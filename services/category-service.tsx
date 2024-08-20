@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const getCategories = async () => {
+export async function getCategories() {
   try {
     const res = await axios.get(
       `${process.env.NEXT_PUBLIC_SERVER_URL}api/categories`,
@@ -10,8 +10,8 @@ export const getCategories = async () => {
         },
       }
     );
-    return res.data;
+    return res.data.data;
   } catch (error) {
-    return [];
+    return null;
   }
-};
+}

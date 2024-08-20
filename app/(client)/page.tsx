@@ -1,4 +1,6 @@
+import BranchsWrapper from "@/components/branchs-wrapper";
 import CategoryWrapper from "@/components/category-wrapper";
+import Footer from "@/components/footer";
 import Navbar from "@/components/header";
 import HeroSLider from "@/components/hero-slider";
 import QuickAbout from "@/components/quick-about";
@@ -10,6 +12,8 @@ export default function Page() {
       <HeroSLider />
       <CategoryWrapper />
       <QuickAbout />
+      <BranchsWrapper />
+      <Footer />
     </div>
   );
 }

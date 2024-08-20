@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Logo from "@/public/image/Logo.svg";
 
 import { SmBrnach } from "./branch-card";
@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { SmCardSkeleton } from "./skeleton";
+import { SmBranchCardsSkeleton } from "./skeleton";
 import Link from "next/link";
 
 export const MainNav = ({
@@ -32,49 +32,68 @@ export const MainNav = ({
   ...props
 }: React.HtmlHTMLAttributes<HTMLElement>) => {
   const [sideMenu, setSideMenu] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [branchs, setBranchs] = useState<IBranch[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getBranchs()
-      .then((data) => {
-        setBranchs(data.data);
-      })
-      .catch((error) => setError(error));
+    const fetchBranchs = async () => {
+      try {
+        const data = await getBranchs();
+        setBranchs(data);
+      } catch (error) {
+        setError("Failed to load branches.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBranchs();
   }, []);
 
   return (
-    <div className="flex flex-row-reverse justify-between flex-1">
-      {/* large screen */}
-      <div className={`hidden md:flex`}>
+    <div className="flex flex-row-reverse justify-between w-full">
+      {/* Large Screen Navigation */}
+      <div className="hidden md:flex mx-auto">
         <ul className="flex flex-row-reverse">
           <li className="lg:mx-1 px-1 cursor-pointer hover:text-Primary text-gray-7 border-b-white border-b-2 py-1 hover:border-Primary duration-75 ease-out">
             صحفه اصلی
           </li>
+
+          {/* Branches Dropdown */}
           <span className="lg:mx-1 px-1 cursor-pointer hover:text-Primary text-gray-7 group relative">
             <p className="flex flex-row items-center border-b-white border-b-2 py-1 hover:border-Primary duration-75 ease-out">
               <ChevronDown className="w-4 h-4" /> شعبه
             </p>
             <ul className="flex-col text-right bg-gray-1 rounded-md hidden group-hover:flex absolute -right-10 h-[400px] w-[400px] p-2 z-10 bg-white border shadow-md">
-              <Suspense fallback={<SmCardSkeleton />}>
-                {branchs?.map((branch) => (
+              {loading ? (
+                <SmBranchCardsSkeleton />
+              ) : error ? (
+                <p className="text-red-500 p-2">{error}</p>
+              ) : (
+                branchs.map((branch) => (
                   <SmBrnach
                     key={branch.id}
                     className="duration-300 hover:text-main"
                     data={branch}
                   />
-                ))}
-              </Suspense>
+                ))
+              )}
             </ul>
           </span>
 
+          {/* Menu Dropdown */}
           <span className="lg:mx-1 px-1 cursor-pointer hover:text-Primary text-gray-7 group relative">
             <p className="flex flex-row items-center border-b-white border-b-2 py-1 hover:border-Primary duration-75 ease-out">
               <ChevronDown className="w-4 h-4" /> منو
             </p>
             <ul className="flex-col text-right bg-gray-1 rounded-md hidden group-hover:flex absolute -right-10 h-[170px] w-[200px] p-2 z-10 bg-white border shadow-md">
-              <Suspense fallback={<SmCardSkeleton />}>
-                {branchs?.map((branch) => (
+              {loading ? (
+                <SmBranchCardsSkeleton />
+              ) : error ? (
+                <p className="text-red-500 p-2">{error}</p>
+              ) : (
+                branchs.map((branch) => (
                   <Link
                     key={branch.id}
                     href={`/branch/${branch.title}/menu`}
@@ -82,8 +101,8 @@ export const MainNav = ({
                   >
                     {branch.name}
                   </Link>
-                ))}
-              </Suspense>
+                ))
+              )}
             </ul>
           </span>
 
@@ -101,7 +120,8 @@ export const MainNav = ({
         </ul>
       </div>
 
-      <div>
+      {/* Small Screen Menu */}
+      <div className="items-start w-full md:w-auto">
         <Button
           className="hover:border-main bg-tint-1 group duration-150 inline-flex md:hidden"
           variant="outline"
@@ -133,10 +153,11 @@ export const MainNav = ({
         </Button>
       </div>
 
+      {/* Side Menu */}
       <div
         className={`${
           sideMenu ? "w-full opacity-100 left-0" : "w-0 opacity-0 -left-12"
-        } min-h-[100vh] flex flex-col text-right bg-white absolute top-0  z-10 duration-300 ease-out md:hidden`}
+        } min-h-[100vh] flex flex-col text-right bg-white absolute top-0 z-10 duration-300 ease-out md:hidden`}
       >
         <div className="flex flex-row-reverse items-center px-3 py-5 justify-between bg-hero-slider bg-blend-darken bg-no-repeat bg-cover bg-center">
           <Image
@@ -147,7 +168,7 @@ export const MainNav = ({
           <Button
             variant="outline"
             size="icon"
-            className="cursor-pointer  bg-error-extra-light hover:border-error"
+            className="cursor-pointer bg-error-extra-light hover:border-error"
             onClick={() => setSideMenu(false)}
           >
             <X className="w-5 h-5 text-error" />
@@ -157,13 +178,19 @@ export const MainNav = ({
           <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full ">
             صحفه اصلی
           </li>
+
+          {/* Branches Select */}
           <Select>
             <SelectTrigger className="w-full text-right my-1" dir="rtl">
               <SelectValue placeholder="شعبه" />
             </SelectTrigger>
             <SelectContent dir="rtl">
-              <Suspense fallback={<SmCardSkeleton />}>
-                {branchs?.map((branch) => (
+              {loading ? (
+                <SmBranchCardsSkeleton />
+              ) : error ? (
+                <p className="text-red-500 p-2">{error}</p>
+              ) : (
+                branchs.map((branch) => (
                   <SelectItem key={branch.id} value={branch.title}>
                     <Link
                       href={`/branch/${branch.title}`}
@@ -172,18 +199,23 @@ export const MainNav = ({
                       {branch.name}
                     </Link>
                   </SelectItem>
-                ))}
-              </Suspense>
+                ))
+              )}
             </SelectContent>
           </Select>
 
+          {/* Menu Select */}
           <Select>
             <SelectTrigger className="w-full text-right my-1" dir="rtl">
               <SelectValue placeholder="منو" />
             </SelectTrigger>
             <SelectContent dir="rtl">
-              <Suspense fallback={<SmCardSkeleton />}>
-                {branchs?.map((branch) => (
+              {loading ? (
+                <SmBranchCardsSkeleton />
+              ) : error ? (
+                <p className="text-red-500 p-2">{error}</p>
+              ) : (
+                branchs.map((branch) => (
                   <SelectItem key={branch.id} value={branch.title}>
                     <Link
                       href={`/branch/${branch.title}/menu`}
@@ -192,8 +224,8 @@ export const MainNav = ({
                       {branch.name}
                     </Link>
                   </SelectItem>
-                ))}
-              </Suspense>
+                ))
+              )}
             </SelectContent>
           </Select>
 

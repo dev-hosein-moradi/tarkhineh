@@ -50,7 +50,7 @@ const HeroSLider = () => {
                 />
               </div>
               <div className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] ">
-                <h1 className="text-white text-[4.5vw] font-bold w-fit text-nowrap">
+                <h1 className="text-white text-[4vw] font-bold w-fit text-nowrap">
                   تجربه غذای سالم و گیاهی به سبک ترخینه
                 </h1>
                 {paths.includes("menu") && (

@@ -4,6 +4,8 @@ import Image from "next/image";
 
 import { IBranch } from "@/types";
 import { cn } from "@/lib/utils";
+import { ChevronLeft, Expand } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function SmBrnach({
   className,
@@ -32,10 +34,40 @@ export function SmBrnach({
   );
 }
 
-export function MdBrnach() {
-  return <div></div>;
-}
+export function MdBrnach({
+  className,
+  data,
+}: {
+  className: string;
+  data: IBranch;
+}) {
+  return (
+    <div className="agency-card w-[340px] h-[102px] border-[1px] border-gray-4 hover:border-Primary rounded-md relative flex flex-row-reverse my-2 sm:mx-1 lg:flex-col lg:w-[230px] lg:h-[344px] hover:shadow-md ease-in-out duration-500 hover:translate-y-1 group cursor-pointer ">
+      <Image
+        className="w-[160px] h-[100px] object-cover rounded-r-md lg:w-[228px] lg:h-[230px] lg:rounded-r-none lg:rounded-t-md lg:group-hover:h-[190px] ease-in-out duration-500 bg-gray-100 group-hover:brightness-50"
+        alt="agency"
+        src={data.image}
+        width={100}
+        height={100}
+        quality={100}
+        priority
+      />
+      <span className="absolute bottom-2 lg:bottom-[130px] right-2 hover:scale-105 ease-out duration-75 cursor-pointer lg:group-hover:bottom-[240px] lg:group-hover:right-[105px] lg:duration-500 ">
+        <Expand className="w-5 h-5 text-white" />
+      </span>
 
-export function LgBrnach() {
-  return <div></div>;
+      <span className="text-center px-2">
+        <h3 className="font-medium text-[15px] text-gray-8 leading-6 py-1 lg:py-2 lg:text-[20px] lg:font-semibold ">
+          {data.name}
+        </h3>
+        <p className="text-[13px] font-normal text-gray-8 lg:text-[14px] lg:font-medium ">
+          {data?.address}
+        </p>
+      </span>
+
+      <Button className="hidden lg:flex justify-center items-center w-[128px] h-[35px] bg-white text-shade-2 border-[1px] border-shade-2 rounded-md opacity-0 group-hover:opacity-100 ease-in-out duration-500 mx-auto mt-1 hover:bg-main hover:text-white">
+        <ChevronLeft className="w-4 h-4 text-inherit" /> صفحه شعبه
+      </Button>
+    </div>
+  );
 }

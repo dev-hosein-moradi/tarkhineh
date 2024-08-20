@@ -82,4 +82,12 @@
     background-size: cover;
     background-clip: border-box;
   }
+
+  .footer_bg {
+    background: url(../public/image/footer.webp) no-repeat;
+    background-size: cover;
+    background-clip: border-box;
+    background-blend-mode: darken;
+    
+  }
 }

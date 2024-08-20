@@ -2,7 +2,7 @@ import { CheckCircle, NotebookText, UserCheck, Wifi } from "lucide-react";
 
 export default function QuickAbout() {
   return (
-    <div className="summery_bg w-full min-h-[720px] sm:min-h-[420px] md:min-h-[280px] py-[24px]">
+    <div className="summery_bg w-full min-h-[550px] sm:min-h-[420px] md:min-h-[270px] py-[24px] px-[5%]">
       <div className="w-full max-w-[1150px] mx-auto flex flex-col md:flex-row-reverse md:items-center md:justify-between">
         <div className="text-white text-right flex flex-col md:w-[50%] lg:w-[45%]">
           <h2 className="font-normal text-xl mb-4">
