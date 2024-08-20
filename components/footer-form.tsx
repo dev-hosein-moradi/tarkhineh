@@ -39,7 +39,7 @@ export default function FooterForm() {
     console.log(values);
   }
   return (
-    <div className="text-white">
+    <div className="text-white lg:flex flex-col items-cente hidden w-[60%]">
       <h2 className="font-bold text-xl leading-7 ml-auto text-right mb-4 w-full">
         پیام به ترخینه{" "}
       </h2>
