@@ -26,15 +26,20 @@ import {
 
 import { SmBranchCardsSkeleton } from "./skeleton";
 import Link from "next/link";
+import { useSearchModal } from "@/hooks/use-search-modal";
 
 export const MainNav = ({
   className,
   ...props
 }: React.HtmlHTMLAttributes<HTMLElement>) => {
+  const searchModel = useSearchModal();
+
   const [sideMenu, setSideMenu] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [branchs, setBranchs] = useState<IBranch[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const fetchBranchs = async () => {
@@ -71,7 +76,7 @@ export const MainNav = ({
               ) : error ? (
                 <p className="text-red-500 p-2">{error}</p>
               ) : (
-                branchs.map((branch) => (
+                branchs?.map((branch) => (
                   <SmBrnach
                     key={branch.id}
                     className="duration-300 hover:text-main"
@@ -93,7 +98,7 @@ export const MainNav = ({
               ) : error ? (
                 <p className="text-red-500 p-2">{error}</p>
               ) : (
-                branchs.map((branch) => (
+                branchs?.map((branch) => (
                   <Link
                     key={branch.id}
                     href={`/branch/${branch.title}/menu`}
@@ -149,7 +154,13 @@ export const MainNav = ({
           variant="outline"
           size="icon"
         >
-          <Search className="h-5 w-5 text-main" />
+          <Search
+            className="h-5 w-5 text-main"
+            onClick={() => {
+              setOpen(false);
+              searchModel.onOpen();
+            }}
+          />
         </Button>
       </div>
 
@@ -190,7 +201,7 @@ export const MainNav = ({
               ) : error ? (
                 <p className="text-red-500 p-2">{error}</p>
               ) : (
-                branchs.map((branch) => (
+                branchs?.map((branch) => (
                   <SelectItem key={branch.id} value={branch.title}>
                     <Link
                       href={`/branch/${branch.title}`}
@@ -215,7 +226,7 @@ export const MainNav = ({
               ) : error ? (
                 <p className="text-red-500 p-2">{error}</p>
               ) : (
-                branchs.map((branch) => (
+                branchs?.map((branch) => (
                   <SelectItem key={branch.id} value={branch.title}>
                     <Link
                       href={`/branch/${branch.title}/menu`}

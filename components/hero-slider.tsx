@@ -12,18 +12,12 @@ import {
 import { getBranchs } from "@/services/branch-service";
 import { IBranch } from "@/types";
 import Image from "next/image";
-import agh from "@/public/image/banner/aghdasieh.webp";
-import cha from "@/public/image/banner/chalus.webp";
-import ekb from "@/public/image/banner/ekbatan.webp";
-import van from "@/public/image/banner/vanak.webp";
 import banner from "@/public/image/banner/banner.jpg";
-import { usePathname } from "next/navigation";
 import { Button } from "./ui/button";
 
 const banners = [banner];
 
 const HeroSLider = () => {
-  const paths = usePathname();
   const [error, setError] = useState(null);
   const [branchs, setBranchs] = useState<IBranch[]>([]);
 
@@ -44,20 +38,28 @@ const HeroSLider = () => {
                 <Image
                   src={branch}
                   alt={`banner image`}
-                  className="object-cover w-[100%] h-[500px] brightness-[0.3]"
+                  className="object-cover w-[100%] h-[400px] brightness-[0.3]"
                   quality={100}
                   priority
+                  blurDataURL=""
+                  placeholder="blur"
+                  layout="responsive"
                 />
               </div>
-              <div className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] ">
+              <div className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex flex-col items-center">
                 <h1 className="text-white text-[4vw] font-bold w-fit text-nowrap">
                   تجربه غذای سالم و گیاهی به سبک ترخینه
                 </h1>
-                {paths.includes("menu") && (
-                  <Button className="bg-main text-white">
-                    سفارش آنلاین غذا
-                  </Button>
-                )}
+                <Button
+                  onClick={() =>
+                    document
+                      .getElementById("Category_Section")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                  className="bg-main text-white mx-auto hover:bg-main my-2"
+                >
+                  سفارش آنلاین غذا
+                </Button>
               </div>
             </CarouselItem>
           ))}
