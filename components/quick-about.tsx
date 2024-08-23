@@ -23,24 +23,24 @@ export default function QuickAbout() {
         </div>
 
         <div className="flex flex-row-reverse justify-center items-center flex-wrap mt-4 gap-1 md:w-[50%] lg:justify-end">
-          <span className="text-white my-2 w-[140px] py-8 px-1 text-center flex flex-col-reverse items-center border rounded-md  ">
+          <span className="text-white my-2 w-[140px] py-8 px-1 text-center flex flex-col-reverse items-center rounded-md  ">
             <p className="font-normal text-[13px] mt-1 ">
               پرسنلی مجرب و حرفه‌ای
             </p>
             <UserCheck className="w-5 h-5 text-white" />
           </span>
 
-          <span className="text-white my-2 w-[140px] py-8 px-1 text-center flex flex-col-reverse items-center border rounded-md  ">
+          <span className="text-white my-2 w-[140px] py-8 px-1 text-center flex flex-col-reverse items-center rounded-md  ">
             <p className="font-normal text-[13px] mt-1 ">کیفیت بالای غذاها</p>
             <CheckCircle className="w-5 h-5 text-white" />
           </span>
 
-          <span className="text-white my-2 w-[140px] py-8 px-1 text-center flex flex-col-reverse items-center border rounded-md  ">
+          <span className="text-white my-2 w-[140px] py-8 px-1 text-center flex flex-col-reverse items-center rounded-md  ">
             <p className="font-normal text-[13px] mt-1 ">محیطی دلنشین و آرام</p>
             <Wifi className="w-5 h-5 text-white" />
           </span>
 
-          <span className="text-white my-2 w-[140px] py-8 px-1 text-center flex flex-col-reverse items-center border rounded-md  ">
+          <span className="text-white my-2 w-[140px] py-8 px-1 text-center flex flex-col-reverse items-center rounded-md  ">
             <p className="font-normal text-[13px] mt-1 ">منوی متنوع</p>
             <NotebookText className="w-5 h-5 text-white" />
           </span>

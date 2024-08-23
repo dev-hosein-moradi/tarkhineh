@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
+import { useEffect, useState, useMemo } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { getBranchs } from "@/services/branch-service";
 import { IBranch } from "@/types";
@@ -17,38 +15,50 @@ import { Button } from "./ui/button";
 
 const banners = [banner];
 
-const HeroSLider = () => {
-  const [error, setError] = useState(null);
-  const [branchs, setBranchs] = useState<IBranch[]>([]);
+const HeroSlider = () => {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
+  const [error, setError] = useState<string | null>(null);
+  const [branches, setBranches] = useState<IBranch[]>([]);
+
+  // Extract the 'n' query parameter from the URL
+  const branchName = searchParams.get("n");
+
+  // Fetch branches only once when the component mounts
   useEffect(() => {
     getBranchs()
-      .then((data) => {
-        setBranchs(data.data);
-      })
-      .catch((error) => setError(error));
+      .then((data) => setBranches(data.data))
+      .catch((error) => setError(error.message));
   }, []);
+
+  // Memoize the banner text to avoid recalculating on each render
+  const bannerText = useMemo(() => {
+    if (pathname?.startsWith("/branch") && branchName) {
+      return `سرسبزی ${branchName} دلیل حس خوب شماست`;
+    }
+    return "تجربه غذای سالم و گیاهی به سبک ترخینه";
+  }, [pathname, branchName]);
+
   return (
-    <div className="">
-      <Carousel className="w-full max-w-[100%]">
+    <div>
+      <Carousel className="w-full max-w-full">
         <CarouselContent className="relative h-auto">
-          {banners.map((branch, index) => (
-            <CarouselItem key={index} className="">
+          {banners.map((bannerImage, index) => (
+            <CarouselItem key={index}>
               <div className="relative">
                 <Image
-                  src={branch}
-                  alt={`banner image`}
-                  className="object-cover w-[100%] h-[400px] brightness-[0.3]"
+                  src={bannerImage}
+                  alt="banner image"
+                  className="object-cover w-full h-[450px] brightness-50"
                   quality={100}
                   priority
-                  blurDataURL=""
                   placeholder="blur"
-                  layout="responsive"
                 />
               </div>
-              <div className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex flex-col items-center">
-                <h1 className="text-white text-[4vw] font-bold w-fit text-nowrap">
-                  تجربه غذای سالم و گیاهی به سبک ترخینه
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-full">
+                <h1 className="text-white text-center text-[5vw] lg:text-[4vw] font-bold w-full">
+                  {bannerText}
                 </h1>
                 <Button
                   onClick={() =>
@@ -63,12 +73,10 @@ const HeroSLider = () => {
               </div>
             </CarouselItem>
           ))}
-          {/* <CarouselPrevious className="absolute left-5 bottom-0" />
-          <CarouselNext className="absolute right-5 bottom-0" /> */}
         </CarouselContent>
       </Carousel>
     </div>
   );
 };
 
-export default HeroSLider;
+export default HeroSlider;

@@ -1,10 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Logo from "@/public/image/Logo.svg";
-
-import { SmBrnach } from "./branch-card";
 import {
   ChevronDown,
   Menu,
@@ -23,10 +21,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { SmBranchCardsSkeleton } from "./skeleton";
 import Link from "next/link";
 import { useSearchModal } from "@/hooks/use-search-modal";
+
+const extractBranchName = (fullName: string) => {
+  const parts = fullName.split(" ");
+  return parts.length > 1 ? parts[1] : parts[0];
+};
 
 export const MainNav = ({
   className,
@@ -36,77 +38,80 @@ export const MainNav = ({
 
   const [sideMenu, setSideMenu] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [branchs, setBranchs] = useState<IBranch[]>([]);
+  const [branches, setBranches] = useState<IBranch[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [open, setOpen] = useState(false);
+  const fetchBranches = useCallback(async () => {
+    try {
+      const data = await getBranchs();
+      setBranches(data);
+    } catch {
+      setError("Failed to load branches.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchBranchs = async () => {
-      try {
-        const data = await getBranchs();
-        setBranchs(data);
-      } catch (error) {
-        setError("Failed to load branches.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (branches.length === 0) {
+      fetchBranches();
+    }
+  }, [fetchBranches, branches]);
 
-    fetchBranchs();
-  }, []);
+  const renderBranches = useCallback(
+    (linkPrefix = "/branch") =>
+      branches.map((branch) => (
+        <Link
+          key={branch.id}
+          href={`${linkPrefix}?n=${extractBranchName(branch.name)}`}
+          className="hover:text-main duration-150 py-2 px-2"
+        >
+          {branch.name}
+        </Link>
+      )),
+    [branches]
+  );
 
   return (
     <div className="flex flex-row-reverse justify-between w-full">
       {/* Large Screen Navigation */}
       <div className="hidden md:flex mx-auto">
         <ul className="flex flex-row-reverse">
-          <li className="lg:mx-1 px-1 cursor-pointer hover:text-Primary text-gray-7 border-b-white border-b-2 py-1 hover:border-Primary duration-75 ease-out">
-            صحفه اصلی
-          </li>
+          <Link
+            href={"/"}
+            className="lg:mx-1 px-1 cursor-pointer hover:text-Primary text-gray-7 border-b-white border-b-2 py-1 hover:border-Primary duration-75 ease-out"
+          >
+            صفحه اصلی
+          </Link>
 
           {/* Branches Dropdown */}
           <span className="lg:mx-1 px-1 cursor-pointer hover:text-Primary text-gray-7 group relative">
-            <p className="flex flex-row items-center border-b-white border-b-2 py-1 hover:border-Primary duration-75 ease-out">
+            <p className="flex items-center border-b-white border-b-2 py-1 hover:border-Primary duration-75 ease-out">
               <ChevronDown className="w-4 h-4" /> شعبه
             </p>
-            <ul className="flex-col text-right bg-gray-1 rounded-md hidden group-hover:flex absolute -right-10 h-[400px] w-[400px] p-2 z-10 bg-white border shadow-md">
+            <ul className="flex-col text-right bg-white rounded-md hidden group-hover:flex absolute -right-10 h-[180px] w-[200px] p-2 z-10 shadow-md border">
               {loading ? (
                 <SmBranchCardsSkeleton />
               ) : error ? (
                 <p className="text-red-500 p-2">{error}</p>
               ) : (
-                branchs?.map((branch) => (
-                  <SmBrnach
-                    key={branch.id}
-                    className="duration-300 hover:text-main"
-                    data={branch}
-                  />
-                ))
+                renderBranches()
               )}
             </ul>
           </span>
 
           {/* Menu Dropdown */}
           <span className="lg:mx-1 px-1 cursor-pointer hover:text-Primary text-gray-7 group relative">
-            <p className="flex flex-row items-center border-b-white border-b-2 py-1 hover:border-Primary duration-75 ease-out">
+            <p className="flex items-center border-b-white border-b-2 py-1 hover:border-Primary duration-75 ease-out">
               <ChevronDown className="w-4 h-4" /> منو
             </p>
-            <ul className="flex-col text-right bg-gray-1 rounded-md hidden group-hover:flex absolute -right-10 h-[170px] w-[200px] p-2 z-10 bg-white border shadow-md">
+            <ul className="flex-col text-right bg-white rounded-md hidden group-hover:flex absolute -right-10 h-[180px] w-[200px] p-2 z-10 shadow-md border">
               {loading ? (
                 <SmBranchCardsSkeleton />
               ) : error ? (
                 <p className="text-red-500 p-2">{error}</p>
               ) : (
-                branchs?.map((branch) => (
-                  <Link
-                    key={branch.id}
-                    href={`/branch/${branch.title}/menu`}
-                    className="p-1 hover:text-main duration-150"
-                  >
-                    {branch.name}
-                  </Link>
-                ))
+                renderBranches("/branch/menu")
               )}
             </ul>
           </span>
@@ -126,9 +131,9 @@ export const MainNav = ({
       </div>
 
       {/* Small Screen Menu */}
-      <div className="items-start w-full md:w-auto">
+      <div className="w-full md:w-auto flex items-center gap-1">
         <Button
-          className="hover:border-main bg-tint-1 group duration-150 inline-flex md:hidden"
+          className="hover:border-main text-main bg-tint-1 group duration-150 inline-flex md:hidden"
           variant="outline"
           size="icon"
           onClick={() => setSideMenu(true)}
@@ -136,31 +141,28 @@ export const MainNav = ({
           <Menu className="w-6 h-6 group-hover:text-main duration-150" />
         </Button>
         <Button
-          className="mx-1 hover:border-main bg-tint-1 duration-150 hidden md:inline-flex"
+          className="hover:border-main bg-tint-1 duration-150"
           variant="outline"
           size="icon"
         >
           <User2 className="w-5 h-5 text-main duration-150" />
         </Button>
         <Button
-          className="mx-1 hover:border-main bg-tint-1 duration-150 hidden md:inline-flex"
+          className="hover:border-main bg-tint-1 duration-150"
           variant="outline"
           size="icon"
         >
           <ShoppingCart className="h-5 w-5 text-main duration-150" />
         </Button>
         <Button
-          className="mx-1 hover:border-main bg-tint-1 duration-150 hidden lg:inline-flex"
+          className="hover:border-main bg-tint-1 duration-150 hidden lg:inline-flex"
           variant="outline"
           size="icon"
+          onClick={() => {
+            searchModel.onOpen();
+          }}
         >
-          <Search
-            className="h-5 w-5 text-main"
-            onClick={() => {
-              setOpen(false);
-              searchModel.onOpen();
-            }}
-          />
+          <Search className="h-5 w-5 text-main" />
         </Button>
       </div>
 
@@ -179,15 +181,15 @@ export const MainNav = ({
           <Button
             variant="outline"
             size="icon"
-            className="cursor-pointer bg-error-extra-light hover:border-error"
+            className="bg-error-extra-light hover:border-error"
             onClick={() => setSideMenu(false)}
           >
             <X className="w-5 h-5 text-error" />
           </Button>
         </div>
-        <ul className="px-3 hover:*:text-main duration-150">
-          <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full ">
-            صحفه اصلی
+        <ul className="px-3">
+          <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full">
+            صفحه اصلی
           </li>
 
           {/* Branches Select */}
@@ -201,10 +203,10 @@ export const MainNav = ({
               ) : error ? (
                 <p className="text-red-500 p-2">{error}</p>
               ) : (
-                branchs?.map((branch) => (
+                branches?.map((branch) => (
                   <SelectItem key={branch.id} value={branch.title}>
                     <Link
-                      href={`/branch/${branch.title}`}
+                      href={`/branch/${branch.name.split(" ")[1]}`}
                       className="hover:text-main duration-150"
                     >
                       {branch.name}
@@ -226,10 +228,10 @@ export const MainNav = ({
               ) : error ? (
                 <p className="text-red-500 p-2">{error}</p>
               ) : (
-                branchs?.map((branch) => (
+                branches?.map((branch) => (
                   <SelectItem key={branch.id} value={branch.title}>
                     <Link
-                      href={`/branch/${branch.title}/menu`}
+                      href={`/branch/${branch.name.split(" ")[1]}/menu`}
                       className="hover:text-main duration-150"
                     >
                       {branch.name}
@@ -240,15 +242,15 @@ export const MainNav = ({
             </SelectContent>
           </Select>
 
-          <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full ">
+          <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full">
             اعطای نمایندگی
           </li>
 
-          <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full ">
+          <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full">
             درباره ما
           </li>
 
-          <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full ">
+          <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full">
             تماس با ما
           </li>
         </ul>

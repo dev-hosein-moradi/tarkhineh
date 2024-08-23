@@ -55,11 +55,10 @@ export default function FooterForm() {
               name="fullname"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>نام و نام خانوادگی</FormLabel>
                   <FormControl>
                     <Input
                       className="bg-transparent w-[270px] h-[40px] text-[15px] font-normal border-[1px] border-gray-6 hover:border-gray-1 my-1 rounded-md outline-none rtl-grid text-white px-4 py-1 focus:border-gray-1  "
-                      placeholder="حسین مرادی"
+                      placeholder="نام و نام خانوادگی"
                       {...field}
                     />
                   </FormControl>
@@ -72,11 +71,10 @@ export default function FooterForm() {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>شماره تماس(اختیاری)</FormLabel>
                   <FormControl>
                     <Input
                       className="bg-transparent w-[270px] h-[40px] text-[15px] font-normal border-[1px] border-gray-6 hover:border-gray-1 my-1 rounded-md outline-none rtl-grid text-white px-4 py-1 focus:border-gray-1  "
-                      placeholder="09025197379"
+                      placeholder="شماره تماس (اختیاری)"
                       {...field}
                     />
                   </FormControl>
@@ -89,11 +87,10 @@ export default function FooterForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>ایمیل</FormLabel>
                   <FormControl>
                     <Input
                       className="bg-transparent w-[270px] h-[40px] text-[15px] font-normal border-[1px] border-gray-6 hover:border-gray-1 my-1 rounded-md outline-none rtl-grid text-white px-4 py-1 focus:border-gray-1  "
-                      placeholder="moradih7379@gmail.com"
+                      placeholder="ایمیل"
                       {...field}
                     />
                   </FormControl>
@@ -102,23 +99,27 @@ export default function FooterForm() {
               )}
             />
           </div>
-          <FormField
-            control={form.control}
-            name="message"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>پیام</FormLabel>
-                <FormControl>
-                  <Textarea
-                    className="bg-transparent w-[300px] h-[135px] text-[15px] font-normal border-[1px] border-gray-6  hover:border-gray-1 my-1 mr-2 rounded-md resize-none outline-none rtl-grid text-white px-4 py-1 focus:border-gray-1 "
-                    placeholder="پیام خود را بنویسید"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-col">
+            <FormField
+              control={form.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Textarea
+                      className="bg-transparent w-[300px] h-[135px] text-[15px] font-normal border-[1px] border-gray-6  hover:border-gray-1 my-1 mr-2 rounded-md resize-none outline-none rtl-grid text-white px-4 py-1 focus:border-gray-1 "
+                      placeholder="پیام خود را بنویسید"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button className="bg-transparent hover:bg-main border-[1px] border-gray-6 w-[183px] h-[40px] mr-auto my-2 rounded-md hover:footer-link-hover active:footer-link-hover">
+              ارسال پیام
+            </Button>
+          </div>
         </form>
       </Form>
     </div>

@@ -28,3 +28,18 @@ export interface ICategory {
   title: string;
   image: string
 }
+
+export interface IFood {
+  id: string
+  name: string
+  compounds: string
+  type: string
+  tag: string
+  rate: number
+  percentOfDiscount: number
+  discountPrice: string
+  mainPrice: string
+  isFavorite: Boolean
+  numOfScore: number
+  image: string,
+}

@@ -34,7 +34,7 @@ export const SearchModal = () => {
   return (
     <Modal
       title="جستجو"
-      description="جستجو در فروشگاه"
+      description="جستجو در رستوران"
       isOpen={searchModal.isOpen}
       onClose={searchModal.onClose}
     >
