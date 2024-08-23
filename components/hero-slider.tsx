@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   Carousel,
@@ -40,6 +40,10 @@ const HeroSlider = () => {
     return "تجربه غذای سالم و گیاهی به سبک ترخینه";
   }, [pathname, branchName]);
 
+  if (!branchName) {
+    return <p>search param error</p>;
+  }
+
   return (
     <div>
       <Carousel className="w-full max-w-full">
@@ -58,7 +62,9 @@ const HeroSlider = () => {
               </div>
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-full">
                 <h1 className="text-white text-center text-[5vw] lg:text-[4vw] font-bold w-full">
-                  {bannerText}
+                  <Suspense fallback={<p>error in searcparamsd</p>}>
+                    {bannerText}
+                  </Suspense>
                 </h1>
                 <Button
                   onClick={() =>
