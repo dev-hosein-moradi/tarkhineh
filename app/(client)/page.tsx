@@ -5,12 +5,15 @@ import Navbar from "@/components/header";
 import HeroSLider from "@/components/hero-slider";
 import QuickAbout from "@/components/quick-about";
 import SearchWrapper from "@/components/search-wrapper";
+import { Suspense } from "react";
 
 export default function Page() {
   return (
     <div>
       <Navbar />
-      <HeroSLider />
+      <Suspense fallback={<p>hello</p>}>
+        <HeroSLider />
+      </Suspense>
       <SearchWrapper />
       <CategoryWrapper />
       <QuickAbout />
