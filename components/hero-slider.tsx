@@ -17,13 +17,13 @@ const banners = [banner];
 
 const HeroSlider = () => {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
 
   const [error, setError] = useState<string | null>(null);
   const [branches, setBranches] = useState<IBranch[]>([]);
 
   // Extract the 'n' query parameter from the URL
-  const branchName = searchParams.get("n");
+  // const branchName = searchParams.get("n");
 
   // Fetch branches only once when the component mounts
   useEffect(() => {
@@ -34,15 +34,11 @@ const HeroSlider = () => {
 
   // Memoize the banner text to avoid recalculating on each render
   const bannerText = useMemo(() => {
-    if (pathname?.startsWith("/branch") && branchName) {
-      return `سرسبزی ${branchName} دلیل حس خوب شماست`;
+    if (pathname?.startsWith("/branch")) {
+      return `سرسبزی } دلیل حس خوب شماست`;
     }
     return "تجربه غذای سالم و گیاهی به سبک ترخینه";
-  }, [pathname, branchName]);
-
-  if (!branchName) {
-    return <p>search param error</p>;
-  }
+  }, [pathname]);
 
   return (
     <div>
