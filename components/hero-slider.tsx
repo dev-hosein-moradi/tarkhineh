@@ -10,18 +10,34 @@ import {
 import Image from "next/image";
 import banner from "@/public/image/banner/banner.jpg";
 import { Button } from "./ui/button";
+import { getBranch } from "@/services/branch-service";
+import { IBranch } from "@/types";
 
 const banners = [banner];
 
-const HeroSlider = () => {
+interface HeroSliderProps {
+  params: { branchId: string };
+}
+
+const HeroSlider: React.FC<HeroSliderProps> = ({ params }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [branchName, setBranchName] = useState<String | null>("ترخینه");
 
   // Extract the 'n' query parameter from the URL
   useEffect(() => {
-    setBranchName(searchParams?.get("n"));
-  }, [searchParams]);
+    const fetchBranch = async () => {
+      try {
+        const branch: IBranch = await getBranch(params.branchId);
+        setBranchName(branch?.name?.split(" ")[1] || ""); // Assuming branch object has a name property
+      } catch (error) {
+        console.error("Failed to fetch branch:", error);
+      }
+    };
+    if (pathname?.startsWith("/branch")) {
+      fetchBranch();
+    }
+  }, [params, pathname, searchParams]);
 
   // Memoize the banner text to avoid recalculating on each render
   const bannerText = useMemo(() => {

@@ -111,9 +111,9 @@ export function HeroSliderSkeleton() {
       <div className="w-full max-w-full">
         <div className="relative h-auto">
           <div className="relative">
-            <Skeleton className="w-full h-[450px] brightness-50" />
+            <Skeleton className="w-full h-[450px] bg-gray-100" />
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-full">
-              <Skeleton className="w-full h-[5vw] lg:h-[4vw]" />
+              <Skeleton className="w-[70%] bg-gray-200 mx-auto h-[3vw]" />
               <Skeleton className="w-[200px] h-10 bg-main my-2" />
             </div>
           </div>
@@ -121,4 +121,31 @@ export function HeroSliderSkeleton() {
       </div>
     </div>
   );
+}
+
+export function BranchReviewSkeleton(){
+  return (
+    <div className="py-16">
+      <h2 className="w-full mx-auto py-4">
+        <Skeleton className="w-[40%] bg-gray-200 h-4 mx-auto" />
+      </h2>
+      <div className="relative h-[300px] sm:h-[400px]">
+        <Skeleton className="w-full h-full" />
+
+        <div className="bg-white pb-2 w-full sm:w-[80%] md:w-[70%] absolute translate-x-[-50%] left-[50%] -bottom-5 mx-auto h-20 sm:h-24 rounded border-main border flex flex-col sm:flex-row sm:items-center justify-around px-2">
+          <article className="flex flex-row-reverse sm:flex-col flex-1 text-center w-full items-center justify-start">
+            <Skeleton className="w-[80%] h-4" />
+          </article>
+          <div className="flex flex-2 flex-row items-center justify-between sm:w-[60%]">
+            <article className="flex flex-row-reverse sm:flex-col items-center flex-1">
+              <Skeleton className="w-[80%] h-4" />
+            </article>
+            <article className="flex flex-row-reverse sm:flex-col items-center justify-start flex-1">
+              <Skeleton className="w-[80%] h-4" />
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }

@@ -2,6 +2,7 @@ import { ICategory } from "@/types";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { fakeBlurDataURL } from "@/lib/blurDataImage";
+import { useCategoryModal } from "@/hooks/use-category-modal";
 
 export default function CategoryCard({
   data,
@@ -10,6 +11,8 @@ export default function CategoryCard({
   data: ICategory;
   classname: string;
 }) {
+  const categoryModal = useCategoryModal();
+
   return (
     <div
       className={`relative border-Primary border rounded h-[111px] lg:h-[160px] w-[162px] lg:w-[230px] mx-1 sm:mx-2 my-12 lg:my-20 hover:shadow-card-shadow transition ease-out duration-150`}
@@ -26,6 +29,9 @@ export default function CategoryCard({
         blurDataURL={fakeBlurDataURL}
       />
       <Button
+        onClick={() => {
+          categoryModal.onOpen();
+        }}
         variant="default"
         className="absolute -bottom-4 mx-[20%] lg:mx-[16%] bg-main text-white w-[90px] lg:w-[155px] h-[32px] lg:h-[48px] rounded font-normal text-[14px] lg:text-[20px]"
       >

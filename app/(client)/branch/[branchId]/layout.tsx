@@ -6,14 +6,16 @@ import { Fragment, Suspense } from "react";
 
 export default function BranchLayout({
   children,
-}: Readonly<{
+  params,
+}: {
   children: React.ReactNode;
-}>) {
+  params: { branchId: string };
+}) {
   return (
     <Fragment>
       <Navbar />
       <Suspense fallback={<HeroSliderSkeleton />}>
-        <HeroSLider />
+        <HeroSLider params={params} />
       </Suspense>
       {children}
       <Footer />

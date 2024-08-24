@@ -8,12 +8,12 @@ import SearchWrapper from "@/components/search-wrapper";
 import { HeroSliderSkeleton } from "@/components/skeleton";
 import { Suspense } from "react";
 
-export default function Page() {
+export default function Page({ params }: { params: any }) {
   return (
     <div>
       <Navbar />
       <Suspense fallback={<HeroSliderSkeleton />}>
-        <HeroSLider />
+        <HeroSLider params={params} />
       </Suspense>
       <SearchWrapper />
       <CategoryWrapper />

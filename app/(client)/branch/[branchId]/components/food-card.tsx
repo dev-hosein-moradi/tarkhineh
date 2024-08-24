@@ -18,7 +18,7 @@ export default function BranchFoodCard({ food }: { food: IFood }) {
   };
 
   return (
-    <div className="mx-auto w-[230px] min-w-[230px] h-[280px] min-h-[280px] rounded-md border-[1px] border-gray-4 bg-white p-2 shadow-card-shadow hover:shadow-content-card-shadow ease-in-out duration-300">
+    <div className="mx-auto w-[230px] min-w-[230px] h-[280px] min-h-[280px] rounded-md border-[1px] border-gray-4 bg-white p-2 shadow-lg hover:shadow-xl ease-in-out duration-300">
       <Image
         className="min-w-[213px] h-[130px] object-cover rounded-md"
         alt={food?.name}

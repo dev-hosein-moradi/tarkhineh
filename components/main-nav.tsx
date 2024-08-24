@@ -11,8 +11,6 @@ import {
   User2,
   X,
 } from "lucide-react";
-import { getBranchs } from "@/services/branch-service";
-import { IBranch } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -24,6 +22,7 @@ import {
 import { SmBranchCardsSkeleton } from "./skeleton";
 import Link from "next/link";
 import { useSearchModal } from "@/hooks/use-search-modal";
+import { useBranchStore } from "@/hooks/use-branch";
 
 const extractBranchName = (fullName: string) => {
   const parts = fullName.split(" ");
@@ -38,32 +37,26 @@ export const MainNav = ({
 
   const [sideMenu, setSideMenu] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [branches, setBranches] = useState<IBranch[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchBranches = useCallback(async () => {
-    try {
-      const data = await getBranchs();
-      setBranches(data);
-    } catch {
-      setError("Failed to load branches.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { branches, fetchBranches } = useBranchStore();
 
   useEffect(() => {
-    if (branches.length === 0) {
-      fetchBranches();
+    fetchBranches();
+  }, [fetchBranches]);
+
+  useEffect(() => {
+    if (branches?.length !== 0) {
+      setLoading(false);
     }
-  }, [fetchBranches, branches]);
+  }, [branches]);
 
   const renderBranches = useCallback(
     (linkPrefix = "/branch") =>
       branches.map((branch) => (
         <Link
           key={branch.id}
-          href={`${linkPrefix}?n=${extractBranchName(branch.name)}`}
+          href={`${linkPrefix}/${branch.id}`}
           className="hover:text-main duration-150 py-2 px-2"
         >
           {branch.name}

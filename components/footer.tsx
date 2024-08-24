@@ -1,10 +1,17 @@
-("");
-
+"use client";
 import FooterBg from "@/public/image/footer.webp";
 import Image from "next/image";
 import FooterForm from "./footer-form";
+import { useBranchStore } from "@/hooks/use-branch";
+import { useEffect } from "react";
+import Link from "next/link";
 
 export default function Footer() {
+  const { branches, fetchBranches } = useBranchStore();
+
+  useEffect(() => {
+    fetchBranches();
+  }, [fetchBranches]);
   return (
     <div className="relative bg-blend-darken w-full h-[300px]">
       <Image
@@ -39,19 +46,16 @@ export default function Footer() {
             <h2 className="text-lg lg:text-xl font-normal lg:font-bold mb-3">
               شعبه‌های ترخینه
             </h2>
-            <ul className="text-sm">
-              <li className="mb-2 lg:mb-6 hover:footer-link-hover hover:text-main cursor-pointer lg:text-base ">
-                شعبه اکباتان
-              </li>
-              <li className="mb-2 lg:mb-6 hover:footer-link-hover hover:text-main cursor-pointer lg:text-base ">
-                شعبه چالوس
-              </li>
-              <li className="mb-2 lg:mb-6 hover:footer-link-hover hover:text-main cursor-pointer lg:text-base ">
-                شعبه اقدسیه
-              </li>
-              <li className="mb-2 lg:mb-6 hover:footer-link-hover hover:text-main cursor-pointer lg:text-base ">
-                شعبه ونک
-              </li>
+            <ul className="text-sm flex flex-col">
+              {branches?.map((branch) => (
+                <Link
+                  href={`/branch/${branch.id}`}
+                  key={branch.id}
+                  className="mb-2 lg:mb-6 hover:footer-link-hover hover:text-main cursor-pointer lg:text-base "
+                >
+                  {branch.name}
+                </Link>
+              ))}
             </ul>
           </div>
         </div>
