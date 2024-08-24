@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useState, useMemo, Suspense } from "react";
+import { useMemo } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import { getBranchs } from "@/services/branch-service";
-import { IBranch } from "@/types";
 import Image from "next/image";
 import banner from "@/public/image/banner/banner.jpg";
 import { Button } from "./ui/button";
@@ -19,18 +17,8 @@ const HeroSlider = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [error, setError] = useState<string | null>(null);
-  const [branches, setBranches] = useState<IBranch[]>([]);
-
   // Extract the 'n' query parameter from the URL
-  const branchName = searchParams.get("n");
-
-  // Fetch branches only once when the component mounts
-  useEffect(() => {
-    getBranchs()
-      .then((data) => setBranches(data.data))
-      .catch((error) => setError(error.message));
-  }, []);
+  const branchName = searchParams?.get("n") || "ترخینه";
 
   // Memoize the banner text to avoid recalculating on each render
   const bannerText = useMemo(() => {
@@ -44,7 +32,7 @@ const HeroSlider = () => {
     <div>
       <Carousel className="w-full max-w-full">
         <CarouselContent className="relative h-auto">
-          {banners.map((bannerImage, index) => (
+          {banners?.map((bannerImage, index) => (
             <CarouselItem key={index}>
               <div className="relative">
                 <Image
