@@ -104,3 +104,21 @@ export function BranchFoodCardWrapperSkeleton() {
     </div>
   );
 }
+
+export function HeroSliderSkeleton() {
+  return (
+    <div>
+      <div className="w-full max-w-full">
+        <div className="relative h-auto">
+          <div className="relative">
+            <Skeleton className="w-full h-[450px] brightness-50" />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-full">
+              <Skeleton className="w-full h-[5vw] lg:h-[4vw]" />
+              <Skeleton className="w-[200px] h-10 bg-main my-2" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

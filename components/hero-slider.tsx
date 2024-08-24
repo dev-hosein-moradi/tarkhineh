@@ -17,13 +17,13 @@ const banners = [banner];
 
 const HeroSlider = () => {
   const pathname = usePathname();
-  // const searchParams = useSearchParams();
+  const searchParams = useSearchParams();
 
   const [error, setError] = useState<string | null>(null);
   const [branches, setBranches] = useState<IBranch[]>([]);
 
   // Extract the 'n' query parameter from the URL
-  // const branchName = searchParams.get("n");
+  const branchName = searchParams.get("n");
 
   // Fetch branches only once when the component mounts
   useEffect(() => {
@@ -34,11 +34,11 @@ const HeroSlider = () => {
 
   // Memoize the banner text to avoid recalculating on each render
   const bannerText = useMemo(() => {
-    if (pathname?.startsWith("/branch")) {
-      return `سرسبزی } دلیل حس خوب شماست`;
+    if (pathname?.startsWith("/branch") && branchName) {
+      return `سرسبزی ${branchName} دلیل حس خوب شماست`;
     }
     return "تجربه غذای سالم و گیاهی به سبک ترخینه";
-  }, [pathname]);
+  }, [pathname, branchName]);
 
   return (
     <div>
@@ -58,9 +58,7 @@ const HeroSlider = () => {
               </div>
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-full">
                 <h1 className="text-white text-center text-[5vw] lg:text-[4vw] font-bold w-full">
-                  <Suspense fallback={<p>error in searcparamsd</p>}>
-                    {bannerText}
-                  </Suspense>
+                  {bannerText}
                 </h1>
                 <Button
                   onClick={() =>
