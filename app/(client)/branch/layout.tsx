@@ -1,7 +1,8 @@
 import Footer from "@/components/footer";
 import Navbar from "@/components/header";
 import HeroSLider from "@/components/hero-slider";
-import { Fragment } from "react";
+import { HeroSliderSkeleton } from "@/components/skeleton";
+import { Fragment, Suspense } from "react";
 
 export default function BranchLayout({
   children,
@@ -11,7 +12,9 @@ export default function BranchLayout({
   return (
     <Fragment>
       <Navbar />
-      <HeroSLider />
+      <Suspense fallback={<HeroSliderSkeleton />}>
+        <HeroSLider />
+      </Suspense>
       {children}
       <Footer />
     </Fragment>
