@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   Carousel,
@@ -16,9 +16,12 @@ const banners = [banner];
 const HeroSlider = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [branchName, setBranchName] = useState<String | null>("ترخینه");
 
   // Extract the 'n' query parameter from the URL
-  const branchName = searchParams?.get("n") || "ترخینه";
+  useEffect(() => {
+    setBranchName(searchParams?.get("n"));
+  }, [searchParams]);
 
   // Memoize the banner text to avoid recalculating on each render
   const bannerText = useMemo(() => {
