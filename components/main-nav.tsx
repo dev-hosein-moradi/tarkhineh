@@ -23,6 +23,8 @@ import { SmBranchCardsSkeleton } from "./skeleton";
 import Link from "next/link";
 import { useSearchModal } from "@/hooks/use-search-modal";
 import { useBranchStore } from "@/hooks/use-branch";
+import { useAuthModal } from "@/hooks/use-auth-modal";
+import { useCategoryStore } from "@/hooks/use-category";
 
 const extractBranchName = (fullName: string) => {
   const parts = fullName.split(" ");
@@ -34,26 +36,32 @@ export const MainNav = ({
   ...props
 }: React.HtmlHTMLAttributes<HTMLElement>) => {
   const searchModel = useSearchModal();
+  const authModal = useAuthModal();
 
   const [sideMenu, setSideMenu] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const { branches, fetchBranches } = useBranchStore();
+  const { categories, fetchCategories } = useCategoryStore();
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   useEffect(() => {
     fetchBranches();
   }, [fetchBranches]);
 
   useEffect(() => {
-    if (branches?.length !== 0) {
+    if (branches?.length !== 0 && categories?.length !== 0) {
       setLoading(false);
     }
-  }, [branches]);
+  }, [branches, categories]);
 
   const renderBranches = useCallback(
     (linkPrefix = "/branch") =>
-      branches.map((branch) => (
+      branches?.map((branch) => (
         <Link
           key={branch.id}
           href={`${linkPrefix}/${branch.id}`}
@@ -63,6 +71,20 @@ export const MainNav = ({
         </Link>
       )),
     [branches]
+  );
+
+  const renderMenu = useCallback(
+    (linkPrefix = "/menu") =>
+      categories?.map((category) => (
+        <Link
+          key={category.id}
+          href={`${linkPrefix}/${category.id}`}
+          className="hover:text-main duration-150 py-2 px-2"
+        >
+          {category.name}
+        </Link>
+      )),
+    [categories]
   );
 
   return (
@@ -104,7 +126,7 @@ export const MainNav = ({
               ) : error ? (
                 <p className="text-red-500 p-2">{error}</p>
               ) : (
-                renderBranches("/branch/menu")
+                renderMenu()
               )}
             </ul>
           </span>
@@ -137,6 +159,9 @@ export const MainNav = ({
           className="hover:border-main bg-tint-1 duration-150"
           variant="outline"
           size="icon"
+          onClick={() => {
+            authModal.onOpen();
+          }}
         >
           <User2 className="w-5 h-5 text-main duration-150" />
         </Button>
@@ -221,13 +246,13 @@ export const MainNav = ({
               ) : error ? (
                 <p className="text-red-500 p-2">{error}</p>
               ) : (
-                branches?.map((branch) => (
-                  <SelectItem key={branch.id} value={branch.title}>
+                categories?.map((category) => (
+                  <SelectItem key={category.id} value={category.title}>
                     <Link
-                      href={`/branch/${branch.name.split(" ")[1]}/menu`}
+                      href={`/menu/${category.id}`}
                       className="hover:text-main duration-150"
                     >
-                      {branch.name}
+                      {category.name}
                     </Link>
                   </SelectItem>
                 ))

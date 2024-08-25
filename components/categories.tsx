@@ -13,7 +13,7 @@ export default function Categories() {
     fetchCategories();
   }, [fetchCategories]);
 
-  if (categories.length == 0) {
+  if (categories?.length == 0) {
     return <CategoryCardsSkeleton />;
   }
   return (

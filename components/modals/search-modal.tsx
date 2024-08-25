@@ -49,7 +49,7 @@ export const SearchModal = () => {
                   <FormItem>
                     <FormLabel></FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input dir="rtl" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

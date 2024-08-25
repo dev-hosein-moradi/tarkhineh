@@ -4,6 +4,7 @@ import { Fragment, useEffect, useState } from "react";
 
 import { SearchModal } from "@/components/modals/search-modal";
 import { CategoryModal } from "@/components/modals/category-modal";
+import { AuthModal } from "@/components/modals/auth-modal";
 
 export const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -20,6 +21,7 @@ export const ModalProvider = () => {
     <Fragment>
       <SearchModal />
       <CategoryModal />
+      <AuthModal />
     </Fragment>
   );
 };

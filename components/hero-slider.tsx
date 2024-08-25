@@ -8,18 +8,20 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import Image from "next/image";
-import banner from "@/public/image/banner/banner.jpg";
+import banner from "@/public/image/banner/banner.webp";
 import { Button } from "./ui/button";
 import { getBranch } from "@/services/branch-service";
 import { IBranch } from "@/types";
+import { fakeBlurDataURL } from "@/lib/blurDataImage";
 
 const banners = [banner];
 
 interface HeroSliderProps {
-  params: { branchId: string };
+  params: { id: string };
+  banner: string;
 }
 
-const HeroSlider: React.FC<HeroSliderProps> = ({ params }) => {
+const HeroSlider: React.FC<HeroSliderProps> = ({ params, banner }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [branchName, setBranchName] = useState<String | null>("ترخینه");
@@ -28,7 +30,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ params }) => {
   useEffect(() => {
     const fetchBranch = async () => {
       try {
-        const branch: IBranch = await getBranch(params.branchId);
+        const branch: IBranch = await getBranch(params.id);
         setBranchName(branch?.name?.split(" ")[1] || ""); // Assuming branch object has a name property
       } catch (error) {
         console.error("Failed to fetch branch:", error);
@@ -55,12 +57,15 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ params }) => {
             <CarouselItem key={index}>
               <div className="relative">
                 <Image
-                  src={bannerImage}
+                  src={banner}
                   alt="banner image"
-                  className="object-cover w-full h-[450px] brightness-50"
+                  className="object-cover w-full h-[450px] brightness-[0.3]"
                   quality={100}
                   priority
                   placeholder="blur"
+                  width={1000}
+                  height={100}
+                  blurDataURL={fakeBlurDataURL}
                 />
               </div>
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-full">
