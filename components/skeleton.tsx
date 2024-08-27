@@ -123,7 +123,7 @@ export function HeroSliderSkeleton() {
   );
 }
 
-export function BranchReviewSkeleton(){
+export function BranchReviewSkeleton() {
   return (
     <div className="py-16">
       <h2 className="w-full mx-auto py-4">
@@ -147,5 +147,21 @@ export function BranchReviewSkeleton(){
         </div>
       </div>
     </div>
-  )
+  );
 }
+
+export const MenuBarSkeleton = () => {
+  const skeletonItems = Array(4).fill(null);
+  return (
+    <div>
+      <ul className="flex flex-row-reverse items-center justify-start px-3 h-12 gap-2 bg-gray-100 md:px-[4%]">
+        {skeletonItems.map((_, index) => (
+          <Skeleton
+            key={index}
+            className="w-20 h-4 bg-gray-200 rounded animate-pulse"
+          />
+        ))}
+      </ul>
+    </div>
+  );
+};
