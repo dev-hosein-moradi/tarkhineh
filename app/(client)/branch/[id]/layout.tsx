@@ -5,9 +5,9 @@ import NavBreadcrumb from "@/components/nav-breadcrumb";
 import { HeroSliderSkeleton } from "@/components/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { Fragment, Suspense } from "react";
-import banner from "@/public/image/banner/menu-banner.jpeg";
+import banner from "@/public/image/banner/branch-banner.jpeg";
 
-export default function MenuLayout({
+export default function BranchLayout({
   children,
   params,
 }: {
@@ -18,7 +18,7 @@ export default function MenuLayout({
     <Fragment>
       <Navbar />
       <Separator />
-      <NavBreadcrumb now="منو" />
+      <NavBreadcrumb now="شعبه" />
       <Suspense fallback={<HeroSliderSkeleton />}>
         <HeroSLider params={params} banner={banner.src} />
       </Suspense>

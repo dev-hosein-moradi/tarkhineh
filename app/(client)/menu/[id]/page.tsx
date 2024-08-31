@@ -19,7 +19,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ params }) => {
   // };
   return (
     <div>
-      <MenuBar />
+      <MenuBar params={params} />
       <FilterBar />
     </div>
   );
