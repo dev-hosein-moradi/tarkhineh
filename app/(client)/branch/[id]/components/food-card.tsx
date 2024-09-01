@@ -2,6 +2,7 @@
 
 import Spinner from "@/components/spinner";
 import { Button } from "@/components/ui/button";
+import { useCartStore } from "@/hooks/use-cart";
 import { IFood } from "@/types";
 import { Heart } from "lucide-react";
 import Image from "next/image";
@@ -10,15 +11,18 @@ import { toast } from "sonner";
 
 export default function BranchFoodCard({ food }: { food: IFood }) {
   const [loading, setLoading] = useState(false);
-  const handleSubmitFoodToCart = (food: IFood) => {};
+
+  const { addFoodToCart } = useCartStore();
+
+  const handleSubmitFoodToCart = (food: IFood) => {
+    addFoodToCart(food);
+  };
 
   const onClickCard = (food: IFood) => {
     setLoading(true);
     toast.success("آیتم مورد نظر به سبد خرید اضافه شد");
     handleSubmitFoodToCart(food);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    setLoading(false);
   };
 
   return (
@@ -58,7 +62,6 @@ export default function BranchFoodCard({ food }: { food: IFood }) {
             <p className="font-normal text-xs">{food?.mainPrice} تومان </p>
           ) : (
             <p className="font-normal text-sm text-gray-8 leading-4">
-              {" "}
               {food?.discountPrice} تومان
             </p>
           )}
@@ -68,7 +71,6 @@ export default function BranchFoodCard({ food }: { food: IFood }) {
             (امتیاز {food?.numOfScore})
           </p>
           <p className="font-normal text-sm">{food?.rate}</p>
-          {}
         </span>
       </div>
       <Button

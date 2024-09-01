@@ -43,3 +43,18 @@ export interface IFood {
   numOfScore: number
   image: string,
 }
+
+export interface ICart {
+  id: String,
+  foodId: String,
+  customerId: String,
+  deliverId: String,
+  branchId: String,
+  price: String,
+  payment: Boolean,
+  status: String,
+}
+
+export interface CartFood extends IFood {
+  quantity: number
+}

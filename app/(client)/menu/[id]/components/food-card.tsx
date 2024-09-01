@@ -2,6 +2,7 @@
 
 import Spinner from "@/components/spinner";
 import { Button } from "@/components/ui/button";
+import { useCartStore } from "@/hooks/use-cart";
 import { IFood } from "@/types";
 import { Heart, Star } from "lucide-react";
 import Image from "next/image";
@@ -15,12 +16,17 @@ interface FoodCardProps {
 const FoodCard: React.FC<FoodCardProps> = ({ food }) => {
   const [loading, setLoading] = useState(false);
 
-  const onClickSubmit = () => {
+  const { addFoodToCart } = useCartStore();
+
+  const handleSubmitFoodToCart = (food: IFood) => {
+    addFoodToCart(food);
+  };
+
+  const onClickCard = (food: IFood) => {
     setLoading(true);
     toast.success("آیتم مورد نظر به سبد خرید اضافه شد");
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    handleSubmitFoodToCart(food);
+    setLoading(false);
   };
   return (
     <div className="w-[360px] lg:w-[400px] min-w-[320px] lg:min-w-[400px] h-[120px] lg:h-[170px] min-h-[120px] lg:min-h-[170px] rounded-md border-[1px] border-gray-4 bg-white p-2 shadow-card-shadow hover:shadow-content-card-shadow ease-in-out duration-300 flex flex-row-reverse justify-self-center">
@@ -85,7 +91,7 @@ const FoodCard: React.FC<FoodCardProps> = ({ food }) => {
 
           <Button
             onClick={() => {
-              onClickSubmit();
+              onClickCard(food);
             }}
             disabled={loading}
             className="bg-main hover:bg-main shadow-md hover:shadow-xl text-white w-[110px] h-[32px] rounded-md text-xs font-normal"

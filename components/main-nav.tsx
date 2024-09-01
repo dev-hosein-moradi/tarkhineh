@@ -25,11 +25,7 @@ import { useSearchModal } from "@/hooks/use-search-modal";
 import { useBranchStore } from "@/hooks/use-branch";
 import { useAuthModal } from "@/hooks/use-auth-modal";
 import { useCategoryStore } from "@/hooks/use-category";
-
-const extractBranchName = (fullName: string) => {
-  const parts = fullName.split(" ");
-  return parts.length > 1 ? parts[1] : parts[0];
-};
+import { useRouter } from "next/navigation";
 
 export const MainNav = ({
   className,
@@ -37,6 +33,7 @@ export const MainNav = ({
 }: React.HtmlHTMLAttributes<HTMLElement>) => {
   const searchModel = useSearchModal();
   const authModal = useAuthModal();
+  const router = useRouter();
 
   const [sideMenu, setSideMenu] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -169,6 +166,7 @@ export const MainNav = ({
           className="hover:border-main bg-tint-1 duration-150"
           variant="outline"
           size="icon"
+          onClick={() => router.push(`/cart`)}
         >
           <ShoppingCart className="h-5 w-5 text-main duration-150" />
         </Button>

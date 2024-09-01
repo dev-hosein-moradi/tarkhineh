@@ -110,7 +110,7 @@ const config = {
       },
       fontFamily: {
         'estedad': ['estedad']
-      }
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
