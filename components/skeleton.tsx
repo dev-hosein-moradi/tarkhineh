@@ -165,3 +165,45 @@ export const MenuBarSkeleton = () => {
     </div>
   );
 };
+
+export const MenuFoodCardSkeleton = () => {
+  return (
+    <div className="w-[360px] lg:w-[400px] min-w-[320px] lg:min-w-[400px] h-[120px] lg:h-[170px] min-h-[120px] lg:min-h-[170px] rounded-md border-[1px] border-gray-4 bg-white p-2 shadow-card-shadow hover:shadow-content-card-shadow ease-in-out duration-300 flex flex-row-reverse justify-self-center">
+      <Skeleton className="min-w-[100px] lg:min-w-[140px] h-[102px] lg:h-[152px] rounded-md" />
+
+      <div className="flex flex-col justify-between items-center w-full pr-2">
+        <span className="flex flex-row-reverse items-center justify-between w-full">
+          <Skeleton className="h-5 lg:h-7 w-[120px] lg:w-[100px] rounded" />
+          <div className="flex flex-row">
+            <Skeleton className="h-[19px] w-[30px] rounded-lg" />
+            <Skeleton className="h-4 w-[40px] lg:w-[60px] ml-1 rounded" />
+          </div>
+        </span>
+
+        <div className="flex justify-between w-full">
+          <Skeleton className="h-4 w-[70px] lg:w-[90px] rounded" />
+          <Skeleton className="h-4 w-[100px] lg:w-[140px] rounded" />
+        </div>
+
+        <div className="w-full flex flex-row-reverse justify-between items-center">
+          <Skeleton className="w-5 h-5 rounded" />
+          <div className="flex flex-row justify-between items-center">
+            <Skeleton className="h-4 w-4 rounded" />
+          </div>
+          <Skeleton className="w-[110px] h-[32px] rounded-md" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const MenuFoodCardsSkeleton = () => {
+  const skeletonItems = Array(8).fill(null);
+  return (
+    <div className="flex flex-row flex-wrap justify-end gap-1 max-w-[1350px] px-[5%] mx-auto">
+      {skeletonItems.map((_, index) => (
+        <MenuFoodCardSkeleton key={index} />
+      ))}
+    </div>
+  );
+};

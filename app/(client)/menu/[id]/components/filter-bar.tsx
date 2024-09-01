@@ -1,26 +1,45 @@
 "use client";
-import { ChangeEvent, useState } from "react";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
+import React, { ChangeEvent, useState } from "react";
 
-export default function FilterBar() {
-  const [selectedFilter, setSelectedFilter] = useState("");
+interface FilterBarProps {
+  onFilterChange: (selectedFilter: string) => void;
+}
+
+export default function FilterBar({ onFilterChange }: FilterBarProps) {
+  const [selectedFilter, setSelectedFilter] = useState<string>("");
 
   const filters = [
     { id: "economic", label: "اقتصادی‌ترین" },
     { id: "bestSelling", label: "پرفروش‌ترین" },
     { id: "sandwiches", label: "ساندویچ‌ها" },
-    { id: "pizzas", label: "پیتزاها" },
+    { id: "pizza", label: "پیتزاها" },
     { id: "nonIranian", label: "غذاهای غیر ایرانی" },
-    { id: "iranian", label: "غذاهای ایرانی" },
+    { id: "irani", label: "غذاهای ایرانی" },
   ];
 
   const handleFilterChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSelectedFilter(event.target.value);
-    // onFilterChange(event.target.value);
+    const newValue = event.target.value;
+    const newFilter = selectedFilter === newValue ? "" : newValue;
+    setSelectedFilter(newFilter);
+    onFilterChange(newFilter);
   };
+
   return (
     <div className="flex flex-row-reverse flex-wrap items-center justify-between max-w-[1350px] mx-auto px-[5%] py-4">
       <div className="flex flex-row justify-end gap-1 flex-wrap">
+        <Button
+          onClick={() => {
+            setSelectedFilter("");
+            onFilterChange("");
+          }}
+          variant="outline"
+          size="icon"
+          className="rounded-full"
+        >
+          <X className="w-4 h-4 text-gray-500" />
+        </Button>
         {filters.map((filter) => (
           <div key={filter.id}>
             <input
@@ -32,9 +51,19 @@ export default function FilterBar() {
               id={filter.id}
               type="radio"
             />
-            <div className="flex h-9 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-gray-300 bg-gray-50 p-1 transition-transform duration-150 hover:border-main active:scale-95 peer-checked:border-main peer-checked:shadow-md peer-checked:shadow-tint-3">
+            <div
+              className={`flex h-9 cursor-pointer flex-col items-center justify-center rounded-xl border-2 p-1 transition-transform duration-150 active:scale-95 ${
+                selectedFilter === filter.id
+                  ? "border-main shadow-md shadow-tint-3 bg-main text-white"
+                  : "border-gray-300 bg-gray-50 text-gray-500 hover:border-main"
+              }`}
+            >
               <label
-                className="flex cursor-pointer items-center justify-center text-sm uppercase text-gray-500 peer-checked:text-main"
+                className={`flex cursor-pointer items-center justify-center text-sm uppercase ${
+                  selectedFilter === filter.id
+                    ? "text-white"
+                    : "text-gray-500"
+                }`}
                 htmlFor={filter.id}
               >
                 {filter.label}
@@ -43,11 +72,6 @@ export default function FilterBar() {
           </div>
         ))}
       </div>
-      <Input
-        className="w-full my-2 lg:my-0 lg:w-[30%]"
-        placeholder="جستجو"
-        dir="rtl"
-      />
     </div>
   );
 }

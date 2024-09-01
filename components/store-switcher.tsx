@@ -1,13 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Check,
-  ChevronsUpDown,
-  PlusCircle,
-  Store as StoreIcon,
-} from "lucide-react";
-
+import { Check, ChevronsUpDown, Store as StoreIcon } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -22,7 +16,6 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { IBranch } from "@/types";
@@ -42,31 +35,18 @@ export default function StoreSwitcher({
   const params = useParams();
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [currentStore, setCurrentStore] = useState<IBranch>();
+  const [currentStore, setCurrentStore] = useState("");
 
   const formattedItems = items?.map((item) => ({
     label: item.name,
-    value: item.id,
+    value: String(item.id), // Convert `item.id` to string to ensure type matching
   }));
-
-  //   const currentStore = formattedItems?.find(
-  //     (item) => item?.value === params?.id
-  //   );
-  console.log(formattedItems?.find((item) => item.value));
-  //   console.log(params.id);
 
   const onStoreSelect = (store: { label: string; value: string }) => {
     setOpen(false);
-    router.push(`/${store.value}`);
+    setCurrentStore(store.label);
+    // router.push(`/menu/${store.value}`);
   };
-
-  useEffect(() => {
-    items?.map((item) => {
-      if (item.id == params.id) {
-        setCurrentStore(item);
-      }
-    });
-  }, [items, params]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -77,14 +57,14 @@ export default function StoreSwitcher({
           role="combobox"
           aria-expanded={open}
           aria-label="Select a store"
-          className={cn("w-[250px] justify-between", className)}
+          className={cn("w-[200px] justify-between text-center", className)}
         >
           <StoreIcon className="mr-2 h-4 w-4" />
-          {currentStore?.name}
-          <ChevronsUpDown className="ml-auto w-4 h-4 shrink-0 opacity-50" />
+          {currentStore || "انتخاب شعبه"}
+          <ChevronsUpDown className="w-4 h-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[250px] p-0">
+      <PopoverContent className="w-[200px] p-0">
         <Command>
           <CommandList>
             <CommandInput dir="rtl" placeholder="جستجو شعبه" />
@@ -102,7 +82,7 @@ export default function StoreSwitcher({
                   <Check
                     className={cn(
                       "ml-auto h-4 w-4",
-                      currentStore?.id === item.value
+                      currentStore === item.label
                         ? "opacity-100"
                         : "opacity-0"
                     )}

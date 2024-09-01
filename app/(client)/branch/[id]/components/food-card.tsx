@@ -6,6 +6,7 @@ import { IFood } from "@/types";
 import { Heart } from "lucide-react";
 import Image from "next/image";
 import { Fragment, useState } from "react";
+import { toast } from "sonner";
 
 export default function BranchFoodCard({ food }: { food: IFood }) {
   const [loading, setLoading] = useState(false);
@@ -13,8 +14,11 @@ export default function BranchFoodCard({ food }: { food: IFood }) {
 
   const onClickCard = (food: IFood) => {
     setLoading(true);
+    toast.success("آیتم مورد نظر به سبد خرید اضافه شد");
     handleSubmitFoodToCart(food);
-    // setLoading(false);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
   };
 
   return (

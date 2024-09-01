@@ -1,11 +1,17 @@
 "use client";
-import { MenuBarSkeleton, SmBranchCardsSkeleton } from "@/components/skeleton";
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
 import StoreSwitcher from "@/components/store-switcher";
 import { useBranchStore } from "@/hooks/use-branch";
 import { useCategoryStore } from "@/hooks/use-category";
-import { useEffect, useState } from "react";
+import { MenuBarSkeleton } from "@/components/skeleton";
 
-export default function MenuBar({ params }: { params: { id: string } }) {
+interface MenuBarProps {
+  params: { id: string };
+  onSearchChange: (query: string) => void;
+}
+
+export default function MenuBar({ params, onSearchChange }: MenuBarProps) {
   const { categories, fetchCategories } = useCategoryStore();
   const [currentMenu, setCurrentMenu] = useState("");
   const { branches, fetchBranches } = useBranchStore();
@@ -22,17 +28,21 @@ export default function MenuBar({ params }: { params: { id: string } }) {
     setCurrentMenu(params.id);
   }, [params]);
 
-  if (categories?.length == 0) {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onSearchChange(event.target.value);
+  };
+
+  if (categories?.length === 0) {
     return <MenuBarSkeleton />;
   }
 
-  if (branches?.length == 0) {
-    return <SmBranchCardsSkeleton />;
+  if (branches?.length === 0) {
+    return <></>;
   }
 
   return (
-    <div className="flex flex-row-reverse items-center justify-between max-w-[1350px] mx-auto px-[5%]">
-      <ul className="flex flex-row-reverse gap-1 items-center justify-start h-12">
+    <div className="flex flex-row-reverse flex-wrap items-center justify-between max-w-[1350px] mx-auto px-[5%]">
+      <ul className="flex flex-row-reverse gap-1 items-center justify-start h-12 mb-4 lg:mb-0">
         {categories?.map((category) => (
           <li
             key={category?.id}
@@ -47,6 +57,12 @@ export default function MenuBar({ params }: { params: { id: string } }) {
           </li>
         ))}
       </ul>
+      <Input
+        className="w-[40%] my-2 lg:my-0 lg:w-[30%]"
+        placeholder="جستجو"
+        dir="rtl"
+        onChange={handleSearchChange}
+      />
       <StoreSwitcher items={branches} />
     </div>
   );
