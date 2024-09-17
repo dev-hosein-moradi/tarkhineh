@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ModalProvider } from "@/providers/modal-provider";
 import { ToastProvider } from "@/providers/toast-provider";
-
+import store from "@/hooks/store";
+import { Provider } from "react-redux";
+import ReduxProvider from "@/providers/redux-provider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,9 +19,11 @@ export default function RootLayout({
   return (
     <html lang="fa">
       <body className={`font-estedad`}>
-        <ModalProvider />
-        {children}
-        <ToastProvider />
+        <ReduxProvider>
+          <ModalProvider />
+          {children}
+          <ToastProvider />
+        </ReduxProvider>
       </body>
     </html>
   );

@@ -1,10 +1,33 @@
-import { IFood } from "@/types";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/hooks/store"; // Adjust the import path as needed
+import { updateFoodQuantity, removeFoodFromCart } from "@/hooks/use-cart"; // Adjust the import path as needed
 import { Star, Trash } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { IFood } from "@/types";
 
 export default function CartFoodCard({ food }: { food: IFood }) {
-  const [quantity, setQuantity] = useState(0);
+  const dispatch = useDispatch();
+  const quantity = useSelector((state: RootState) => {
+    const item = state.cart.items.find((item) => item.id === food.id);
+    return item ? item.quantity : 0;
+  });
+
+  const handleIncrease = () => {
+    dispatch(updateFoodQuantity({ id: food.id, quantity: quantity + 1 }));
+  };
+
+  const handleDecrease = () => {
+    if (quantity === 1) {
+      dispatch(removeFoodFromCart(food.id));
+    } else if (quantity > 1) {
+      dispatch(updateFoodQuantity({ id: food.id, quantity: quantity - 1 }));
+    }
+  };
+
+  const handleRemove = () => {
+    dispatch(removeFoodFromCart(food.id));
+  };
+
   return (
     <div className="flex flex-row-reverse items-center justify-between bg-gray-1 lg:bg-white lg:border-[1px] border-gray-4 lg:rounded-lg p-2 mb-3 mr-1 lg:min-w-[610px]">
       {/* for large view */}
@@ -31,7 +54,7 @@ export default function CartFoodCard({ food }: { food: IFood }) {
 
           <span className="flex flex-row-reverse">
             <p className="line-through text-gray-5 text-base font-normal ml-1">
-              {Number(food.mainPrice)?.toLocaleString("fa-IR")}
+              {Number(food.mainPrice.replace(/,/g, "")).toLocaleString("fa-IR")}
             </p>
             <p className="text-xs font-normal text-error p-1 rounded-md bg-error-extra-light">
               %{food.percentOfDiscount?.toLocaleString("fa-IR")}
@@ -43,15 +66,28 @@ export default function CartFoodCard({ food }: { food: IFood }) {
         <div className="hidden lg:flex flex-row justify-between items-center">
           <span>
             <p dir="rtl" className="font-normal text-xl text-gray-8 w-[150px]">
-              {Number(food.discountPrice)?.toLocaleString("fa-IR")} تومان
+              {Number(food.discountPrice.replace(/,/g, "")).toLocaleString(
+                "fa-IR"
+              )}{" "}
+              تومان
             </p>
           </span>
           <div className="flex flex-row-reverse items-center bg-tint-1 text-Primary p-1 rounded">
-            <span className="font-bold text-2xl cursor-pointer">-</span>
-            <span className="mx-2 font-medium text-base">
-              {quantity?.toLocaleString("fa-IR")}
+            <span
+              onClick={handleDecrease}
+              className="font-bold text-2xl cursor-pointer"
+            >
+              -
             </span>
-            <span className="font-bold text-2xl cursor-pointer">+</span>
+            <span className="mx-2 font-medium text-base">
+              {quantity.toLocaleString("fa-IR")}
+            </span>
+            <span
+              onClick={handleIncrease}
+              className="font-bold text-2xl cursor-pointer"
+            >
+              +
+            </span>
           </div>
           <span>
             <Star className="h-4 w-4 text-warning" />
@@ -65,18 +101,24 @@ export default function CartFoodCard({ food }: { food: IFood }) {
           {food.name}
         </h6>
         <p dir="rtl" className="font-normal text-sm text-gray-7">
-          {Number(food.discountPrice)?.toLocaleString("fa-IR")} تومان
+          {Number(food.discountPrice.replace(/,/g, "")).toLocaleString("fa-IR")}{" "}
+          تومان
         </p>
       </div>
 
       <div className="flex flex-row-reverse items-center bg-tint-1 text-Primary p-1 rounded lg:hidden">
-        <span className="cursor-pointer">
+        <span onClick={handleRemove} className="cursor-pointer">
           <Trash className="w-4 h-4 text-main" />
         </span>
         <span className="mx-2 font-medium text-base">
-          {quantity?.toLocaleString("fa-IR")}
+          {quantity.toLocaleString("fa-IR")}
         </span>
-        <span className="font-bold text-2xl cursor-pointer">+</span>
+        <span
+          onClick={handleIncrease}
+          className="font-bold text-2xl cursor-pointer"
+        >
+          +
+        </span>
       </div>
     </div>
   );

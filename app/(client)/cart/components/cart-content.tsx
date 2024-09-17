@@ -1,26 +1,40 @@
 "use client";
-import { Info, Trash, User2 } from "lucide-react";
 import { Fragment, useEffect, useState, useCallback } from "react";
-import CartStatus from "./cart-status";
-import CartFoodCard from "./food-card";
-import { CartFood } from "@/types";
+import Link from "next/link";
 import Image from "next/image";
 
-import EmptyBG from "@/public/image/empty-cart.svg";
+import { useSelector, useDispatch } from "react-redux";
+import { ChevronLeft, Info, Trash, User2 } from "lucide-react";
+import { RootState, AppDispatch } from "@/hooks/store";
+import { useAuthModal } from "@/hooks/use-auth-modal";
 import { Button } from "@/components/ui/button";
-import { useCartStore } from "@/hooks/use-cart";
+import { addCustomLevel, clearCart, increaseLevel } from "@/hooks/use-cart";
+import { useCategoryStore } from "@/hooks/use-category";
+
+import CartStatus from "./cart-status";
+import ProductBox from "./products-box";
+import DeliverConfirm from "./deliver-confirm";
+import EmptyBG from "@/public/image/empty-cart.svg";
 
 export default function CartContent() {
-  const { carts } = useCartStore();
+  const dispatch = useDispatch<AppDispatch>();
+  const carts = useSelector((state: RootState) => state.cart.items);
+  const cartsLevel = useSelector((state: RootState) => state.cart.level);
+  const authModal = useAuthModal();
+  const { categories, fetchCategories } = useCategoryStore();
   const [discountAmount, setDiscountAmount] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
-  console.log(carts);
+
+  //temp
+  const [registerd, setRegistered] = useState(false);
 
   const calculateDiscount = useCallback(() => {
     const discount = carts.reduce(
       (acc, item) =>
         acc +
-        item.quantity * (Number(item.mainPrice) - Number(item.discountPrice)),
+        item.quantity *
+          (Number(item.mainPrice.replace(/,/g, "")) -
+            Number(item.discountPrice.replace(/,/g, ""))),
       0
     );
     return discount;
@@ -28,7 +42,8 @@ export default function CartContent() {
 
   const calculateTotalPrice = useCallback(() => {
     const total = carts.reduce(
-      (acc, item) => acc + item.quantity * Number(item.discountPrice),
+      (acc, item) =>
+        acc + item.quantity * Number(item.discountPrice.replace(/,/g, "")),
       0
     );
     return total;
@@ -38,6 +53,23 @@ export default function CartContent() {
     setDiscountAmount(calculateDiscount());
     setTotalPrice(calculateTotalPrice());
   }, [carts, calculateDiscount, calculateTotalPrice]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  const handleClearCart = () => {
+    dispatch(clearCart());
+    dispatch(addCustomLevel(0));
+  };
+
+  const handleCartProccess = () => {
+    dispatch(increaseLevel());
+  };
+
+  if (categories?.length === 0) {
+    return <></>;
+  }
 
   return (
     <Fragment>
@@ -53,7 +85,7 @@ export default function CartContent() {
         {!carts.length && (
           <Image
             src={EmptyBG}
-            alt="empty background iamge"
+            alt="empty background image"
             className="absolute z-0"
           />
         )}
@@ -66,33 +98,29 @@ export default function CartContent() {
             >
               شما در حال حاضر هیچ سفارشی ثبت نکرده‌اید!
             </p>
-            <Button
-              className="z-[1] border border-main w-[172px] h-[38px] rounded px-8 text-main font-medium text-sm mt-4 hover:bg-main bg-white hover:text-white duration-200 shadow-md"
+            <Link
+              className="z-[1] border flex items-center justify-center border-main w-[172px] h-[38px] rounded px-8 text-main font-medium text-sm mt-4 hover:bg-main bg-white hover:text-white duration-200 shadow-md"
               aria-label="منوی رستوران"
-              role="button"
-              variant="default"
-              onClick={() => window.scrollTo(0, 0)}
+              href={`/menu/${categories[0].id}`}
             >
               منوی رستوران
-            </Button>
+            </Link>
           </Fragment>
         ) : (
           <section className="w-full border lg:border-none border-gray-4 h-fit rounded p-6 lg:p-0 lg:flex lg:flex-row-reverse justify-around">
             {/* Items List */}
-            <section className="lg:border border-gray-4 lg:p-6 lg:rounded-lg lg:max-w-[80%]">
-              <article dir="ltr" className="overflow-y-auto max-h-[400px]">
-                {carts.map((food) => (
-                  <CartFoodCard key={food.id} food={food} />
-                ))}
-              </article>
-            </section>
+            {cartsLevel == 1 ? (
+              <ProductBox carts={carts} />
+            ) : cartsLevel == 2 ? (
+              <DeliverConfirm />
+            ) : cartsLevel == 3 ? null : null}
 
             <hr className="mt-5 w-full border-gray-4 lg:hidden" />
 
             {/* Cart Summary */}
             <article className="w-full flex flex-col lg:border border-gray-4 lg:h-fit lg:p-6 lg:rounded-lg lg:max-w-[35%] mr-auto">
               <div className="lg:flex flex-row items-center justify-between py-2 hidden">
-                <span className="cursor-pointer">
+                <span onClick={handleClearCart} className="cursor-pointer">
                   <Trash className="h-4 w-4 text-gray-700" />
                 </span>
                 <p className="font-normal text-sm text-gray-7" dir="rtl">
@@ -148,12 +176,26 @@ export default function CartContent() {
                 </h3>
               </div>
 
-              <Button className="flex flex-row items-center justify-center w-full h-[35px] rounded bg-main text-white font-normal text-sm my-2">
-                <p>ورود / ثبت‌نام</p>
-                <span className="ml-2">
-                  <User2 className="h-4 w-4" />
-                </span>
-              </Button>
+              {registerd ? (
+                <Button
+                  onClick={handleCartProccess}
+                  className="group flex flex-row items-center justify-center w-full h-[35px] rounded bg-main hover:bg-white hover:text-main duration-300 hover:border-main border-2 text-white font-normal text-sm my-2"
+                >
+                  <ChevronLeft className="h-4 w-4 text-white group-hover:text-main duration-300" />
+                  <span>مرحله بعد</span>
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => {
+                    authModal.onOpen();
+                    setRegistered(true);
+                  }}
+                  className="group flex flex-row items-center justify-center w-full h-[35px] rounded bg-main hover:bg-white hover:text-main duration-300 hover:border-main border-2 text-white font-normal text-sm my-2"
+                >
+                  <p>ورود / ثبت‌نام</p>
+                  <User2 className="h-4 w-4 text-white group-hover:text-main duration-300" />
+                </Button>
+              )}
             </article>
           </section>
         )}
