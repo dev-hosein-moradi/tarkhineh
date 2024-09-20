@@ -12,7 +12,7 @@ interface CartState {
 
 const initialState: CartState = {
   items: [],
-  level: 2,
+  level: 0,
 };
 
 const cartSlice = createSlice({
