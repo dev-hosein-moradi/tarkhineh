@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { useSelector, useDispatch } from "react-redux";
-import { ChevronLeft, Info, Trash, User2 } from "lucide-react";
+import { ChevronLeft, Info, Trash, User2, Wallet } from "lucide-react";
 import { RootState, AppDispatch } from "@/hooks/store";
 import { useAuthModal } from "@/hooks/use-auth-modal";
 import { Button } from "@/components/ui/button";
@@ -15,9 +15,12 @@ import CartStatus from "./cart-status";
 import ProductBox from "./products-box";
 import DeliverConfirm from "./deliver-confirm";
 import EmptyBG from "@/public/image/empty-cart.svg";
+import SelectPayment from "./select-payment";
+import { useRouter } from "next/navigation";
 
 export default function CartContent() {
   const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
   const carts = useSelector((state: RootState) => state.cart.items);
   const cartsLevel = useSelector((state: RootState) => state.cart.level);
   const authModal = useAuthModal();
@@ -67,6 +70,10 @@ export default function CartContent() {
     dispatch(increaseLevel());
   };
 
+  const handleCompleteCart = () => {
+    router.push(`/cart/success`);
+  };
+
   if (categories?.length === 0) {
     return <></>;
   }
@@ -113,7 +120,9 @@ export default function CartContent() {
               <ProductBox carts={carts} />
             ) : cartsLevel == 2 ? (
               <DeliverConfirm />
-            ) : cartsLevel == 3 ? null : null}
+            ) : cartsLevel == 3 ? (
+              <SelectPayment />
+            ) : null}
 
             <hr className="mt-5 w-full border-gray-4 lg:hidden" />
 
@@ -177,13 +186,23 @@ export default function CartContent() {
               </div>
 
               {registerd ? (
-                <Button
-                  onClick={handleCartProccess}
-                  className="group flex flex-row items-center justify-center w-full h-[35px] rounded bg-main hover:bg-white hover:text-main duration-300 hover:border-main border-2 text-white font-normal text-sm my-2"
-                >
-                  <ChevronLeft className="h-4 w-4 text-white group-hover:text-main duration-300" />
-                  <span>مرحله بعد</span>
-                </Button>
+                cartsLevel === 3 ? (
+                  <Button
+                    onClick={handleCompleteCart}
+                    className="group flex flex-row items-center justify-center w-full h-[35px] rounded bg-main hover:bg-white hover:text-main duration-300 hover:border-main border-2 text-white font-normal text-sm my-2"
+                  >
+                    <Wallet className="h-4 w-4 text-white group-hover:text-main duration-300" />
+                    <span>تکمیل خرید</span>
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleCartProccess}
+                    className="group flex flex-row items-center justify-center w-full h-[35px] rounded bg-main hover:bg-white hover:text-main duration-300 hover:border-main border-2 text-white font-normal text-sm my-2"
+                  >
+                    <ChevronLeft className="h-4 w-4 text-white group-hover:text-main duration-300" />
+                    <span>مرحله بعد</span>
+                  </Button>
+                )
               ) : (
                 <Button
                   onClick={() => {
