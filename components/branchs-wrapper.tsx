@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { MdBranchCardsSkeleton } from "./skeleton";
-import Branchs from "./branches";
+import dynamic from "next/dynamic";
+const Branchs = dynamic(() => import("./branches"));
 
 export default async function BranchsWrapper() {
   return (
@@ -15,4 +16,3 @@ export default async function BranchsWrapper() {
     </div>
   );
 }
-

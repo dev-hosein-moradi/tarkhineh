@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { CategoryCardsSkeleton } from "./skeleton";
-import Categories from "./categories";
+import dynamic from "next/dynamic";
+
+const Categories = dynamic(() => import("./categories"));
 
 export default async function CategoryWrapper() {
   return (

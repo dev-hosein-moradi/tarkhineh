@@ -1,7 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState, useCallback } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import Logo from "@/public/image/Logo.svg";
 import {
   ChevronDown,
@@ -11,21 +12,35 @@ import {
   User2,
   X,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { SmBranchCardsSkeleton } from "./skeleton";
-import Link from "next/link";
 import { useSearchModal } from "@/hooks/use-search-modal";
 import { useBranchStore } from "@/hooks/use-branch";
 import { useAuthModal } from "@/hooks/use-auth-modal";
 import { useCategoryStore } from "@/hooks/use-category";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import dynamic from "next/dynamic";
+
+const Select = dynamic(
+  () => import("@/components/ui/select").then((mod) => mod.Select),
+  { ssr: false }
+);
+const SelectTrigger = dynamic(
+  () => import("@/components/ui/select").then((mod) => mod.SelectTrigger),
+  { ssr: false }
+);
+const SelectValue = dynamic(
+  () => import("@/components/ui/select").then((mod) => mod.SelectValue),
+  { ssr: false }
+);
+const SelectContent = dynamic(
+  () => import("@/components/ui/select").then((mod) => mod.SelectContent),
+  { ssr: false }
+);
+const Button = dynamic(() =>
+  import("@/components/ui/button").then((mod) => mod.Button)
+);
 
 export const MainNav = ({
   className,
@@ -43,11 +58,15 @@ export const MainNav = ({
   const { categories, fetchCategories } = useCategoryStore();
 
   useEffect(() => {
-    fetchCategories();
+    fetchCategories().catch((e) => {
+      toast.error(`دریافت دسته بندی ها با مشکل مواجه شد`);
+    });
   }, [fetchCategories]);
 
   useEffect(() => {
-    fetchBranches();
+    fetchBranches().catch((e) => {
+      toast.error(`دریافت شعبه ها با مشکل مواجه شد`);
+    });
   }, [fetchBranches]);
 
   useEffect(() => {
@@ -193,6 +212,7 @@ export const MainNav = ({
             className="w-[150px] h-[38px] md:h-[42px] lg:h-[50px]"
             alt="logo"
             src={Logo}
+            priority
           />
           <Button
             variant="outline"

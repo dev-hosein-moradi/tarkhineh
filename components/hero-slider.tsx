@@ -1,18 +1,27 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
-import Image from "next/image";
+import dynamic from "next/dynamic";
 import banner from "@/public/image/banner/banner.webp";
-import { Button } from "./ui/button";
 import { getBranch } from "@/services/branch-service";
 import { IBranch } from "@/types";
 import { fakeBlurDataURL } from "@/lib/blurDataImage";
+
+// Dynamically import the Carousel and Button components
+const Carousel = dynamic(() =>
+  import("@/components/ui/carousel").then((mod) => mod.Carousel)
+);
+const CarouselContent = dynamic(() =>
+  import("@/components/ui/carousel").then((mod) => mod.CarouselContent)
+);
+const CarouselItem = dynamic(() =>
+  import("@/components/ui/carousel").then((mod) => mod.CarouselItem)
+);
+const Button = dynamic(() =>
+  import("@/components/ui/button").then((mod) => mod.Button)
+);
 
 const banners = [banner];
 
@@ -21,17 +30,16 @@ interface HeroSliderProps {
   banner: string;
 }
 
-const HeroSlider: React.FC<HeroSliderProps> = ({ params, banner }) => {
+const HeroSlider: React.FC<HeroSliderProps> = ({ params }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [branchName, setBranchName] = useState<String | null>("ترخینه");
+  const [branchName, setBranchName] = useState<string | null>("ترخینه");
 
-  // Extract the 'n' query parameter from the URL
   useEffect(() => {
     const fetchBranch = async () => {
       try {
         const branch: IBranch = await getBranch(params.id);
-        setBranchName(branch?.name?.split(" ")[1] || ""); // Assuming branch object has a name property
+        setBranchName(branch?.name?.split(" ")[1] || "");
       } catch (error) {
         console.error("Failed to fetch branch:", error);
       }
@@ -41,7 +49,6 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ params, banner }) => {
     }
   }, [params, pathname, searchParams]);
 
-  // Memoize the banner text to avoid recalculating on each render
   const bannerText = useMemo(() => {
     if (pathname?.startsWith("/branch") && branchName) {
       return `سرسبزی ${branchName} دلیل حس خوب شماست`;
@@ -53,7 +60,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ params, banner }) => {
     <div>
       <Carousel className="w-full max-w-full">
         <CarouselContent className="relative h-auto">
-          {banners?.map((bannerImage, index) => (
+          {banners.map((bannerImage, index) => (
             <CarouselItem key={index}>
               <div className="relative">
                 <Image
