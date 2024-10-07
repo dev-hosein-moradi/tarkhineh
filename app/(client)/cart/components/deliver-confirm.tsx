@@ -14,12 +14,12 @@ const DeliverConfirm = () => {
   };
   return (
     <section className="w-full">
-      <div className="w-[95%] min-h-[130px] px-4 py-6 mx-auto border-[1px] border-gray-200 rounded-md flex flex-row-reverse items-center justify-around">
+      <div className="w-[95%] min-h-[130px] px-4 py-6 mx-auto border-[1px] border-gray-200 rounded-md flex flex-col lg:flex-row-reverse items-end lg:items-center justify-around">
         <div className="flex flex-row items-center">
           روش تحویل سفارش
           <CarFront className="h-6 w-6 text-gray-700 ml-1" />
         </div>
-        <label htmlFor="deliver-one" className="">
+        <label htmlFor="deliver-one" className="text-sm lg:text-base">
           ارسال توسط پیک
           <input
             className="ml-1 w-4 h-4"
@@ -30,7 +30,7 @@ const DeliverConfirm = () => {
             onChange={(e) => setIsDelivery(Number(e.target.value))}
           />
         </label>
-        <label htmlFor="deliver-two" className="">
+        <label htmlFor="deliver-two" className="text-sm lg:text-base">
           تحویل حضوری
           <input
             className="ml-1 w-4 h-4"
@@ -61,7 +61,7 @@ const DeliverConfirm = () => {
             </div>
             <Separator className="mt-2" />
             <div className="py-8">
-              <p className="text-gray-600">
+              <p className="text-gray-600 text-center text-xs lg:text-sm">
                 !شما در حال حاضر هیچ آدرسی ثبت نکرده‌اید
               </p>
             </div>

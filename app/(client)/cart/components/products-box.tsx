@@ -27,7 +27,7 @@ const ProductBox: React.FC<ProductBoxProps> = ({ carts }) => {
               variant="destructive"
               size="icon"
               onClick={() => handleRemoveFromCart(food.id)}
-              className="absolute top-1 left-1 p-2 bg-error-light"
+              className="absolute top-1 left-1 p-2 bg-error-light hidden md:flex"
             >
               <Trash className="w-4 h-4 text-error-extra-light " />
             </Button>

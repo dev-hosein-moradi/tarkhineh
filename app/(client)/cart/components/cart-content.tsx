@@ -85,7 +85,7 @@ export default function CartContent() {
 
       {/* Cart Items */}
       <section
-        className={`h-[510px] max-w-[1350px] mx-auto px-[5%] py-5 flex flex-col items-center justify-center rounded-lg duration-200 relative ${
+        className={`min-h-[510px] max-w-[1350px] mx-auto px-[5%] py-5 flex flex-col items-center justify-center rounded-lg duration-200 relative ${
           !carts.length && " border border-gray-4"
         }`}
       >
@@ -114,7 +114,7 @@ export default function CartContent() {
             </Link>
           </Fragment>
         ) : (
-          <section className="w-full border lg:border-none border-gray-4 h-fit rounded p-6 lg:p-0 lg:flex lg:flex-row-reverse justify-around">
+          <section className="w-full border lg:border-none border-gray-4 h-fit rounded p-2 lg:p-0 lg:flex lg:flex-row-reverse justify-around">
             {/* Items List */}
             {cartsLevel == 1 ? (
               <ProductBox carts={carts} />

@@ -58,7 +58,9 @@ const cartSlice = createSlice({
       state.level = state.level + 1;
     },
     decreaseLevel: (state) => {
-      state.level = state.level - 1;
+      if (state.level > 1) {
+        state.level = state.level - 1;
+      }
     },
     addCustomLevel: (state, action: PayloadAction<number>) => {
       state.level = action.payload;

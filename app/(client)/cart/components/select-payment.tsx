@@ -23,14 +23,14 @@ export default function SelectPayment() {
   const [isDelivery, setIsDelivery] = useState(0);
   return (
     <section className="w-full">
-      <div className="w-[95%] min-h-[130px] px-4 py-6 mx-auto border-[1px] border-gray-200 rounded-md flex flex-row-reverse items-center justify-around">
+      <div className="w-[99%] lg:w-[95%] min-h-[130px] px-4 py-6 mx-auto border-[1px] border-gray-200 rounded-md flex flex-col lg:flex-row-reverse items-end lg:items-center justify-between">
         <div className="flex flex-row gap-2 items-center">
           <h2>ثبت کد تخفیف</h2>
           <PercentCircle className="w-5 h-5" />
         </div>
-        <div className="flex flex-row-reverse gap-4">
+        <div className="flex  items-center justify-center flex-row-reverse gap-0 lg:gap-4">
           <Input
-            className="h-[40px] w-[320px]"
+            className="h-[40px] w-[200px]"
             dir="rtl"
             placeholder="کد تخفیف"
           />
@@ -39,12 +39,12 @@ export default function SelectPayment() {
           </Button>
         </div>
       </div>
-      <div className="w-[95%] min-h-[130px] px-4 py-6 mx-auto mt-1 border-[1px] border-gray-200 rounded-md flex flex-row-reverse items-center justify-around">
+      <div className="w-[99%] lg:w-[95%] min-h-[130px] px-4 py-6 mx-auto mt-1 border-[1px] border-gray-200 rounded-md flex flex-col lg:flex-row-reverse items-end lg:items-center justify-between">
         <div className="flex flex-row items-center">
           روش پرداخت
           <Wallet className="h-6 w-6 text-gray-700 ml-1" />
         </div>
-        <label htmlFor="deliver-one" className="">
+        <label htmlFor="deliver-one" className="text-sm lg:text-base">
           پرداخت اینترنتی
           <input
             className="ml-1 w-4 h-4"
@@ -55,7 +55,7 @@ export default function SelectPayment() {
             onChange={(e) => setIsDelivery(Number(e.target.value))}
           />
         </label>
-        <label htmlFor="deliver-two" className="">
+        <label htmlFor="deliver-two" className="text-sm lg:text-base">
           پرداخت در محل
           <input
             className="ml-1 w-4 h-4"
@@ -68,7 +68,7 @@ export default function SelectPayment() {
         </label>
       </div>
 
-      <div className="w-[95%] min-h-[130px] px-4 py-4 mx-auto border-[1px] border-gray-200 rounded-md flex flex-col mt-1 items-center justify-between">
+      <div className="w-[99%] lg:w-[95%] min-h-[130px] px-4 py-4 mx-auto border-[1px] border-gray-200 rounded-md flex flex-col mt-1 items-center justify-between">
         <div className="flex flex-row-reverse w-full justify-between">
           <h2 className="flex flex-row-reverse items-center">
             <CreditCard className="w-5 h-5 text-gray-800" />
@@ -96,10 +96,10 @@ export default function SelectPayment() {
               />
             </div>
             <figcaption className="text-center py-2">
-              <p className="text-gray-700 text-sm">
+              <p className="text-gray-700 text-xs md:text-sm">
                 .پرداخت از طریق کلیه کارت‌های عضو شتاب امکان‌پذیر است
               </p>
-              <p className="text-gray-700 text-xs">
+              <p dir="rtl" className="text-gray-700 text-xs">
                 (پرداخت از طریق کلیه کارت‌های عضو شتاب امکان‌پذیر است)
               </p>
             </figcaption>

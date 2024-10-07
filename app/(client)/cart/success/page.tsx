@@ -1,10 +1,15 @@
+"use client";
+
 import { Fragment } from "react";
 import Image from "next/image";
 import Celebration from "@/public/image/Selebration.png";
 import CheckSqure from "@/public/image/check-squre.png";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function PageSuccess() {
+  const router = useRouter();
+  
   return (
     <Fragment>
       <section className="relative w-[100vw] h-[500px] z-0">
@@ -25,7 +30,10 @@ export default function PageSuccess() {
             <Button className="bg-main hover:bg-main text-white hover:text-white shadow-md hover:shadow-xl duration-150 w-[180px]">
               پیگیری سفارش
             </Button>
-            <Button className="bg-white text-main hover:bg-white hover:text-main shadow-none border-2 border-main hover:shadow-2xl">
+            <Button
+              onClick={() => router.push("/")}
+              className="bg-white text-main hover:bg-white hover:text-main shadow-none border-2 border-main hover:shadow-2xl"
+            >
               بازگشت به صفحه اصلی
             </Button>
           </div>

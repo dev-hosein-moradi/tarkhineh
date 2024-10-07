@@ -107,8 +107,11 @@ export default function CartFoodCard({ food }: { food: IFood }) {
       </div>
 
       <div className="flex flex-row-reverse items-center bg-tint-1 text-Primary p-1 rounded lg:hidden">
-        <span onClick={handleRemove} className="cursor-pointer">
-          <Trash className="w-4 h-4 text-main" />
+        <span
+          onClick={handleRemove}
+          className="font-bold text-2xl cursor-pointer"
+        >
+          -
         </span>
         <span className="mx-2 font-medium text-base">
           {quantity.toLocaleString("fa-IR")}
