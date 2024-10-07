@@ -21,11 +21,13 @@ export default function PageSuccess() {
           <p className="text-main text-xl font-normal">
             کد رهگیری سفارش شما: ۲۱۵۴۹۰۱۹
           </p>
-          <div className="flex flex-row items-center">
+          <div className="flex flex-row items-center gap-2">
             <Button className="bg-main hover:bg-main text-white hover:text-white shadow-md hover:shadow-xl duration-150 w-[180px]">
               پیگیری سفارش
             </Button>
-            <Button>بازگشت به صفحه اصلی</Button>
+            <Button className="bg-white text-main hover:bg-white hover:text-main shadow-none border-2 border-main hover:shadow-2xl">
+              بازگشت به صفحه اصلی
+            </Button>
           </div>
         </div>
       </section>
