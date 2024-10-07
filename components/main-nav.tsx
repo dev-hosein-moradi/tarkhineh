@@ -220,14 +220,13 @@ export const MainNav = ({
                 <p className="text-red-500 p-2">{error}</p>
               ) : (
                 branches?.map((branch) => (
-                  <SelectItem key={branch.id} value={branch.title}>
-                    <Link
-                      href={`/branch/${branch.name.split(" ")[1]}`}
-                      className="hover:text-main duration-150"
-                    >
-                      {branch.name}
-                    </Link>
-                  </SelectItem>
+                  <Link
+                    key={branch.id}
+                    href={`/branch/${branch.name.split(" ")[1]}`}
+                    className="hover:text-main duration-150 block py-1 px-4"
+                  >
+                    {branch.name}
+                  </Link>
                 ))
               )}
             </SelectContent>
@@ -238,21 +237,20 @@ export const MainNav = ({
             <SelectTrigger className="w-full text-right my-1" dir="rtl">
               <SelectValue placeholder="منو" />
             </SelectTrigger>
-            <SelectContent dir="rtl">
+            <SelectContent dir="rtl" className="flex flex-col">
               {loading ? (
                 <SmBranchCardsSkeleton />
               ) : error ? (
                 <p className="text-red-500 p-2">{error}</p>
               ) : (
                 categories?.map((category) => (
-                  <SelectItem key={category.id} value={category.title}>
-                    <Link
-                      href={`/menu/${category.id}`}
-                      className="hover:text-main duration-150"
-                    >
-                      {category.name}
-                    </Link>
-                  </SelectItem>
+                  <Link
+                    key={category.id}
+                    href={`/menu/${category.id}`}
+                    className="hover:text-main duration-150 block py-1 px-4"
+                  >
+                    {category.name}
+                  </Link>
                 ))
               )}
             </SelectContent>
