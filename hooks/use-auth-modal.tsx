@@ -1,19 +1,38 @@
-import { create } from "zustand";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface useAuthModalStore {
+// Define the initial state
+interface AuthModalState {
   isOpen: boolean;
   level: number;
-  onOpen: () => void;
-  onClose: () => void;
-  nextLevel: () => void;
-  prevLevel: () => void;
 }
 
-export const useAuthModal = create<useAuthModalStore>((set) => ({
+const initialState: AuthModalState = {
   isOpen: false,
   level: 1,
-  onOpen: () => set({ isOpen: true }),
-  onClose: () => set({ isOpen: false }),
-  nextLevel: () => set({ level: 2 }),
-  prevLevel: () => set({ level: 1 }),
-}));
+};
+
+// Create a slice
+const authModalSlice = createSlice({
+  name: "authModal",
+  initialState,
+  reducers: {
+    onOpen: (state) => {
+      state.isOpen = true;
+    },
+    onClose: (state) => {
+      state.isOpen = false;
+    },
+    nextLevel: (state) => {
+      state.level = 2;
+    },
+    prevLevel: (state) => {
+      state.level = 1;
+    },
+  },
+});
+
+// Export the actions
+export const { onOpen, onClose, nextLevel, prevLevel } = authModalSlice.actions;
+
+// Export the reducer
+export default authModalSlice.reducer;

@@ -3,14 +3,19 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { useAddressModal } from "@/hooks/use-address-modal";
 import { CarFront, MapPin, NotebookPen, PlusCircle } from "lucide-react";
 
+import { onClose, onOpen } from "@/hooks/use-address-modal";
+import { RootState } from "@/hooks/store";
+import { useDispatch, useSelector } from "react-redux";
+
 const DeliverConfirm = () => {
-  const addressModal = useAddressModal();
+  const dispatch = useDispatch();
+  const { isOpen } = useSelector((state: RootState) => state.address);
+
   const [isDelivery, setIsDelivery] = useState(0);
   const handleOpenAddressModal = () => {
-    addressModal.onOpen();
+    dispatch(onOpen());
   };
   return (
     <section className="w-full">

@@ -31,11 +31,11 @@ export default function CartStatus() {
       </Button>
 
       <div
-        className={`flex flex-row items-center justify-center flex-1 lg:flex-none lg:justify-around`}
+        className={`flex flex-row items-center justify-around flex-1 lg:flex-none lg:justify-around`}
       >
-        <div className={`flex flex-row-reverse items-center justify-center `}>
+        <div className={`flex flex-row-reverse items-center justify-center gap-2`}>
           <hr
-            className={`inline-block border-dashed border-[1.5px] w-[30px] lg:w-[70px] mr-1 ${
+            className={`inline-block border-dashed border-[1.5px] w-[40px] lg:w-[70px] mr-1 ${
               cartLevel >= 1 ? "border-main" : "border-gray-4"
             }`}
           />
@@ -47,9 +47,9 @@ export default function CartStatus() {
           />
         </div>
 
-        <div className={`flex flex-row-reverse items-center justify-center`}>
+        <div className={`flex flex-row-reverse items-center justify-center gap-2`}>
           <hr
-            className={`inline-block border-dashed border-[1.5px] w-[30px] lg:w-[70px] ${
+            className={`inline-block border-dashed border-[1.5px] w-[40px] lg:w-[70px] ${
               cartLevel >= 2 ? "border-main" : "border-gray-4"
             }`}
           />
@@ -60,13 +60,13 @@ export default function CartStatus() {
             }`}
           />
           <hr
-            className={`inline-block border-dashed border-[1.5px] w-[30px] lg:w-[70px] mr-1 ${
+            className={`inline-block border-dashed border-[1.5px] w-[40px] lg:w-[70px] mr-1 ${
               cartLevel >= 2 ? "border-main" : "border-gray-4"
             }`}
           />
         </div>
 
-        <div className={`flex flex-row-reverse items-center justify-center `}>
+        <div className={`flex flex-row-reverse items-center justify-center gap-2`}>
           <p className={`mr-1 hidden md:flex`}>پرداخت</p>
           <Wallet
             className={`w-5 h-5 ${
@@ -74,7 +74,7 @@ export default function CartStatus() {
             }`}
           />
           <hr
-            className={`inline-block border-dashed border-[1.5px] w-[30px] lg:w-[70px] mr-1 ${
+            className={`inline-block border-dashed border-[1.5px] w-[40px] lg:w-[70px] mr-1 ${
               cartLevel >= 3 ? "border-main" : "border-gray-4"
             }`}
           />

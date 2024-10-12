@@ -100,7 +100,7 @@ export default function SelectPayment() {
                 .پرداخت از طریق کلیه کارت‌های عضو شتاب امکان‌پذیر است
               </p>
               <p dir="rtl" className="text-gray-700 text-xs">
-                (پرداخت از طریق کلیه کارت‌های عضو شتاب امکان‌پذیر است)
+                (لطفا قبل از پرداخت فیلترشکن خود را خاموش کنید)
               </p>
             </figcaption>
           </figure>

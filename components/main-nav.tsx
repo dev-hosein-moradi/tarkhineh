@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import Logo from "@/public/image/Logo.svg";
@@ -14,13 +16,14 @@ import {
 } from "lucide-react";
 
 import { SmBranchCardsSkeleton } from "./skeleton";
+import { useCategoryStore } from "@/hooks/use-category";
+import { toast } from "sonner";
+import { onOpen } from "@/hooks/use-auth-modal";
+
 import { useSearchModal } from "@/hooks/use-search-modal";
 import { useBranchStore } from "@/hooks/use-branch";
-import { useAuthModal } from "@/hooks/use-auth-modal";
-import { useCategoryStore } from "@/hooks/use-category";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import dynamic from "next/dynamic";
+import { RootState } from "@/hooks/store";
+import { useDispatch, useSelector } from "react-redux";
 
 const Select = dynamic(
   () => import("@/components/ui/select").then((mod) => mod.Select),
@@ -46,8 +49,8 @@ export const MainNav = ({
   className,
   ...props
 }: React.HtmlHTMLAttributes<HTMLElement>) => {
+  const dispatch = useDispatch();
   const searchModel = useSearchModal();
-  const authModal = useAuthModal();
   const router = useRouter();
 
   const [sideMenu, setSideMenu] = useState(false);
@@ -56,6 +59,8 @@ export const MainNav = ({
 
   const { branches, fetchBranches } = useBranchStore();
   const { categories, fetchCategories } = useCategoryStore();
+  // Get modal state from Redux store
+  const { isOpen } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     fetchCategories().catch((e) => {
@@ -176,7 +181,7 @@ export const MainNav = ({
           variant="outline"
           size="icon"
           onClick={() => {
-            authModal.onOpen();
+            dispatch(onOpen());
           }}
         >
           <User2 className="w-5 h-5 text-main duration-150" />

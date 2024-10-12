@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 export default function PageSuccess() {
   const router = useRouter();
-  
+
   return (
     <Fragment>
       <section className="relative w-[100vw] h-[500px] z-0">
@@ -20,8 +20,8 @@ export default function PageSuccess() {
         />
         <div className="w-full h-full flex flex-col items-center justify-center gap-4 z-10">
           <Image alt="check image" src={CheckSqure} className="" />
-          <h1 className="text-main text-4xl font-bold">
-            !پرداخت شما با موفقیت انجام شد
+          <h1 className="text-main text-3xl lg:text-4xl font-bold text-center px-4">
+            پرداخت شما با موفقیت انجام شد
           </h1>
           <p className="text-main text-xl font-normal">
             کد رهگیری سفارش شما: ۲۱۵۴۹۰۱۹

@@ -16,10 +16,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useAddressModal } from "@/hooks/use-address-modal";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
+
+import { onClose, onOpen } from "@/hooks/use-address-modal";
+import { RootState } from "@/hooks/store";
+import { useDispatch, useSelector } from "react-redux";
 
 const formSchema = z.object({
   title: z.string().min(4),
@@ -31,7 +34,9 @@ const formSchema = z.object({
 });
 
 export const AddressModal = () => {
-  const addressModal = useAddressModal();
+  const dispatch = useDispatch();
+  const { isOpen } = useSelector((state: RootState) => state.address);
+
   const [isReciver, setIsReciver] = useState(true);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -50,8 +55,8 @@ export const AddressModal = () => {
     <Modal
       title="آدرس"
       description="ثبت یا ویرایش آدرس"
-      isOpen={addressModal.isOpen}
-      onClose={addressModal.onClose}
+      isOpen={isOpen}
+      onClose={() => dispatch(onClose())}
     >
       <div>
         <Separator className="mb-4" />

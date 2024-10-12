@@ -2,11 +2,11 @@
 import { Fragment, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-
+import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
+
 import { ChevronLeft, Info, Trash, User2, Wallet } from "lucide-react";
 import { RootState, AppDispatch } from "@/hooks/store";
-import { useAuthModal } from "@/hooks/use-auth-modal";
 import { Button } from "@/components/ui/button";
 import { addCustomLevel, clearCart, increaseLevel } from "@/hooks/use-cart";
 import { useCategoryStore } from "@/hooks/use-category";
@@ -16,14 +16,16 @@ import ProductBox from "./products-box";
 import DeliverConfirm from "./deliver-confirm";
 import EmptyBG from "@/public/image/empty-cart.svg";
 import SelectPayment from "./select-payment";
-import { useRouter } from "next/navigation";
+
+import { onOpen } from "@/hooks/use-auth-modal";
 
 export default function CartContent() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const carts = useSelector((state: RootState) => state.cart.items);
   const cartsLevel = useSelector((state: RootState) => state.cart.level);
-  const authModal = useAuthModal();
+  const { isOpen } = useSelector((state: RootState) => state.auth);
+
   const { categories, fetchCategories } = useCategoryStore();
   const [discountAmount, setDiscountAmount] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -206,7 +208,7 @@ export default function CartContent() {
               ) : (
                 <Button
                   onClick={() => {
-                    authModal.onOpen();
+                    dispatch(onOpen());
                     setRegistered(true);
                   }}
                   className="group flex flex-row items-center justify-center w-full h-[35px] rounded bg-main hover:bg-white hover:text-main duration-300 hover:border-main border-2 text-white font-normal text-sm my-2"
