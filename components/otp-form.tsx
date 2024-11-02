@@ -20,8 +20,10 @@ import {
 
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { useAuthModal } from "@/hooks/use-auth-modal";
 import { Info } from "lucide-react";
+import { RootState } from "@/hooks/store";
+import { useDispatch, useSelector } from "react-redux";
+import { onClose, onOpen, prevLevel } from "@/hooks/use-auth-modal";
 
 const formSchema = z.object({
   pin: z.string().min(6, {
@@ -29,7 +31,9 @@ const formSchema = z.object({
   }),
 });
 export default function OTPForm({ loading }: { loading: boolean }) {
-  const authModal = useAuthModal();
+  const dispatch = useDispatch();
+  const { isOpen } = useSelector((state: RootState) => state.auth);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,12 +49,12 @@ export default function OTPForm({ loading }: { loading: boolean }) {
       });
       return;
     }
-    authModal.onClose();
-    authModal.prevLevel();
+    dispatch(onClose());
+    dispatch(prevLevel());
   };
 
   const handleEditPhone = () => {
-    authModal.prevLevel();
+    dispatch(prevLevel());
   };
   return (
     <Form {...form}>

@@ -3,14 +3,9 @@ import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
 import {
-  CarFront,
   CreditCard,
-  MapPin,
-  NotebookPen,
   PercentCircle,
-  PlusCircle,
   Wallet,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";

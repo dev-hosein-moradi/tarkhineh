@@ -16,6 +16,7 @@ export default function CartStatus() {
   const handleCartProccess = () => {
     dispatch(decreaseLevel());
   };
+  console.log(cartLevel);
   return (
     <div
       className="h-auto w-[90%] mx-auto flex flex-row items-center justify-around my-4"
@@ -33,7 +34,9 @@ export default function CartStatus() {
       <div
         className={`flex flex-row items-center justify-around flex-1 lg:flex-none lg:justify-around`}
       >
-        <div className={`flex flex-row-reverse items-center justify-center gap-2`}>
+        <div
+          className={`flex flex-row-reverse items-center justify-center gap-2`}
+        >
           <hr
             className={`inline-block border-dashed border-[1.5px] w-[40px] lg:w-[70px] mr-1 ${
               cartLevel >= 1 ? "border-main" : "border-gray-4"
@@ -47,7 +50,9 @@ export default function CartStatus() {
           />
         </div>
 
-        <div className={`flex flex-row-reverse items-center justify-center gap-2`}>
+        <div
+          className={`flex flex-row-reverse items-center justify-center gap-2`}
+        >
           <hr
             className={`inline-block border-dashed border-[1.5px] w-[40px] lg:w-[70px] ${
               cartLevel >= 2 ? "border-main" : "border-gray-4"
@@ -66,7 +71,9 @@ export default function CartStatus() {
           />
         </div>
 
-        <div className={`flex flex-row-reverse items-center justify-center gap-2`}>
+        <div
+          className={`flex flex-row-reverse items-center justify-center gap-2`}
+        >
           <p className={`mr-1 hidden md:flex`}>پرداخت</p>
           <Wallet
             className={`w-5 h-5 ${

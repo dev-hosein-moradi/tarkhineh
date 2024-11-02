@@ -67,7 +67,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ params }) => {
                   src={banner}
                   alt="banner image"
                   className="object-cover w-full h-[450px] brightness-[0.3]"
-                  quality={100}
+                  quality={80}
                   priority
                   placeholder="blur"
                   width={1000}
