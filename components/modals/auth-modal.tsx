@@ -3,6 +3,7 @@
 import { useState } from "react";
 import * as z from "zod";
 import Image from "next/image";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,13 +23,18 @@ import Logo from "@/public/image/Logo.svg";
 import OTPForm from "../otp-form";
 import { RootState } from "@/hooks/store";
 import { onClose, nextLevel, prevLevel } from "@/hooks/use-auth-modal";
+import { toast } from "sonner";
+import { setToken } from "@/hooks/use-user";
 
 // Form validation schema
 const formSchema = z.object({
-  phone: z
+  mobile: z
     .string()
     .min(11, { message: "شماره همراه نامعتبر است" })
     .max(11, { message: "شماره همراه نامعتبر است" }),
+  password: z.string().min(8, {
+    message: " لطفا رمز عبور پیچیده تر انتخاب کنید شامل حداقل 8 کاراکتر",
+  }),
 });
 
 export const AuthModal = () => {
@@ -43,14 +49,41 @@ export const AuthModal = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      phone: "",
+      mobile: "",
+      password: "",
     },
   });
 
   // Handle sending the phone number and navigating to the next level
-  const handleSendPhone = (values: z.infer<typeof formSchema>) => {
-    setSendedPhone(values?.phone);
-    dispatch(nextLevel()); // Move to the next level
+  const handleSendPhone = async (values: z.infer<typeof formSchema>) => {
+    setLoading(true);
+    setSendedPhone(values?.mobile);
+    console.log(`mobile: ${values.mobile} and password: ${values.password}`);
+    /* 
+      ${process.env.NEXT_PUBLIC_SERVER_URL}
+    */
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}login`,
+        {
+          data: {
+            mobile: values?.mobile,
+            password: values?.password,
+          },
+        }
+      );
+      if (response.status === 200) {
+        dispatch(setToken(response.data.data));
+        toast.success(`ورود با موفقیت انجام شد`);
+        dispatch(onClose());
+      }
+    } catch (error) {
+      toast.error(`.عملیات ورود با شکست مواجه شد`);
+    } finally {
+      setLoading(false);
+    }
+    // Move to the next level
+    // dispatch(nextLevel());
   };
 
   return (
@@ -85,14 +118,32 @@ export const AuthModal = () => {
               >
                 <FormField
                   control={form.control}
-                  name="phone"
+                  name="mobile"
+                  render={({ field }) => (
+                    <FormItem className="w-full mb-2">
+                      <FormControl className="w-full">
+                        <Input
+                          className="w-full"
+                          dir="rtl"
+                          placeholder="شماره همراه"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-right" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="password"
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormControl className="w-full">
                         <Input
                           className="w-full"
                           dir="rtl"
-                          placeholder="شماره همراه"
+                          placeholder="رمز عبور"
                           {...field}
                         />
                       </FormControl>

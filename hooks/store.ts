@@ -6,6 +6,7 @@ import storage from "./storage";
 import cartReducer from './use-cart';
 import authReducer from "./use-auth-modal"
 import addressReducer from "./use-address-modal"
+import userReducer from "./use-user"
 
 const persistConfig = {
     key: "root",
@@ -16,7 +17,8 @@ const persistConfig = {
 const RootReducer = combineReducers({
     cart: cartReducer,
     auth: authReducer,
-    address: addressReducer
+    address: addressReducer,
+    user: userReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, RootReducer);

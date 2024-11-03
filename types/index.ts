@@ -58,3 +58,11 @@ export interface ICart {
 export interface CartFood extends IFood {
   quantity: number
 }
+
+export interface IAddress {
+  title: String,
+  tel: String,
+  content: String,
+  userId: String,
+  isRevciver: Boolean
+}
