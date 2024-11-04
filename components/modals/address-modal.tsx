@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import * as z from "zod";
+import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +25,10 @@ import { Button } from "../ui/button";
 import { onClose, onOpen } from "@/hooks/use-address-modal";
 import { RootState } from "@/hooks/store";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
+import { addAddress } from "@/services/address-service";
+import { IAddress } from "@/types";
+import { logout } from "@/hooks/use-user";
 
 const formSchema = z.object({
   title: z.string().min(4),
@@ -36,8 +42,10 @@ const formSchema = z.object({
 export const AddressModal = () => {
   const dispatch = useDispatch();
   const { isOpen } = useSelector((state: RootState) => state.address);
+  const { token } = useSelector((state: RootState) => state.user);
 
   const [isReciver, setIsReciver] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,6 +59,41 @@ export const AddressModal = () => {
     },
   });
 
+  const handleSendAddress = async (values: z.infer<typeof formSchema>) => {
+    setLoading(true);
+    try {
+      const address: IAddress = {
+        id: uuidv4(),
+        title: values.title,
+        content: values.address,
+        tel: values.phone,
+        userId: token,
+        isReciver: isReciver,
+      };
+      const response = await addAddress(address, token);
+
+      if (!response.data.ok) {
+        toast.error(response.data.message);
+      } else {
+        toast.success(response.data.message);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        const statusCode = error.response.status;
+        const errorMessage = error.response.data.message;
+        if (statusCode === 403) {
+          dispatch(logout());
+        } else if (statusCode === 401) {
+          toast.error("ابتدا باید وارد حساب کاربری خود شوید");
+        } else {
+          toast.error(errorMessage || "An error occurred");
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Modal
       title="آدرس"
@@ -62,7 +105,7 @@ export const AddressModal = () => {
         <Separator className="mb-4" />
         <div className="space-y-4 py-2 pb-4 flex-row-reverse">
           <Form {...form}>
-            <form>
+            <form onSubmit={form.handleSubmit(handleSendAddress)}>
               <FormField
                 control={form.control}
                 name="title"
@@ -180,7 +223,10 @@ export const AddressModal = () => {
                 )}
               />
               <div className="flex flex-row items-center justify-around mt-6">
-                <Button className="flex-1 bg-main text-white hover:bg-main hover:text-white hover:shadow-md">
+                <Button
+                  disabled={loading}
+                  className="flex-1 bg-main text-white hover:bg-main hover:text-white hover:shadow-md"
+                >
                   ثبت آدرس
                 </Button>
                 <Button className="flex-1 bg-white text-main hover:bg-white hover:text-main hover:shadow-md shadow-none">

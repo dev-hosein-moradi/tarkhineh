@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -8,15 +8,30 @@ import { CarFront, MapPin, NotebookPen, PlusCircle } from "lucide-react";
 import { onClose, onOpen } from "@/hooks/use-address-modal";
 import { RootState } from "@/hooks/store";
 import { useDispatch, useSelector } from "react-redux";
+import { getAddresses } from "@/services/address-service";
 
 const DeliverConfirm = () => {
   const dispatch = useDispatch();
   const { isOpen } = useSelector((state: RootState) => state.address);
+  const {  } = useSelector((state: RootState) => state.address);
 
   const [isDelivery, setIsDelivery] = useState(0);
   const handleOpenAddressModal = () => {
     dispatch(onOpen());
   };
+
+  const callGetAddresses = async () => {
+    try {
+      const response = await getAddresses();
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    callGetAddresses();
+  }, []);
+
   return (
     <section className="w-full">
       <div className="w-[95%] min-h-[130px] px-4 py-6 mx-auto border-[1px] border-gray-200 rounded-md flex flex-col lg:flex-row-reverse items-end lg:items-center justify-around">
