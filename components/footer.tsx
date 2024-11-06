@@ -21,6 +21,8 @@ export default function Footer() {
     <div className="relative bg-blend-darken w-full h-[300px]">
       <Image
         src={FooterBg}
+        priority
+        quality={80}
         alt="footer background image"
         className="absolute w-full h-full object-cover brightness-[0.3] z-[-1]"
       />

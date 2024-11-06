@@ -8,6 +8,7 @@ interface User {
   email: string;
   mobileNumber: string;
   token: string;
+  userId: string;
   isAuthenticated: boolean;
 }
 
@@ -18,6 +19,7 @@ const initialState: User = {
   email: "",
   mobileNumber: "",
   token: "",
+  userId: "",
   isAuthenticated: false,
 };
 
@@ -41,7 +43,9 @@ const userSlice = createSlice({
       state.isAuthenticated = true;
     },
     setToken: (state, action) => {
-      state.token = action.payload;
+      state.token = action.payload.token;
+      state.userId = action.payload.userId;
+      state.mobileNumber = action.payload.mobile;
       state.isAuthenticated = true;
     },
     updateUserData: (
@@ -57,6 +61,7 @@ const userSlice = createSlice({
       state.email = "";
       state.mobileNumber = "";
       state.token = "";
+      state.userId = "";
       state.isAuthenticated = false;
     },
   },

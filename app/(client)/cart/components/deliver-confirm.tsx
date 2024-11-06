@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -9,28 +9,32 @@ import { onClose, onOpen } from "@/hooks/use-address-modal";
 import { RootState } from "@/hooks/store";
 import { useDispatch, useSelector } from "react-redux";
 import { getAddresses } from "@/services/address-service";
+import { setAddresses } from "@/hooks/use-address";
+import AddressCard from "./address-card";
 
 const DeliverConfirm = () => {
   const dispatch = useDispatch();
-  const { isOpen } = useSelector((state: RootState) => state.address);
-  const {  } = useSelector((state: RootState) => state.address);
+  
+  const { addresses } = useSelector((state: RootState) => state.userAddress);
+  const { userId } = useSelector((state: RootState) => state.user);
 
   const [isDelivery, setIsDelivery] = useState(0);
   const handleOpenAddressModal = () => {
-    dispatch(onOpen());
+    dispatch(onOpen(null));
   };
 
-  const callGetAddresses = async () => {
+  const callGetAddresses = useCallback(async () => {
     try {
-      const response = await getAddresses();
-      console.log(response);
+      const response = await getAddresses(userId);
+      dispatch(setAddresses(response));
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [dispatch, userId]);
+
   useEffect(() => {
     callGetAddresses();
-  }, []);
+  }, [callGetAddresses]);
 
   return (
     <section className="w-full">
@@ -80,10 +84,16 @@ const DeliverConfirm = () => {
               </h2>
             </div>
             <Separator className="mt-2" />
-            <div className="py-8">
-              <p className="text-gray-600 text-center text-xs lg:text-sm">
-                !شما در حال حاضر هیچ آدرسی ثبت نکرده‌اید
-              </p>
+            <div className="py-8 w-full flex flex-row flex-wrap gap-1 items-center justify-end">
+              {Array.isArray(addresses) && addresses.length > 0 ? (
+                addresses?.map((item, index) => (
+                  <AddressCard key={index} data={item} />
+                ))
+              ) : (
+                <p className="text-gray-600 text-center text-xs lg:text-sm">
+                  !شما در حال حاضر هیچ آدرسی ثبت نکرده‌اید
+                </p>
+              )}
             </div>
           </>
         ) : (

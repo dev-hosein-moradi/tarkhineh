@@ -108,6 +108,35 @@ export const MainNav = ({
     [categories]
   );
 
+  // useEffect(() => {
+  //   let isTabClosed = false;
+
+  //   // Detect tab close or navigation away (default browser prompt)
+  //   const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+  //     if (!isTabClosed) {
+  //       event.preventDefault();
+  //       event.returnValue = ""; // Trigger browser confirmation dialog
+  //     }
+  //   };
+
+  //   // Track visibility change
+  //   const handleVisibilityChange = () => {
+  //     if (document.visibilityState === "hidden") {
+  //       // The tab is inactive or being closed
+  //       const confirmation = window.confirm("Are you sure you want to leave?");
+  //       isTabClosed = confirmation; // Only close if confirmed
+  //     }
+  //   };
+
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+  //   document.addEventListener("visibilitychange", handleVisibilityChange);
+
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //     document.removeEventListener("visibilitychange", handleVisibilityChange);
+  //   };
+  // }, []);
+
   return (
     <div className="flex flex-row-reverse justify-between w-full">
       {/* Large Screen Navigation */}

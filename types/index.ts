@@ -60,10 +60,10 @@ export interface CartFood extends IFood {
 }
 
 export interface IAddress {
-  id: String,
-  title: String,
-  tel: String,
-  content: String,
-  userId: String,
+  id: string,
+  title: string,
+  tel: string,
+  content: string,
+  userId: string,
   isReciver: Boolean
 }

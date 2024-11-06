@@ -108,7 +108,7 @@ export default function CartFoodCard({ food }: { food: IFood }) {
 
       <div className="flex flex-row-reverse items-center bg-tint-1 text-Primary p-1 rounded lg:hidden">
         <span
-          onClick={handleRemove}
+          onClick={handleDecrease}
           className="font-bold text-2xl cursor-pointer"
         >
           -

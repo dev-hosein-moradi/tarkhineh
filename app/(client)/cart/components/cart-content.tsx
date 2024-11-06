@@ -25,13 +25,11 @@ export default function CartContent() {
   const carts = useSelector((state: RootState) => state.cart.items);
   const cartsLevel = useSelector((state: RootState) => state.cart.level);
   const { isOpen } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated } = useSelector((state: RootState) => state.user);
 
   const { categories, fetchCategories } = useCategoryStore();
   const [discountAmount, setDiscountAmount] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
-
-  //temp
-  const [registerd, setRegistered] = useState(false);
 
   const calculateDiscount = useCallback(() => {
     const discount = carts.reduce(
@@ -110,7 +108,7 @@ export default function CartContent() {
             <Link
               className="z-[1] border flex items-center justify-center border-main w-[172px] h-[38px] rounded px-8 text-main font-medium text-sm mt-4 hover:bg-main bg-white hover:text-white duration-200 shadow-md"
               aria-label="منوی رستوران"
-              href={`/menu/${categories[0].id}`}
+              href={`/menu/${categories[0]?.id}`}
             >
               منوی رستوران
             </Link>
@@ -187,7 +185,7 @@ export default function CartContent() {
                 </h3>
               </div>
 
-              {registerd ? (
+              {isAuthenticated ? (
                 cartsLevel === 3 ? (
                   <Button
                     onClick={handleCompleteCart}
@@ -209,7 +207,6 @@ export default function CartContent() {
                 <Button
                   onClick={() => {
                     dispatch(onOpen());
-                    setRegistered(true);
                   }}
                   className="group flex flex-row items-center justify-center w-full h-[35px] rounded bg-main hover:bg-white hover:text-main duration-300 hover:border-main border-2 text-white font-normal text-sm my-2"
                 >

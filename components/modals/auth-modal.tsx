@@ -73,6 +73,8 @@ export const AuthModal = () => {
         }
       );
       if (response.status === 200) {
+        console.log(response.data.data);
+        
         dispatch(setToken(response.data.data));
         toast.success(`ورود با موفقیت انجام شد`);
         dispatch(onClose());
