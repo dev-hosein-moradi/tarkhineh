@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
-import { IAddress } from "@/types";
+import { IOrder } from "@/types";
 
-interface AddressResponse {
+interface OrderResponse {
   data: boolean;
   status: number;
   error: Record<string, null>;
@@ -9,11 +9,11 @@ interface AddressResponse {
   message: string;
 }
 
-export const getAddresses = async (id: string) => {
+export const getOrders = async (id: string) => {
   try {
     // await new Promise((resolve) => setTimeout(resolve, 8000));
     const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}api/addresses`,
+      `${process.env.NEXT_PUBLIC_SERVER_URL}api/orders`,
       {
         params: {
           userId: id,
@@ -26,14 +26,14 @@ export const getAddresses = async (id: string) => {
   }
 };
 
-export const getAddress = async (id: string) => {
+export const getOrder = async (id: string) => {
   try {
     // await new Promise((resolve) => setTimeout(resolve, 8000));
     const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}api/address/${id}`,
+      `${process.env.NEXT_PUBLIC_SERVER_URL}api/order/${id}`,
       {
         data: {
-          reqId: "address",
+          reqId: "order",
         },
       }
     );
@@ -44,13 +44,13 @@ export const getAddress = async (id: string) => {
 };
 
 export const addAddress = async (
-  address: IAddress,
+  order: IOrder,
   token: string
-): Promise<AxiosResponse<AddressResponse>> => {
+): Promise<AxiosResponse<OrderResponse>> => {
   try {
-    const res = await axios.post<AddressResponse>(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}api/address`,
-      { ...address },
+    const res = await axios.post<OrderResponse>(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}api/order`,
+      { ...order },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -68,14 +68,14 @@ export const addAddress = async (
   }
 };
 
-export const EditAddress = async (
-  address: IAddress,
+export const EditOrder = async (
+  order: IOrder,
   token: string
-): Promise<AxiosResponse<AddressResponse>> => {
+): Promise<AxiosResponse<OrderResponse>> => {
   try {
-    const res = await axios.patch<AddressResponse>(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}api/address`,
-      { ...address },
+    const res = await axios.patch<OrderResponse>(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}api/order`,
+      { ...order },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -93,13 +93,13 @@ export const EditAddress = async (
   }
 };
 
-export const DeleteAddress = async (
+export const DeleteOrder = async (
   id: string,
   token: string
-): Promise<AxiosResponse<AddressResponse>> => {
+): Promise<AxiosResponse<OrderResponse>> => {
   try {
-    const res = await axios.delete<AddressResponse>(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}api/address/${id}`,
+    const res = await axios.delete<OrderResponse>(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}api/order/${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

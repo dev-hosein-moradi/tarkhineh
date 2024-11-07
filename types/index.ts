@@ -67,3 +67,13 @@ export interface IAddress {
   userId: string,
   isReciver: Boolean
 }
+
+export interface IOrder {
+  id: string,
+  userId: string,
+  foodId: [string],
+  status: string,
+  userAddress: string,
+  price: string,
+  time: string,
+}

@@ -57,7 +57,7 @@ export default function FooterForm() {
                 <FormItem>
                   <FormControl>
                     <Input
-                      className="bg-transparent w-[270px] h-[40px] text-[15px] font-normal border-[1px] border-gray-6 hover:border-gray-1 my-1 rounded-md outline-none rtl-grid text-white px-4 py-1 focus:border-gray-1  "
+                      className="bg-transparent w-[270px] h-[40px] text-[15px] font-normal border-[1px] border-gray-6 hover:border-gray-1 my-1 rounded-md outline-none rtl-grid  px-4 py-1 focus:border-gray-1  placeholder:text-white"
                       placeholder="نام و نام خانوادگی"
                       {...field}
                     />
@@ -73,7 +73,7 @@ export default function FooterForm() {
                 <FormItem>
                   <FormControl>
                     <Input
-                      className="bg-transparent w-[270px] h-[40px] text-[15px] font-normal border-[1px] border-gray-6 hover:border-gray-1 my-1 rounded-md outline-none rtl-grid text-white px-4 py-1 focus:border-gray-1  "
+                      className="bg-transparent w-[270px] h-[40px] text-[15px] font-normal border-[1px] border-gray-6 hover:border-gray-1 my-1 rounded-md outline-none rtl-grid text-white px-4 py-1 focus:border-gray-1  placeholder:text-white"
                       placeholder="شماره تماس (اختیاری)"
                       {...field}
                     />
@@ -89,7 +89,7 @@ export default function FooterForm() {
                 <FormItem>
                   <FormControl>
                     <Input
-                      className="bg-transparent w-[270px] h-[40px] text-[15px] font-normal border-[1px] border-gray-6 hover:border-gray-1 my-1 rounded-md outline-none rtl-grid text-white px-4 py-1 focus:border-gray-1  "
+                      className="bg-transparent w-[270px] h-[40px] text-[15px] font-normal border-[1px] border-gray-6 hover:border-gray-1 my-1 rounded-md outline-none rtl-grid text-white px-4 py-1 focus:border-gray-1  placeholder:text-white"
                       placeholder="ایمیل"
                       {...field}
                     />
@@ -107,7 +107,7 @@ export default function FooterForm() {
                 <FormItem>
                   <FormControl>
                     <Textarea
-                      className="bg-transparent w-[300px] h-[135px] text-[15px] font-normal border-[1px] border-gray-6  hover:border-gray-1 my-1 mr-2 rounded-md resize-none outline-none rtl-grid text-white px-4 py-1 focus:border-gray-1 "
+                      className="bg-transparent w-[300px] h-[135px] text-[15px] font-normal border-[1px] border-gray-6  hover:border-gray-1 my-1 mr-2 rounded-md resize-none outline-none rtl-grid text-white px-4 py-1 focus:border-gray-1 placeholder:text-white"
                       placeholder="پیام خود را بنویسید"
                       {...field}
                     />

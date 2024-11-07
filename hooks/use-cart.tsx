@@ -7,11 +7,13 @@ interface CartItem extends IFood {
 
 interface CartState {
   items: CartItem[];
+  addressId: string;
   level: number;
 }
 
 const initialState: CartState = {
   items: [],
+  addressId: "",
   level: 0,
 };
 

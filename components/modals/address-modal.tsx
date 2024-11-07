@@ -39,16 +39,19 @@ const formSchema = z.object({
   title: z.string().min(4),
   reciver: z.boolean(),
   reciverName: z.string().optional(),
-  reciverPhone: z.string().optional(),
-  phone: z.string(),
+  reciverPhone: z.string(),
   address: z.string().min(4),
 });
 
 export const AddressModal = ({ id }: { id?: string }) => {
   const dispatch = useDispatch();
-  const { isOpen } = useSelector((state: RootState) => state.address);
-  const { userId, token } = useSelector((state: RootState) => state.user);
-  const { selectedId } = useSelector((state: RootState) => state.address);
+
+  const { isOpen, selectedId } = useSelector(
+    (state: RootState) => state.address
+  );
+  const { userId, token, mobileNumber } = useSelector(
+    (state: RootState) => state.user
+  );
 
   const [loading, setLoading] = useState(false);
 
@@ -58,8 +61,7 @@ export const AddressModal = ({ id }: { id?: string }) => {
       title: "",
       reciver: true,
       reciverName: "",
-      reciverPhone: "",
-      phone: "",
+      reciverPhone: mobileNumber,
       address: "",
     },
   });
@@ -71,7 +73,7 @@ export const AddressModal = ({ id }: { id?: string }) => {
         id: uuidv4(),
         title: values.title,
         content: values.address,
-        tel: values.phone,
+        tel: values.reciver ? mobileNumber : values.reciverPhone,
         userId: userId,
         isReciver: values.reciver,
       };
@@ -79,6 +81,10 @@ export const AddressModal = ({ id }: { id?: string }) => {
       response.data.ok
         ? toast.success(response.data.message)
         : toast.error(response.data.message);
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 900);
     } catch (error) {
       handleError(error);
     } finally {
@@ -93,7 +99,7 @@ export const AddressModal = ({ id }: { id?: string }) => {
         id: selectedId || uuidv4(),
         title: values.title,
         content: values.address,
-        tel: values.phone,
+        tel: values.reciver ? mobileNumber : values.reciverPhone,
         userId: userId,
         isReciver: values.reciver,
       };
@@ -101,6 +107,10 @@ export const AddressModal = ({ id }: { id?: string }) => {
       response.data.ok
         ? toast.success(response.data.message)
         : toast.error(response.data.message);
+      dispatch(onClose());
+      setTimeout(() => {
+        window.location.reload();
+      }, 900);
     } catch (error) {
       handleError(error);
     } finally {
@@ -126,10 +136,9 @@ export const AddressModal = ({ id }: { id?: string }) => {
           const response = await getAddress(selectedId);
           form.reset({
             title: response.title,
-            reciver: response.reciver,
+            reciver: response.isReciver,
             reciverName: response.reciverName || "",
-            reciverPhone: response.reciverPhone || "",
-            phone: response.tel,
+            reciverPhone: response.tel,
             address: response.content,
           });
         }
@@ -150,7 +159,7 @@ export const AddressModal = ({ id }: { id?: string }) => {
       isOpen={isOpen}
       onClose={() => {
         dispatch(onClose());
-        form.reset({ title: "", reciver: true, phone: "", address: "" });
+        form.reset({ title: "", reciver: true, address: "" });
       }}
     >
       <div>

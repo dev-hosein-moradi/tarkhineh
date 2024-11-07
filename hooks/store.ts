@@ -8,6 +8,7 @@ import authReducer from "./use-auth-modal"
 import addressReducer from "./use-address-modal"
 import userReducer from "./use-user"
 import userAddressReducer from "./use-address"
+import userOrdersReducer from "./use-order"
 
 const persistConfig = {
     key: "root",
@@ -20,7 +21,8 @@ const RootReducer = combineReducers({
     auth: authReducer,
     address: addressReducer,
     user: userReducer,
-    userAddress: userAddressReducer
+    userAddress: userAddressReducer,
+    userOrder: userOrdersReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, RootReducer);
