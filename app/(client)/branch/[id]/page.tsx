@@ -10,7 +10,7 @@ interface BranchPageProps {
 const BranchPage: React.FC<BranchPageProps> = ({ params }) => {
   return (
     <div>
-      <FoodSlidersByType />
+      <FoodSlidersByType params={params} />
       <Suspense fallback={<BranchReviewSkeleton />}>
         <BranchReview params={params} />
       </Suspense>

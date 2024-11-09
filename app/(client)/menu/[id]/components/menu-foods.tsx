@@ -9,9 +9,14 @@ import { useRouter } from "next/navigation";
 interface MenuFoodByTypeProps {
   foodsByType: Record<string, IFood[]>;
   error: Error | null;
+  params: { id: string };
 }
 
-export default function MenuFoodByType({ foodsByType, error }: MenuFoodByTypeProps) {
+export default function MenuFoodByType({
+  foodsByType,
+  error,
+  params,
+}: MenuFoodByTypeProps) {
   const router = useRouter();
 
   if (error) {
@@ -28,6 +33,7 @@ export default function MenuFoodByType({ foodsByType, error }: MenuFoodByTypePro
               type={type}
               foods={foodsByType[type]}
               index={index}
+              params={params}
             />
           ))}
       </Suspense>
@@ -45,10 +51,12 @@ const MenuFoodCard = ({
   type,
   foods,
   index,
+  params,
 }: {
   type: string;
   foods: IFood[];
   index: number;
+  params: { id: string };
 }) => {
   const router = useRouter();
   const label = typeLabels[type] || "سایر غذاها";
@@ -71,7 +79,7 @@ const MenuFoodCard = ({
       </h2>
       <div className="flex flex-wrap flex-row justify-end gap-1">
         {foods.map((food) => (
-          <FoodCard key={food.id} food={food} />
+          <FoodCard key={food.id} food={food} params={params} />
         ))}
       </div>
     </div>

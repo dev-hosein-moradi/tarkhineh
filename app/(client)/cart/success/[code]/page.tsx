@@ -7,7 +7,11 @@ import CheckSqure from "@/public/image/check-squre.png";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
-export default function PageSuccess() {
+interface SuccessPageProps {
+  params: { code: string };
+}
+
+export default function PageSuccess({ params }: SuccessPageProps) {
   const router = useRouter();
 
   return (
@@ -23,8 +27,8 @@ export default function PageSuccess() {
           <h1 className="text-main text-3xl lg:text-4xl font-bold text-center px-4">
             پرداخت شما با موفقیت انجام شد
           </h1>
-          <p className="text-main text-xl font-normal">
-            کد رهگیری سفارش شما: ۲۱۵۴۹۰۱۹
+          <p className="text-main text-xl font-normal" dir="rtl">
+            کد رهگیری سفارش شما: {params.code}
           </p>
           <div className="flex flex-row items-center gap-2">
             <Button className="bg-main hover:bg-main text-white hover:text-white shadow-md hover:shadow-xl duration-150 w-[180px]">

@@ -1,6 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/hooks/store"; // Adjust the import path as needed
-import { updateFoodQuantity, removeFoodFromCart } from "@/hooks/use-cart"; // Adjust the import path as needed
+import {
+  updateFoodQuantity,
+  removeFoodFromCart,
+  addCustomLevel,
+} from "@/hooks/use-cart"; // Adjust the import path as needed
 import { Star, Trash } from "lucide-react";
 import Image from "next/image";
 import { IFood } from "@/types";
@@ -13,19 +17,21 @@ export default function CartFoodCard({ food }: { food: IFood }) {
   });
 
   const handleIncrease = () => {
-    dispatch(updateFoodQuantity({ id: food.id, quantity: quantity + 1 }));
-  };
-
-  const handleDecrease = () => {
-    if (quantity === 1) {
-      dispatch(removeFoodFromCart(food.id));
-    } else if (quantity > 1) {
-      dispatch(updateFoodQuantity({ id: food.id, quantity: quantity - 1 }));
+    if (food.id && quantity !== undefined) {
+      dispatch(addCustomLevel(1));
+      dispatch(updateFoodQuantity({ id: food.id, quantity: quantity + 1 }));
     }
   };
 
-  const handleRemove = () => {
-    dispatch(removeFoodFromCart(food.id));
+  const handleDecrease = () => {
+    if (food.id && quantity !== undefined) {
+      dispatch(addCustomLevel(1));
+      if (quantity === 1) {
+        dispatch(removeFoodFromCart(food.id));
+      } else if (quantity > 1) {
+        dispatch(updateFoodQuantity({ id: food.id, quantity: quantity - 1 }));
+      }
+    }
   };
 
   return (
@@ -80,7 +86,7 @@ export default function CartFoodCard({ food }: { food: IFood }) {
               -
             </span>
             <span className="mx-2 font-medium text-base">
-              {quantity.toLocaleString("fa-IR")}
+              {quantity?.toLocaleString("fa-IR")}
             </span>
             <span
               onClick={handleIncrease}
@@ -114,7 +120,7 @@ export default function CartFoodCard({ food }: { food: IFood }) {
           -
         </span>
         <span className="mx-2 font-medium text-base">
-          {quantity.toLocaleString("fa-IR")}
+          {quantity?.toLocaleString("fa-IR")}
         </span>
         <span
           onClick={handleIncrease}

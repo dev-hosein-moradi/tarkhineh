@@ -14,7 +14,7 @@ export default function NavBreadcrumb({ now }: { now: string }) {
   const pathname = usePathname();
 
   return (
-    <div className="mx-w-[1350px] mx-auto px-[5%] py-2">
+    <div className="mx-w-[1350px] mx-auto px-[10%] py-2">
       <Breadcrumb>
         <BreadcrumbList className="flex-row-reverse">
           <BreadcrumbItem>

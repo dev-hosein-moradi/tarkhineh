@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useMemo } from "react";
+import React, { Suspense, useEffect, useMemo } from "react";
 import { BranchFoodCardWrapperSkeleton } from "@/components/skeleton";
 import {
   Carousel,
@@ -14,9 +14,20 @@ import BranchFoodCard from "./food-card";
 import { useFoods } from "@/hooks/useFoods";
 import { NotebookText } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useDispatch } from "react-redux";
+import { clearCart } from "@/hooks/use-cart";
 
-export default function FoodSlidersByType() {
+export default function FoodSlidersByType({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const dispatch = useDispatch();
   const { foods, error } = useFoods();
+
+  useEffect(() => {
+    dispatch(clearCart());
+  }, [dispatch]);
 
   // Memoize the grouped foods by type
   const foodsByType = useMemo(() => {
@@ -45,6 +56,7 @@ export default function FoodSlidersByType() {
               type={type}
               foods={foodsByType[type]}
               index={index}
+              params={params}
             />
           ))}
       </Suspense>
@@ -68,10 +80,12 @@ const CardSlider = ({
   type,
   foods,
   index,
+  params,
 }: {
   type: string;
   foods: IFood[];
   index: number;
+  params: { id: string };
 }) => {
   const label = typeLabels[type] || "سایر غذاها";
   return (
@@ -94,7 +108,7 @@ const CardSlider = ({
               key={food.id}
               className="md:basis-1/3 lg:basis-1/4 pl-0"
             >
-              <BranchFoodCard food={food} />
+              <BranchFoodCard food={food} params={params} />
             </CarouselItem>
           ))}
         </CarouselContent>

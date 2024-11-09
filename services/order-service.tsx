@@ -9,6 +9,24 @@ interface OrderResponse {
   message: string;
 }
 
+export const getOrdersByUser = async (
+  userId: string
+): Promise<AxiosResponse<OrderResponse>> => {
+  try {
+    const res = await axios.get<OrderResponse>(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}api/orders`
+    );
+    return res;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      // Rethrow the original error so we can access status and response details later
+      throw error;
+    }
+    // Throw a generic error for unexpected cases
+    throw new Error("An unexpected error occurred");
+  }
+};
+
 export const getOrders = async (id: string) => {
   try {
     // await new Promise((resolve) => setTimeout(resolve, 8000));
@@ -43,7 +61,7 @@ export const getOrder = async (id: string) => {
   }
 };
 
-export const addAddress = async (
+export const addOrder = async (
   order: IOrder,
   token: string
 ): Promise<AxiosResponse<OrderResponse>> => {

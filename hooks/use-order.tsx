@@ -10,13 +10,14 @@ interface UserOrder extends IOrder {
 const initialState: UserOrder = {
   id: "",
   userId: "",
-  foodId: [""],
+  foods: [{ id: "", quantity: 0 }],
   status: "",
   userAddress: "",
   price: "",
   time: "",
   orders: [],
 };
+
 // Create a slice
 const userOrderSlice = createSlice({
   name: "userOrder",

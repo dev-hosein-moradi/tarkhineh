@@ -54,7 +54,11 @@ const MenuPage: React.FC<MenuPageProps> = ({ params }) => {
     <div>
       <MenuBar params={params} onSearchChange={handleSearchChange} />
       <FilterBar onFilterChange={handleFilterChange} />
-      <MenuFoodByType foodsByType={filteredFoodsByType} error={error} />
+      <MenuFoodByType
+        foodsByType={filteredFoodsByType}
+        error={error}
+        params={params}
+      />
     </div>
   );
 };

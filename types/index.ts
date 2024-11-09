@@ -69,11 +69,11 @@ export interface IAddress {
 }
 
 export interface IOrder {
-  id: string,
-  userId: string,
-  foodId: [string],
-  status: string,
-  userAddress: string,
-  price: string,
-  time: string,
+  id: string;
+  userId: string;
+  foods: { id: string; quantity: number }[];
+  status: string;
+  userAddress: string;
+  price: string;
+  time: string;
 }

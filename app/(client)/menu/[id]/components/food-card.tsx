@@ -7,25 +7,33 @@ import { Heart, Star } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux"; // Use Redux hooks
-import { addFoodToCart } from "@/hooks/use-cart"; // Import the action from Redux
+import { useDispatch, useSelector } from "react-redux"; // Use Redux hooks
+import { addCustomLevel, addFoodToCart, CartToOrder } from "@/hooks/use-cart"; // Import the action from Redux
+import { RootState } from "@/hooks/store";
 
 interface FoodCardProps {
   food: IFood;
+  params: { id: string };
 }
 
-const FoodCard: React.FC<FoodCardProps> = ({ food }) => {
+const FoodCard: React.FC<FoodCardProps> = ({ food, params }) => {
+  const { selectedBranch } = useSelector((state: RootState) => state.cart);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch(); // Get Redux dispatch function
 
-  const handleSubmitFoodToCart = (food: IFood) => {
+  const handleSubmitFoodToCart = (food: CartToOrder) => {
+    dispatch(addCustomLevel(1))
     dispatch(addFoodToCart(food)); // Dispatch Redux action
   };
 
   const onClickCard = (food: IFood) => {
     setLoading(true);
+    const newFood: CartToOrder = {
+      ...food,
+      branchId: selectedBranch,
+    };
+    handleSubmitFoodToCart(newFood);
     toast.success("آیتم مورد نظر به سبد خرید اضافه شد");
-    handleSubmitFoodToCart(food);
     setLoading(false);
   };
 

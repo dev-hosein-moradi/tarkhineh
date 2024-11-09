@@ -7,20 +7,33 @@ import { Heart } from "lucide-react";
 import Image from "next/image";
 import { Fragment, useState } from "react";
 import { toast } from "sonner";
-import { addFoodToCart } from "@/hooks/use-cart";
+import { addCustomLevel, addFoodToCart, CartToOrder } from "@/hooks/use-cart";
 
-export default function BranchFoodCard({ food }: { food: IFood }) {
+interface BranchFoodCardPageProps {
+  params: { id: string };
+  food: IFood;
+}
+
+const BranchFoodCard: React.FC<BranchFoodCardPageProps> = ({
+  food,
+  params,
+}) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items); // Ensure the correct slice and state are used
 
-  const handleSubmitFoodToCart = (food: IFood) => {
+  const handleSubmitFoodToCart = (food: CartToOrder) => {
+    dispatch(addCustomLevel(1))
     dispatch(addFoodToCart(food));
   };
 
   const onClickCard = (food: IFood) => {
     setLoading(true);
-    handleSubmitFoodToCart(food);
+    const newFood: CartToOrder = {
+      ...food,
+      branchId: params.id,
+    };
+    handleSubmitFoodToCart(newFood);
     toast.success("آیتم مورد نظر به سبد خرید اضافه شد");
     setLoading(false);
   };
@@ -82,4 +95,6 @@ export default function BranchFoodCard({ food }: { food: IFood }) {
       </Button>
     </div>
   );
-}
+};
+
+export default BranchFoodCard;

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
+import { v4 as uuidv4 } from "uuid";
 
 import { ChevronLeft, Info, Trash, User2, Wallet } from "lucide-react";
 import { RootState, AppDispatch } from "@/hooks/store";
@@ -18,37 +19,53 @@ import EmptyBG from "@/public/image/empty-cart.svg";
 import SelectPayment from "./select-payment";
 
 import { onOpen } from "@/hooks/use-auth-modal";
+import { addOrder } from "@/services/order-service";
+import { IOrder } from "@/types";
+import { getDateTime } from "@/hooks/use-date-time";
+import axios from "axios";
+import { toast } from "sonner";
+import { logout } from "@/hooks/use-user";
 
 export default function CartContent() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
+
   const carts = useSelector((state: RootState) => state.cart.items);
   const cartsLevel = useSelector((state: RootState) => state.cart.level);
-  const { isOpen } = useSelector((state: RootState) => state.auth);
-  const { isAuthenticated } = useSelector((state: RootState) => state.user);
+  const { items, addressId } = useSelector((state: RootState) => state.cart);
+  const { isAuthenticated, token, userId } = useSelector(
+    (state: RootState) => state.user
+  );
 
   const { categories, fetchCategories } = useCategoryStore();
   const [discountAmount, setDiscountAmount] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const calculateDiscount = useCallback(() => {
-    const discount = carts.reduce(
-      (acc, item) =>
-        acc +
-        item.quantity *
-          (Number(item.mainPrice.replace(/,/g, "")) -
-            Number(item.discountPrice.replace(/,/g, ""))),
-      0
-    );
+    const discount = carts.reduce((acc, item) => {
+      if (item.quantity) {
+        return (
+          acc +
+          item.quantity *
+            (Number(item.mainPrice.replace(/,/g, "")) -
+              Number(item.discountPrice.replace(/,/g, "")))
+        );
+      }
+      return acc;
+    }, 0);
     return discount;
   }, [carts]);
 
   const calculateTotalPrice = useCallback(() => {
-    const total = carts.reduce(
-      (acc, item) =>
-        acc + item.quantity * Number(item.discountPrice.replace(/,/g, "")),
-      0
-    );
+    const total = carts.reduce((acc, item) => {
+      if (item.quantity) {
+        return (
+          acc + item.quantity * Number(item.discountPrice.replace(/,/g, ""))
+        );
+      }
+      return acc;
+    }, 0);
     return total;
   }, [carts]);
 
@@ -70,8 +87,49 @@ export default function CartContent() {
     dispatch(increaseLevel());
   };
 
-  const handleCompleteCart = () => {
-    router.push(`/cart/success`);
+  const formatedFoods = items?.map((item) => ({
+    id: item.id,
+    quantity: item?.quantity || 1,
+    branchId: item.branchId,
+  }));
+
+  const handleCompleteCart = async () => {
+    try {
+      const date = await getDateTime("all");
+      const newOrder: IOrder = {
+        foods: formatedFoods,
+        id: uuidv4(),
+        price: String(totalPrice),
+        status: "1",
+        time: date.data.data,
+        userAddress: addressId,
+        userId,
+      };
+
+      const response = await addOrder(newOrder, token);
+      response.data.ok
+        ? (toast.success(response.data.message), dispatch(clearCart()))
+        : toast.error(response.data.message);
+
+      setTimeout(() => {
+        router.push(`/cart/success/${response.data.data}`);
+      }, 900);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleError = (error: any) => {
+    if (axios.isAxiosError(error) && error.response) {
+      const statusCode = error.response.status;
+      const errorMessage = error.response.data.message;
+      if (statusCode === 403) dispatch(logout());
+      else if (statusCode === 401)
+        toast.error("ابتدا باید وارد حساب کاربری خود شوید");
+      else toast.error(errorMessage || "An error occurred");
+    }
   };
 
   if (categories?.length === 0) {

@@ -15,6 +15,7 @@ import { AlertModal } from "@/components/modals/alert-modal";
 import { toast } from "sonner";
 import axios from "axios";
 import { logout } from "@/hooks/use-user";
+import { setAddressId } from "@/hooks/use-cart";
 
 const DeliverConfirm = () => {
   const dispatch = useDispatch();
@@ -84,6 +85,7 @@ const DeliverConfirm = () => {
   };
 
   const handleSelectAddress = (id: string) => {
+    dispatch(setAddressId(id));
     selectedAddress === id ? setSelectedAddress("") : setSelectedAddress(id);
   };
 
@@ -108,7 +110,10 @@ const DeliverConfirm = () => {
           </div>
           <Separator />
           <div className="flex flex-row-reverse items-center gap-4">
-            <label htmlFor="deliver-one" className="text-sm flex items-center text-gray-600">
+            <label
+              htmlFor="deliver-one"
+              className="text-sm flex items-center text-gray-600"
+            >
               ارسال توسط پیک
               <input
                 className="ml-1 w-4 h-4"
@@ -120,7 +125,10 @@ const DeliverConfirm = () => {
                 onChange={(e) => setIsDelivery(Number(e.target.value))}
               />
             </label>
-            <label htmlFor="deliver-two" className="text-sm flex items-center text-gray-600">
+            <label
+              htmlFor="deliver-two"
+              className="text-sm flex items-center text-gray-600"
+            >
               تحویل حضوری
               <input
                 className="ml-1 w-4 h-4"

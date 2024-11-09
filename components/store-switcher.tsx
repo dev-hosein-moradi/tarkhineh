@@ -7,7 +7,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -19,6 +18,8 @@ import {
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { IBranch } from "@/types";
+import { useDispatch } from "react-redux";
+import { clearCart, setSelectedBranch } from "@/hooks/use-cart";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
@@ -32,8 +33,7 @@ export default function StoreSwitcher({
   className,
   items = [],
 }: StoreSwitcherProps) {
-  const params = useParams();
-  const router = useRouter();
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [currentStore, setCurrentStore] = useState("");
 
@@ -42,10 +42,18 @@ export default function StoreSwitcher({
     value: String(item.id), // Convert `item.id` to string to ensure type matching
   }));
 
+  useEffect(() => {
+    if (items.length > 0) {
+      setCurrentStore(items[0].name);
+      dispatch(setSelectedBranch(items[0].id));
+    }
+  }, [dispatch, items]);
+
   const onStoreSelect = (store: { label: string; value: string }) => {
     setOpen(false);
     setCurrentStore(store.label);
-    // router.push(`/menu/${store.value}`);
+    dispatch(clearCart());
+    dispatch(setSelectedBranch(store.value));
   };
 
   return (
@@ -82,9 +90,7 @@ export default function StoreSwitcher({
                   <Check
                     className={cn(
                       "ml-auto h-4 w-4",
-                      currentStore === item.label
-                        ? "opacity-100"
-                        : "opacity-0"
+                      currentStore === item.label ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>

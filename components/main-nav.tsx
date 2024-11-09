@@ -24,6 +24,7 @@ import { useSearchModal } from "@/hooks/use-search-modal";
 import { useBranchStore } from "@/hooks/use-branch";
 import { RootState } from "@/hooks/store";
 import { useDispatch, useSelector } from "react-redux";
+import AccountDropdown from "./account-dropdown";
 
 const Select = dynamic(
   () => import("@/components/ui/select").then((mod) => mod.Select),
@@ -61,6 +62,7 @@ export const MainNav = ({
   const { categories, fetchCategories } = useCategoryStore();
   // Get modal state from Redux store
   const { isOpen } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     fetchCategories().catch((e) => {
@@ -205,16 +207,21 @@ export const MainNav = ({
         >
           <Menu className="w-6 h-6 group-hover:text-main duration-150" />
         </Button>
-        <Button
-          className="hover:border-main bg-tint-1 duration-150"
-          variant="outline"
-          size="icon"
-          onClick={() => {
-            dispatch(onOpen());
-          }}
-        >
-          <User2 className="w-5 h-5 text-main duration-150" />
-        </Button>
+        {!isAuthenticated ? (
+          <Button
+            className="hover:border-main bg-tint-1 duration-150"
+            variant="outline"
+            size="icon"
+            onClick={() => {
+              dispatch(onOpen());
+            }}
+          >
+            <User2 className="w-5 h-5 text-main duration-150" />
+          </Button>
+        ) : (
+          <AccountDropdown />
+        )}
+
         <Button
           className="hover:border-main bg-tint-1 duration-150"
           variant="outline"
