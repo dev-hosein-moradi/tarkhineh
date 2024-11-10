@@ -1,3 +1,4 @@
+"use client"
 import { useEffect, useState } from "react";
 import { BranchReviewSkeleton } from "@/components/skeleton";
 import { fakeBlurDataURL } from "@/lib/blurDataImage";
