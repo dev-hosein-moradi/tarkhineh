@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/hooks/store"; // Adjust the import path as needed
+import { RootState } from "@/hooks/store"; 
 import {
   updateFoodQuantity,
   removeFoodFromCart,
   addCustomLevel,
-} from "@/hooks/use-cart"; // Adjust the import path as needed
+} from "@/hooks/use-cart"; 
 import { Star, Trash } from "lucide-react";
 import Image from "next/image";
 import { IFood } from "@/types";

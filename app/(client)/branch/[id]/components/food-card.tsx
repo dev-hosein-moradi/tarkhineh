@@ -1,5 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/hooks/store";
+import { useDispatch } from "react-redux";
 import Spinner from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import { IFood } from "@/types";
@@ -8,6 +7,7 @@ import Image from "next/image";
 import { Fragment, useState } from "react";
 import { toast } from "sonner";
 import { addCustomLevel, addFoodToCart, CartToOrder } from "@/hooks/use-cart";
+import { BranchFoodCardWrapperSkeleton } from "@/components/skeleton";
 
 interface BranchFoodCardPageProps {
   params: { id: string };
@@ -18,9 +18,8 @@ const BranchFoodCard: React.FC<BranchFoodCardPageProps> = ({
   food,
   params,
 }) => {
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const cartItems = useSelector((state: RootState) => state.cart.items); // Ensure the correct slice and state are used
+  const [loading, setLoading] = useState(false);
 
   const handleSubmitFoodToCart = (food: CartToOrder) => {
     dispatch(addCustomLevel(1))
@@ -31,12 +30,16 @@ const BranchFoodCard: React.FC<BranchFoodCardPageProps> = ({
     setLoading(true);
     const newFood: CartToOrder = {
       ...food,
-      branchId: params.id,
+      branchId: params?.id,
     };
     handleSubmitFoodToCart(newFood);
     toast.success("آیتم مورد نظر به سبد خرید اضافه شد");
     setLoading(false);
   };
+
+  if(!food){
+    return <BranchFoodCardWrapperSkeleton />
+  }
 
   return (
     <div className="mx-auto w-[230px] min-w-[230px] h-[280px] min-h-[280px] rounded-md border-[1px] border-gray-4 bg-white p-2 shadow-lg hover:shadow-xl ease-in-out duration-300">

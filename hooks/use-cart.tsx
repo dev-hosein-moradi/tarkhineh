@@ -11,6 +11,8 @@ interface CartState {
   addressId: string;
   level: number;
   selectedBranch: string;
+  deliveryType: string;
+  branchId: string;
 }
 
 const initialState: CartState = {
@@ -18,6 +20,8 @@ const initialState: CartState = {
   addressId: "",
   level: 0,
   selectedBranch: "",
+  deliveryType: "2",
+  branchId: "",
 };
 
 const cartSlice = createSlice({
@@ -79,6 +83,9 @@ const cartSlice = createSlice({
     setSelectedBranch: (state, action) => {
       state.selectedBranch = action.payload;
     },
+    setDeliveryType: (state, action) => {
+      state.deliveryType = action.payload;
+    },
   },
 });
 
@@ -92,5 +99,6 @@ export const {
   addCustomLevel,
   setAddressId,
   setSelectedBranch,
+  setDeliveryType,
 } = cartSlice.actions;
 export default cartSlice.reducer;

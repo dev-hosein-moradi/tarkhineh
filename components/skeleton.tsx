@@ -207,3 +207,32 @@ export const MenuFoodCardsSkeleton = () => {
     </div>
   );
 };
+
+export const CartAddressCard = () => {
+  return (
+    <div className="cursor-pointer flex flex-col gap-3 justify-between border border-gray-300 items-end duration-150 rounded-md sm:w-[45%] px-4 py-2">
+      <div className="w-full flex flex-row-reverse gap-2">
+        <Skeleton className="w-full h-4" />
+        <div className="flex flex-row gap-1">
+          <Skeleton className="w-6 h-6 rounded-full" />{" "}
+          <Skeleton className="w-6 h-6 rounded-full" />{" "}
+        </div>
+      </div>
+      <div className="w-full flex flex-row-reverse items-center justify-between">
+        <Skeleton className="w-1/3 h-3" />
+        <Skeleton className="w-1/3 h-3" />
+      </div>
+    </div>
+  );
+};
+
+export const CartAddressCards = () => {
+  const skeletonItems = Array(4).fill(null);
+  return (
+    <div>
+      {skeletonItems.map((_, index) => (
+        <CartAddressCard key={index} />
+      ))}
+    </div>
+  );
+};

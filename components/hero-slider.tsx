@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import banner from "@/public/image/banner/banner.webp";
-import { getBranch } from "@/services/branch-service";
+import { getBranchById } from "@/services/branch-service";
 import { IBranch } from "@/types";
 import { fakeBlurDataURL } from "@/lib/blurDataImage";
 
@@ -38,7 +38,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ params }) => {
   useEffect(() => {
     const fetchBranch = async () => {
       try {
-        const branch: IBranch = await getBranch(params.id);
+        const branch: IBranch = await getBranchById(params.id);
         setBranchName(branch?.name?.split(" ")[1] || "");
       } catch (error) {
         console.error("Failed to fetch branch:", error);

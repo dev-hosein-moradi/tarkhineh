@@ -1,6 +1,5 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+
 import React, { ChangeEvent, useState } from "react";
 
 interface FilterBarProps {
@@ -19,25 +18,19 @@ export default function FilterBar({ onFilterChange }: FilterBarProps) {
 
   const handleFilterChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
-    const newFilter = selectedFilter === newValue ? "" : newValue;
-    setSelectedFilter(newFilter);
-    onFilterChange(newFilter);
+    if (newValue === "0") {
+      setSelectedFilter("");
+      onFilterChange("");
+    } else {
+      const newFilter = selectedFilter === newValue ? "" : newValue;
+      setSelectedFilter(newFilter);
+      onFilterChange(newFilter);
+    }
   };
 
   return (
-    <div className="flex flex-row-reverse flex-wrap items-center justify-between max-w-[1350px] mx-auto px-[5%] py-4">
-      <div className="flex flex-row justify-end gap-1 flex-wrap">
-        <Button
-          onClick={() => {
-            setSelectedFilter("");
-            onFilterChange("");
-          }}
-          variant="outline"
-          size="icon"
-          className="rounded-full"
-        >
-          <X className="w-4 h-4 text-gray-500" />
-        </Button>
+    <div className="flex flex-row-reverse flex-wrap items-center justify-between w-full max-w-[1350px] mx-auto px-[5%] py-4">
+      <div className="flex flex-row-reverse justify-start gap-1 flex-wrap w-full">
         {filters.map((filter) => (
           <div key={filter.code}>
             <input

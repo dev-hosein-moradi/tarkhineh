@@ -19,6 +19,7 @@ const AddressCard: React.FC<AddressCardState> = ({
   handleSelectAddress,
 }) => {
   const dispatch = useDispatch();
+
   const handleOpenAddressModal = (id?: string) => {
     dispatch(onOpen(id || null));
   };

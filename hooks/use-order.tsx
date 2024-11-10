@@ -1,10 +1,12 @@
 import { IOrder } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { CartToOrder } from "./use-cart";
 
 // Define the initial state
 
-interface UserOrder extends IOrder {
-  orders: IOrder[];
+export interface UserOrder extends IOrder {
+  orders: UserOrder[];
+  branchId: string;
 }
 
 const initialState: UserOrder = {
@@ -15,6 +17,9 @@ const initialState: UserOrder = {
   userAddress: "",
   price: "",
   time: "",
+  discount: "",
+  deliverType: "",
+  branchId: "",
   orders: [],
 };
 

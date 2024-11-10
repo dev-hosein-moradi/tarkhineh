@@ -22,9 +22,10 @@ const FoodCard: React.FC<FoodCardProps> = ({ food, params }) => {
   const dispatch = useDispatch(); // Get Redux dispatch function
 
   const handleSubmitFoodToCart = (food: CartToOrder) => {
-    dispatch(addCustomLevel(1))
+    dispatch(addCustomLevel(1));
     dispatch(addFoodToCart(food)); // Dispatch Redux action
   };
+  console.log(selectedBranch);
 
   const onClickCard = (food: IFood) => {
     setLoading(true);
@@ -32,6 +33,8 @@ const FoodCard: React.FC<FoodCardProps> = ({ food, params }) => {
       ...food,
       branchId: selectedBranch,
     };
+    console.log(newFood);
+
     handleSubmitFoodToCart(newFood);
     toast.success("آیتم مورد نظر به سبد خرید اضافه شد");
     setLoading(false);

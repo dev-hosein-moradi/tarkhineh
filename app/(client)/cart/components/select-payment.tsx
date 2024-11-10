@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,19 @@ import { Input } from "@/components/ui/input";
 import bank1 from "@/public/image/bank1.jpeg";
 import bank2 from "@/public/image/bank2.jpeg";
 import bank3 from "@/public/image/bank3.jpeg";
+import { useDispatch } from "react-redux";
+import { setDeliveryType } from "@/hooks/use-cart";
 
 export default function SelectPayment() {
-  const [isDelivery, setIsDelivery] = useState(0);
+  const dispatch = useDispatch();
+  const [isDelivery, setIsDelivery] = useState(2);
+
+  const handleSelectDeliveryType = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    setIsDelivery(value);
+    dispatch(setDeliveryType(e.target.value));
+    console.log(isDelivery);
+  };
   return (
     <section className="w-full">
       <div className="w-[99%] lg:w-[95%] min-h-[130px] px-4 py-2 mx-auto border-[1px] border-gray-200 rounded-md flex flex-col items-end justify-between">
@@ -48,8 +58,9 @@ export default function SelectPayment() {
               id="deliver-one"
               name="deliver-type"
               type="radio"
-              value="0"
-              onChange={(e) => setIsDelivery(Number(e.target.value))}
+              value="1"
+              checked={isDelivery === 1}
+              onChange={handleSelectDeliveryType}
             />
           </label>
           <label
@@ -62,9 +73,9 @@ export default function SelectPayment() {
               id="deliver-two"
               name="deliver-type"
               type="radio"
-              value="1"
-              checked
-              onChange={(e) => setIsDelivery(Number(e.target.value))}
+              value="2"
+              checked={isDelivery === 2}
+              onChange={handleSelectDeliveryType}
             />
           </label>
         </div>

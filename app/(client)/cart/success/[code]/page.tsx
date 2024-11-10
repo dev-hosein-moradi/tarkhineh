@@ -16,7 +16,7 @@ export default function PageSuccess({ params }: SuccessPageProps) {
 
   return (
     <Fragment>
-      <section className="relative w-[100vw] h-[500px] z-0">
+      <section className="relative h-[500px] z-0">
         <Image
           alt="success background"
           src={Celebration}
@@ -28,7 +28,7 @@ export default function PageSuccess({ params }: SuccessPageProps) {
             پرداخت شما با موفقیت انجام شد
           </h1>
           <p className="text-main text-xl font-normal" dir="rtl">
-            کد رهگیری سفارش شما: {params.code}
+            کد رهگیری سفارش شما: {params?.code}
           </p>
           <div className="flex flex-row items-center gap-2">
             <Button className="bg-main hover:bg-main text-white hover:text-white shadow-md hover:shadow-xl duration-150 w-[180px]">

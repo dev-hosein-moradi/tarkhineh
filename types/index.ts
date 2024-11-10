@@ -75,5 +75,8 @@ export interface IOrder {
   status: string;
   userAddress: string;
   price: string;
+  discount: string;
   time: string;
+  deliverType: string;
+  branchId: string;
 }

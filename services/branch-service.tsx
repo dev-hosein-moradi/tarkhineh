@@ -1,4 +1,13 @@
-import axios from "axios";
+import { IBranch } from "@/types";
+import axios, { AxiosResponse } from "axios";
+
+interface BranchResponse {
+  data: IBranch;
+  status: number;
+  error: Record<string, null>;
+  ok: boolean;
+  message: string;
+}
 
 export const getBranchs = async () => {
   try {
@@ -17,19 +26,22 @@ export const getBranchs = async () => {
   }
 };
 
-export const getBranch = async (id: string) => {
+export const getBranchById = async (
+  id: string
+): Promise<AxiosResponse<BranchResponse>> => {
   try {
-    // await new Promise((resolve) => setTimeout(resolve, 8000));
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}api/branch/${id}`,
-      {
-        data: {
-          reqId: "branch",
-        },
-      }
+    const res = await axios.get<BranchResponse>(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}api/branch/${id}`
     );
-    return res.data.data;
+    console.log("serv" + res);
+    
+    return res;
   } catch (error) {
-    return null;
+    if (axios.isAxiosError(error) && error.response) {
+      // Rethrow the original error so we can access status and response details later
+      throw error;
+    }
+    // Throw a generic error for unexpected cases
+    throw new Error("An unexpected error occurred");
   }
 };

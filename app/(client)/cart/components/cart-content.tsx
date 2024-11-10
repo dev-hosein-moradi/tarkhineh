@@ -25,6 +25,7 @@ import { getDateTime } from "@/hooks/use-date-time";
 import axios from "axios";
 import { toast } from "sonner";
 import { logout } from "@/hooks/use-user";
+import Spinner from "@/components/spinner";
 
 export default function CartContent() {
   const dispatch = useDispatch<AppDispatch>();
@@ -32,7 +33,9 @@ export default function CartContent() {
 
   const carts = useSelector((state: RootState) => state.cart.items);
   const cartsLevel = useSelector((state: RootState) => state.cart.level);
-  const { items, addressId } = useSelector((state: RootState) => state.cart);
+  const { items, addressId, deliveryType, selectedBranch } = useSelector(
+    (state: RootState) => state.cart
+  );
   const { isAuthenticated, token, userId } = useSelector(
     (state: RootState) => state.user
   );
@@ -104,6 +107,9 @@ export default function CartContent() {
         time: date.data.data,
         userAddress: addressId,
         userId,
+        deliverType: deliveryType,
+        discount: String(discountAmount),
+        branchId: selectedBranch,
       };
 
       const response = await addOrder(newOrder, token);
@@ -132,8 +138,12 @@ export default function CartContent() {
     }
   };
 
-  if (categories?.length === 0) {
-    return <></>;
+  if (!carts) {
+    return <>no cart</>;
+  }
+
+  if (!categories) {
+    return <>no categ</>;
   }
 
   return (

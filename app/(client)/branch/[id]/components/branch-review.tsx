@@ -41,11 +41,7 @@ export default function BranchReview({ params }: { params: { id: string } }) {
     return phoneNumber.match(/.{1,8}/g)?.join("-") ?? phoneNumber;
   }
 
-  if (loading) {
-    return <BranchReviewSkeleton />;
-  }
-
-  if (!branch) {
+  if (loading || !branch) {
     return <BranchReviewSkeleton />;
   }
 

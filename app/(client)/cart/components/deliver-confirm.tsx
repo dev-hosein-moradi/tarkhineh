@@ -1,11 +1,15 @@
-import React, { useCallback, useEffect, useState } from "react";
-
+import React, {
+  ChangeEvent,
+  Suspense,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { CarFront, MapPin, NotebookPen, PlusCircle } from "lucide-react";
-
-import { onClose, onOpen } from "@/hooks/use-address-modal";
+import {  onOpen } from "@/hooks/use-address-modal";
 import { RootState } from "@/hooks/store";
 import { useDispatch, useSelector } from "react-redux";
 import { DeleteAddress, getAddresses } from "@/services/address-service";
@@ -15,11 +19,11 @@ import { AlertModal } from "@/components/modals/alert-modal";
 import { toast } from "sonner";
 import axios from "axios";
 import { logout } from "@/hooks/use-user";
-import { setAddressId } from "@/hooks/use-cart";
+import { setAddressId, setDeliveryType } from "@/hooks/use-cart";
+import { CartAddressCard } from "@/components/skeleton";
 
 const DeliverConfirm = () => {
   const dispatch = useDispatch();
-
   const { addresses } = useSelector((state: RootState) => state.userAddress);
   const { userId, token } = useSelector((state: RootState) => state.user);
 
@@ -29,38 +33,30 @@ const DeliverConfirm = () => {
   const [selectedAddress, setSelectedAddress] = useState<string>(
     addresses[0]?.id || ""
   );
-
   const [isDelivery, setIsDelivery] = useState(0);
-  const handleOpenAddressModal = () => {
-    dispatch(onOpen(null));
-  };
 
-  const callGetAddresses = useCallback(async () => {
+  const fetchAddresses = useCallback(async () => {
     try {
       const response = await getAddresses(userId);
       dispatch(setAddresses(response));
     } catch (error) {
-      console.error(error);
+      console.error("Failed to fetch addresses", error);
     }
   }, [dispatch, userId]);
 
   useEffect(() => {
-    callGetAddresses();
-  }, [callGetAddresses]);
+    fetchAddresses();
+  }, [fetchAddresses]);
 
-  const handleDeleteAddress = async (selectedId: string) => {
+  const handleDeleteAddress = async (id: string) => {
     setLoading(true);
     try {
-      if (selectedId) {
-        const response = await DeleteAddress(selectedId, token);
-        response.data.ok
-          ? toast.success(response.data.message)
-          : toast.error(response.data.message);
-        dispatch(onClose());
-        setTimeout(() => {
-          window.location.reload();
-        }, 900);
-      }
+      const response = await DeleteAddress(id, token);
+      response.data.ok
+        ? toast.success(response.data.message)
+        : toast.error(response.data.message);
+      setOpen(false);
+      fetchAddresses();
     } catch (error) {
       handleError(error);
     } finally {
@@ -70,12 +66,11 @@ const DeliverConfirm = () => {
 
   const handleError = (error: any) => {
     if (axios.isAxiosError(error) && error.response) {
-      const statusCode = error.response.status;
-      const errorMessage = error.response.data.message;
-      if (statusCode === 403) dispatch(logout());
-      else if (statusCode === 401)
+      const { status, data } = error.response;
+      if (status === 403) dispatch(logout());
+      else if (status === 401)
         toast.error("ابتدا باید وارد حساب کاربری خود شوید");
-      else toast.error(errorMessage || "An error occurred");
+      else toast.error(data?.message || "An error occurred");
     }
   };
 
@@ -86,12 +81,10 @@ const DeliverConfirm = () => {
 
   const handleSelectAddress = (id: string) => {
     dispatch(setAddressId(id));
-    selectedAddress === id ? setSelectedAddress("") : setSelectedAddress(id);
+    setSelectedAddress(selectedAddress === id ? "" : id);
   };
 
-  if (!addresses) {
-    return <></>;
-  }
+  if (!addresses) return <CartAddressCard />;
 
   return (
     <>
@@ -103,7 +96,7 @@ const DeliverConfirm = () => {
       />
 
       <section className="w-full">
-        <div className="w-[95%] min-h-[130px] px-4 py-2 mx-auto border-[1px] border-gray-200 rounded-md flex flex-col items-end justify-around">
+        <div className="w-[95%] min-h-[130px] px-4 py-2 mx-auto border border-gray-200 rounded-md flex flex-col items-end justify-around">
           <div className="flex flex-row items-center">
             روش تحویل سفارش
             <CarFront className="h-6 w-6 text-gray-700 ml-1" />
@@ -143,12 +136,12 @@ const DeliverConfirm = () => {
           </div>
         </div>
 
-        <div className="w-[95%] min-h-[130px] px-4 py-6 mx-auto border-[1px] border-gray-200 rounded-md flex flex-col mt-1 items-center justify-between">
+        <div className="w-[95%] min-h-[130px] px-4 py-6 mx-auto border border-gray-200 rounded-md flex flex-col mt-1 items-center justify-between">
           {isDelivery === 0 ? (
             <>
               <div className="flex flex-row w-full justify-between">
                 <Button
-                  onClick={handleOpenAddressModal}
+                  onClick={() => dispatch(onOpen(null))}
                   className="bg-white text-main hover:bg-white"
                 >
                   <PlusCircle className="w-4 h-4" />
@@ -162,7 +155,7 @@ const DeliverConfirm = () => {
               <Separator className="mt-2" />
               <div className="py-8 w-full flex flex-row flex-wrap gap-1 items-center justify-end">
                 {Array.isArray(addresses) && addresses.length > 0 ? (
-                  addresses?.map((item, index) => (
+                  addresses.map((item, index) => (
                     <AddressCard
                       key={index}
                       data={item}
@@ -200,7 +193,7 @@ const DeliverConfirm = () => {
           )}
         </div>
 
-        <div className="w-[95%] min-h-[100px] px-4 py-2 mx-auto border-[1px] border-gray-200 rounded-md flex flex-col mt-1 items-end justify-start">
+        <div className="w-[95%] min-h-[100px] px-4 py-2 mx-auto border border-gray-200 rounded-md flex flex-col mt-1 items-end justify-start">
           <div className="flex flex-row-reverse gap-1 items-center">
             <NotebookPen className="h-5 w-5" />
             <h2>توضیحات سفارش</h2>
