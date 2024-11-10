@@ -2,7 +2,7 @@
 
 import { BranchReviewSkeleton } from "@/components/skeleton";
 import { fakeBlurDataURL } from "@/lib/blurDataImage";
-import { getBranch } from "@/services/branch-service";
+import { getBranchById } from "@/services/branch-service";
 import { IBranch } from "@/types";
 import { Clock, MapPin, Phone } from "lucide-react";
 import Image from "next/image";
@@ -17,7 +17,7 @@ export default function BranchReview({ params }: { params: { id: string } }) {
 
     const fetchBranch = async () => {
       try {
-        const branch: IBranch = await getBranch(params.id);
+        const branch: IBranch = await getBranchById(params.id);
         if (isMounted) {
           setBranch(branch);
         }
