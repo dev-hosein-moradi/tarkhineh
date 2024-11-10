@@ -38,12 +38,16 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ params }) => {
   useEffect(() => {
     const fetchBranch = async () => {
       try {
-        const branch: IBranch = await getBranchById(params.id);
-        setBranchName(branch?.name?.split(" ")[1] || "");
+        // Get the full response and extract the branch data
+        const response = await getBranchById(params.id);
+        const branchData: IBranch = response.data.data; // Extract the IBranch object
+
+        setBranchName(branchData?.name?.split(" ")[1] || "");
       } catch (error) {
         console.error("Failed to fetch branch:", error);
       }
     };
+
     if (pathname?.startsWith("/branch")) {
       fetchBranch();
     }
@@ -64,7 +68,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ params }) => {
             <CarouselItem key={index}>
               <div className="relative">
                 <Image
-                  src={banner}
+                  src={bannerImage}
                   alt="banner image"
                   className="object-cover w-full h-[450px] brightness-[0.3]"
                   quality={80}
