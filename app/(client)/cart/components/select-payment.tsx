@@ -29,13 +29,13 @@ export default function SelectPayment() {
           <PercentCircle className="w-5 h-5" />
         </div>
         <Separator />
-        <div className="flex  items-center justify-center flex-row-reverse gap-0 lg:gap-4">
+        <div className="flex items-center justify-center flex-row-reverse gap-1">
           <Input
-            className="h-[40px] w-[200px]"
+            className=" w-[200px]"
             dir="rtl"
             placeholder="کد تخفیف"
           />
-          <Button className="w-[95px] h-[40px] bg-gray-100 border text-gray-700 hover:bg-gray-200 shadow-md">
+          <Button className="w-[95px] bg-gray-100 border text-gray-700 hover:bg-gray-200">
             ثبت کد
           </Button>
         </div>

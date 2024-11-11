@@ -21,6 +21,7 @@ const initialState: UserOrder = {
   deliverType: "",
   branchId: "",
   orders: [],
+  paymentType: "",
 };
 
 // Create a slice

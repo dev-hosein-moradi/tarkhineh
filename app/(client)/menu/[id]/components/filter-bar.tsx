@@ -28,7 +28,7 @@ export default function FilterBar({ onFilterChange }: FilterBarProps) {
 
   return (
     <div className="flex flex-row-reverse flex-wrap items-center justify-between max-w-[1350px] mx-auto px-[5%] py-4">
-      <div className="flex flex-row justify-end gap-1 flex-wrap">
+      <div className="flex flex-row-reverse justify-start gap-1 flex-wrap">
         <Button
           onClick={() => {
             setSelectedFilter("");

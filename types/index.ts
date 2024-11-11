@@ -78,5 +78,6 @@ export interface IOrder {
   discount: string;
   time: string;
   deliverType: string;
+  paymentType: string;
   branchId: string;
 }

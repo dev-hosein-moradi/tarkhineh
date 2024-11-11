@@ -25,7 +25,7 @@ export default function Footer() {
       <Image
         src={FooterBg}
         priority
-        quality={80}
+        quality={60}
         alt="footer background image"
         className="absolute w-full h-full object-cover brightness-[0.3] z-[-1]"
       />

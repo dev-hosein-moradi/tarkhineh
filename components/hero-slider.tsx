@@ -71,12 +71,12 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ params }) => {
                   src={bannerImage}
                   alt="banner image"
                   className="object-cover w-full h-[450px] brightness-[0.3]"
-                  quality={80}
+                  quality={70}
                   priority
-                  placeholder="blur"
+                  // placeholder="blur"
                   width={1000}
                   height={100}
-                  blurDataURL={fakeBlurDataURL}
+                  // blurDataURL={fakeBlurDataURL}
                 />
               </div>
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-full">

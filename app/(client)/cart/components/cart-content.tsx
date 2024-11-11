@@ -2,7 +2,6 @@
 import { Fragment, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 
@@ -28,13 +27,11 @@ import { logout } from "@/hooks/use-user";
 
 export default function CartContent() {
   const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter();
 
   const carts = useSelector((state: RootState) => state.cart.items);
   const cartsLevel = useSelector((state: RootState) => state.cart.level);
-  const { items, addressId, deliveryType, selectedBranch } = useSelector(
-    (state: RootState) => state.cart
-  );
+  const { items, addressId, deliveryType, selectedBranch, paymentType } =
+    useSelector((state: RootState) => state.cart);
   const { isAuthenticated, token, userId } = useSelector(
     (state: RootState) => state.user
   );
@@ -86,7 +83,11 @@ export default function CartContent() {
   };
 
   const handleCartProccess = () => {
-    dispatch(increaseLevel());
+    if (cartsLevel === 2 && addressId.length === 0 && deliveryType === "1") {
+      toast.error("لطفا آدرس خود را انتخاب کنید");
+    } else {
+      dispatch(increaseLevel());
+    }
   };
 
   const formatedFoods = items?.map((item) => ({
@@ -98,10 +99,10 @@ export default function CartContent() {
   const handleCompleteCart = async () => {
     setLoading(true);
     const loadingToastId = toast.loading("در حال پردازش"); // Show loading toast
-  
+
     try {
       const date = await getDateTime("all");
-  
+
       const newOrder: IOrder = {
         foods: formatedFoods,
         id: uuidv4(),
@@ -113,21 +114,42 @@ export default function CartContent() {
         deliverType: deliveryType,
         discount: String(discountAmount),
         branchId: selectedBranch,
+        paymentType,
       };
-  
-      const response = await addOrder(newOrder, token);
-  
-      if (response.data.ok) {
-        toast.dismiss(loadingToastId); // Dismiss loading toast on success
-        toast.success(response.data.message);
-        dispatch(clearCart());
-  
-        setTimeout(() => {
-          router.push(`/cart/success/${response.data.data}`);
-        }, 900);
+
+      if (!newOrder.foods) {
+        toast.error("خطا در ثبت به دلیل عدم انتخاب محصولات");
+      } else if (!newOrder.id) {
+        toast.error("خطا در ثبت به دلیل عدم دریافت شناسه سفارش");
+      } else if (!newOrder.price) {
+        toast.error("خطا در ثبت به دلیل عدم دریافت مبلغ سفارش ");
+      } else if (!newOrder.time) {
+        toast.error("خطا در ثبت به دلیل عدم دریافت زمان سفارش ");
+      } else if (!newOrder.userId) {
+        toast.error("خطا در ثبت به دلیل عدم دریافت شناسه کاربر ");
+      } else if (!newOrder.deliverType) {
+        toast.error("خطا در ثبت به دلیل عدم انتخاب نوع ارسال");
+      } else if (!newOrder.discount) {
+        toast.error("خطا در ثبت به دلیل عدم دریافت مبلغ تخفیف ");
+      } else if (!newOrder.branchId) {
+        toast.error("خطا در ثبت به دلیل عدم دریافت شناسه شعبه");
+      } else if (!newOrder.paymentType) {
+        toast.error("خطا در ثبت به دلیل عدم انتخاب نوع پرداخت");
       } else {
-        toast.dismiss(loadingToastId); // Dismiss loading toast on error
-        toast.error(response.data.message);
+        const response = await addOrder(newOrder, token);
+
+        if (response.data.ok) {
+          toast.dismiss(loadingToastId); // Dismiss loading toast on success
+          toast.success(response.data.message);
+          dispatch(clearCart());
+
+          setTimeout(() => {
+            window.location.href = `/cart/success/${response.data.data}`;
+          }, 900);
+        } else {
+          toast.dismiss(loadingToastId); // Dismiss loading toast on error
+          toast.error(response.data.message);
+        }
       }
     } catch (error) {
       toast.dismiss(loadingToastId); // Dismiss loading toast on error
@@ -136,7 +158,6 @@ export default function CartContent() {
       setLoading(false); // Reset loading state
     }
   };
-  
 
   const handleError = (error: any) => {
     if (axios.isAxiosError(error) && error.response) {
@@ -173,6 +194,8 @@ export default function CartContent() {
             src={EmptyBG}
             alt="empty background image"
             className="absolute z-0"
+            quality={50}
+            priority
           />
         )}
 
@@ -268,17 +291,17 @@ export default function CartContent() {
                 cartsLevel === 3 ? (
                   <Button
                     onClick={handleCompleteCart}
-                    className="group flex flex-row items-center justify-center w-full h-[35px] rounded bg-main hover:bg-white hover:text-main duration-300 hover:border-main border-2 text-white font-normal text-sm my-2"
+                    className="group flex flex-row items-center justify-center w-full h-[35px] rounded bg-main hover:bg-main hover:text-white duration-300  border-2 text-white font-normal text-sm my-2"
                   >
-                    <Wallet className="h-4 w-4 text-white group-hover:text-main duration-300" />
+                    <Wallet className="h-4 w-4 text-white group-hover:text-white duration-300" />
                     <span>تکمیل خرید</span>
                   </Button>
                 ) : (
                   <Button
                     onClick={handleCartProccess}
-                    className="group flex flex-row items-center justify-center w-full h-[35px] rounded bg-main hover:bg-white hover:text-main duration-300 hover:border-main border-2 text-white font-normal text-sm my-2"
+                    className="group flex flex-row items-center justify-center w-full h-[35px] rounded bg-main hover:bg-main hover:text-white duration-300  border-2 text-white font-normal text-sm my-2"
                   >
-                    <ChevronLeft className="h-4 w-4 text-white group-hover:text-main duration-300" />
+                    <ChevronLeft className="h-4 w-4 text-white group-hover:text-white duration-300" />
                     <span>مرحله بعد</span>
                   </Button>
                 )
@@ -287,10 +310,10 @@ export default function CartContent() {
                   onClick={() => {
                     dispatch(onOpen());
                   }}
-                  className="group flex flex-row items-center justify-center w-full h-[35px] rounded bg-main hover:bg-white hover:text-main duration-300 hover:border-main border-2 text-white font-normal text-sm my-2"
+                  className="group flex flex-row items-center justify-center w-full h-[35px] rounded bg-main hover:bg-main hover:text-white duration-300  border-2 text-white font-normal text-sm my-2"
                 >
                   <p>ورود / ثبت‌نام</p>
-                  <User2 className="h-4 w-4 text-white group-hover:text-main duration-300" />
+                  <User2 className="h-4 w-4 text-white group-hover:text-white duration-300" />
                 </Button>
               )}
             </article>

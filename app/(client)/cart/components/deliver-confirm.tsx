@@ -30,10 +30,8 @@ const DeliverConfirm = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<string>("");
-  const [selectedAddress, setSelectedAddress] = useState<string>(
-    addresses[0]?.id || ""
-  );
-  const [isDelivery, setIsDelivery] = useState(0);
+  const [selectedAddress, setSelectedAddress] = useState<string>("");
+  const [isDelivery, setIsDelivery] = useState(1);
 
   const fetchAddresses = useCallback(async () => {
     try {
@@ -93,6 +91,11 @@ const DeliverConfirm = () => {
     setSelectedAddress(selectedAddress === id ? "" : id);
   };
 
+  const handleSelectDeliveryType = (e: ChangeEvent<HTMLInputElement>) => {
+    setIsDelivery(Number(e.target.value));
+    dispatch(setDeliveryType(e.target.value));
+  };
+
   if (!addresses) return <CartAddressCard />;
 
   return (
@@ -122,9 +125,8 @@ const DeliverConfirm = () => {
                 id="deliver-one"
                 name="deliver-type"
                 type="radio"
-                value="0"
-                checked={addresses?.length > 0 && true}
-                onChange={(e) => setIsDelivery(Number(e.target.value))}
+                value="1"
+                onChange={handleSelectDeliveryType}
               />
             </label>
             <label
@@ -137,16 +139,15 @@ const DeliverConfirm = () => {
                 id="deliver-two"
                 name="deliver-type"
                 type="radio"
-                value="1"
-                checked={addresses?.length === 0 && true}
-                onChange={(e) => setIsDelivery(Number(e.target.value))}
+                value="2"
+                onChange={handleSelectDeliveryType}
               />
             </label>
           </div>
         </div>
 
         <div className="w-[95%] min-h-[130px] px-4 py-6 mx-auto border border-gray-200 rounded-md flex flex-col mt-1 items-center justify-between">
-          {isDelivery === 0 ? (
+          {isDelivery === 1 ? (
             <>
               <div className="flex flex-row w-full justify-between">
                 <Button

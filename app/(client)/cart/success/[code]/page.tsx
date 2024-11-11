@@ -5,14 +5,12 @@ import Image from "next/image";
 import Celebration from "@/public/image/Selebration.png";
 import CheckSqure from "@/public/image/check-squre.png";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 
 interface SuccessPageProps {
   params: { code: string };
 }
 
 export default function PageSuccess({ params }: SuccessPageProps) {
-  const router = useRouter();
 
   return (
     <Fragment>
@@ -21,6 +19,8 @@ export default function PageSuccess({ params }: SuccessPageProps) {
           alt="success background"
           src={Celebration}
           className="w-full h-full object-cover absolute left-0 top-0 -z-10"
+          quality={50}
+          priority
         />
         <div className="w-full h-full flex flex-col items-center justify-center gap-4 z-10">
           <Image alt="check image" src={CheckSqure} className="" />
@@ -31,11 +31,11 @@ export default function PageSuccess({ params }: SuccessPageProps) {
             کد رهگیری سفارش شما: {params?.code}
           </p>
           <div className="flex flex-row items-center gap-2">
-            <Button className="bg-main hover:bg-main text-white hover:text-white shadow-md hover:shadow-xl duration-150 w-[180px]">
+            <Button  onClick={() => window.location.href = "/track-orders"} className="bg-main hover:bg-main text-white hover:text-white shadow-md hover:shadow-xl duration-150 w-[180px]">
               پیگیری سفارش
             </Button>
             <Button
-              onClick={() => router.push("/")}
+              onClick={() => window.location.href = "/"}
               className="bg-white text-main hover:bg-white hover:text-main shadow-none border-2 border-main hover:shadow-2xl"
             >
               بازگشت به صفحه اصلی

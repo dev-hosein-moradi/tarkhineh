@@ -31,7 +31,7 @@ const AddressCard: React.FC<AddressCardState> = ({
       onClick={() => handleSelectAddress(data.id)}
       className={`${
         selectedAddress === data.id ? " border-main" : " border-gray-300"
-      } cursor-pointer flex flex-col gap-3 justify-between border border-1 items-end duration-150 rounded-md sm:w-[45%]  px-4 py-2`}
+      } cursor-pointer flex flex-col gap-3 justify-between border-[2px] items-end duration-150 rounded-md sm:w-[45%]  px-4 py-2`}
     >
       <div className="w-full flex flex-row-reverse gap-2">
         <h2 className="w-full text-right text-sm" dir="rtl">

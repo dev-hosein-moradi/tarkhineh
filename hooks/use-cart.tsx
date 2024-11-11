@@ -12,6 +12,7 @@ interface CartState {
   level: number;
   selectedBranch: string;
   deliveryType: string;
+  paymentType: string;
   branchId: string;
 }
 
@@ -20,7 +21,8 @@ const initialState: CartState = {
   addressId: "",
   level: 0,
   selectedBranch: "",
-  deliveryType: "2",
+  deliveryType: "1",
+  paymentType: "2",
   branchId: "",
 };
 
@@ -65,6 +67,10 @@ const cartSlice = createSlice({
       state.items = [];
       state.level = 1;
       state.selectedBranch = "";
+      state.addressId = "";
+      state.branchId = "";
+      state.deliveryType = "1";
+      state.paymentType = "2";
     },
     increaseLevel: (state) => {
       state.level = state.level + 1;
@@ -86,6 +92,9 @@ const cartSlice = createSlice({
     setDeliveryType: (state, action) => {
       state.deliveryType = action.payload;
     },
+    setPaymentType: (state, action) => {
+      state.paymentType = action.payload;
+    },
   },
 });
 
@@ -100,5 +109,6 @@ export const {
   setAddressId,
   setSelectedBranch,
   setDeliveryType,
+  setPaymentType,
 } = cartSlice.actions;
 export default cartSlice.reducer;
