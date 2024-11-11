@@ -5,6 +5,7 @@ import MenuBar from "./components/menu-bar";
 import MenuFoodByType from "./components/menu-foods";
 import { useFoods } from "@/hooks/useFoods";
 import { IFood } from "@/types";
+import { MenuFoodCardsSkeleton } from "@/components/skeleton";
 
 interface MenuPageProps {
   params: { id: string };
@@ -49,6 +50,8 @@ const MenuPage: React.FC<MenuPageProps> = ({ params }) => {
       return acc;
     }, {});
   }, [filteredFoods]);
+
+  if(!foods) return <MenuFoodCardsSkeleton />
 
   return (
     <div>

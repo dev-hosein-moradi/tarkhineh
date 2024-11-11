@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useDispatch } from "react-redux";
 import { logout } from "@/hooks/use-user";
@@ -26,9 +26,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function AccountDropdown() {
-    const dispatch = useDispatch();
-    const router = useRouter()
-    
+  const dispatch = useDispatch();
+  const router = useRouter();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -43,26 +43,44 @@ export default function AccountDropdown() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => router.push(`/profile`)} className="flex-row-reverse justify-between">
+          <DropdownMenuItem
+            onClick={() => router.push(`/profile`)}
+            className="flex-row-reverse justify-between"
+          >
             <span>مشخصات من</span>
             <User />
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push(`/track-orders`)} className="flex-row-reverse justify-between">
+          <DropdownMenuItem
+            onClick={() => router.push(`/track-orders`)}
+            className="flex-row-reverse justify-between"
+          >
             <span>پیگیری سفارشات</span>
             <CreditCard />
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push(`/setting`)} className="flex-row-reverse justify-between">
+          <DropdownMenuItem
+            onClick={() => router.push(`/setting`)}
+            className="flex-row-reverse justify-between"
+          >
             <span>تنظیمات</span>
             <Settings />
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push(`/support`)} className="flex-row-reverse justify-between">
+        <DropdownMenuItem
+          onClick={() => router.push(`/support`)}
+          className="flex-row-reverse justify-between"
+        >
           <span>پشتیبانی</span>
           <LifeBuoy />
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => dispatch(logout())} className="flex-row-reverse justify-between">
+        <DropdownMenuItem
+          onClick={() => {
+            dispatch(logout());
+            router.push("/");
+          }}
+          className="flex-row-reverse justify-between"
+        >
           <span className="text-error">خروج</span>
           <LogOut className="text-error-light" />
         </DropdownMenuItem>

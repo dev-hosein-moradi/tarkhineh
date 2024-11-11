@@ -25,7 +25,6 @@ import { getDateTime } from "@/hooks/use-date-time";
 import axios from "axios";
 import { toast } from "sonner";
 import { logout } from "@/hooks/use-user";
-import Spinner from "@/components/spinner";
 
 export default function CartContent() {
   const dispatch = useDispatch<AppDispatch>();
@@ -97,8 +96,12 @@ export default function CartContent() {
   }));
 
   const handleCompleteCart = async () => {
+    setLoading(true);
+    const loadingToastId = toast.loading("در حال پردازش"); // Show loading toast
+  
     try {
       const date = await getDateTime("all");
+  
       const newOrder: IOrder = {
         foods: formatedFoods,
         id: uuidv4(),
@@ -111,21 +114,29 @@ export default function CartContent() {
         discount: String(discountAmount),
         branchId: selectedBranch,
       };
-
+  
       const response = await addOrder(newOrder, token);
-      response.data.ok
-        ? (toast.success(response.data.message), dispatch(clearCart()))
-        : toast.error(response.data.message);
-
-      setTimeout(() => {
-        router.push(`/cart/success/${response.data.data}`);
-      }, 900);
+  
+      if (response.data.ok) {
+        toast.dismiss(loadingToastId); // Dismiss loading toast on success
+        toast.success(response.data.message);
+        dispatch(clearCart());
+  
+        setTimeout(() => {
+          router.push(`/cart/success/${response.data.data}`);
+        }, 900);
+      } else {
+        toast.dismiss(loadingToastId); // Dismiss loading toast on error
+        toast.error(response.data.message);
+      }
     } catch (error) {
+      toast.dismiss(loadingToastId); // Dismiss loading toast on error
       handleError(error);
     } finally {
-      setLoading(false);
+      setLoading(false); // Reset loading state
     }
   };
+  
 
   const handleError = (error: any) => {
     if (axios.isAxiosError(error) && error.response) {
@@ -139,11 +150,11 @@ export default function CartContent() {
   };
 
   if (!carts) {
-    return <>no cart</>;
+    return <></>;
   }
 
   if (!categories) {
-    return <>no categ</>;
+    return <></>;
   }
 
   return (

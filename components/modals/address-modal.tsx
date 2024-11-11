@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import * as z from "zod";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
@@ -31,9 +31,11 @@ import {
   addAddress,
   EditAddress,
   getAddress,
+  getAddresses,
 } from "@/services/address-service";
 import { IAddress } from "@/types";
 import { logout } from "@/hooks/use-user";
+import { setAddresses } from "@/hooks/use-address";
 
 const formSchema = z.object({
   title: z.string().min(4),
@@ -66,8 +68,23 @@ export const AddressModal = ({ id }: { id?: string }) => {
     },
   });
 
+  const fetchAddresses = useCallback(async () => {
+    try {
+      const response = await getAddresses(userId);
+      dispatch(setAddresses(response));
+    } catch (error) {
+      console.error("Failed to fetch addresses", error);
+    }
+  }, [dispatch, userId]);
+
+  useEffect(() => {
+    fetchAddresses();
+  }, [fetchAddresses]);
+
   const handleSendAddress = async (values: z.infer<typeof formSchema>) => {
     setLoading(true);
+    const loadingToastId = toast.loading("در حال پردازش");
+
     try {
       const address: IAddress = {
         id: uuidv4(),
@@ -77,15 +94,19 @@ export const AddressModal = ({ id }: { id?: string }) => {
         userId: userId,
         isReciver: values.reciver,
       };
-      const response = await addAddress(address, token);
-      response.data.ok
-        ? toast.success(response.data.message)
-        : toast.error(response.data.message);
 
-      setTimeout(() => {
-        window.location.reload();
-      }, 900);
+      const response = await addAddress(address, token);
+
+      if (response.data.ok) {
+        toast.dismiss(loadingToastId);
+        toast.success(response.data.message);
+        fetchAddresses()
+      } else {
+        toast.dismiss(loadingToastId);
+        toast.error(response.data.message);
+      }
     } catch (error) {
+      toast.dismiss(loadingToastId);
       handleError(error);
     } finally {
       setLoading(false);
@@ -94,6 +115,8 @@ export const AddressModal = ({ id }: { id?: string }) => {
 
   const handleEditAddress = async (values: z.infer<typeof formSchema>) => {
     setLoading(true);
+    const loadingToastId = toast.loading("در حال پردازش");
+
     try {
       const address: IAddress = {
         id: selectedId || uuidv4(),
@@ -103,18 +126,23 @@ export const AddressModal = ({ id }: { id?: string }) => {
         userId: userId,
         isReciver: values.reciver,
       };
+
       const response = await EditAddress(address, token);
-      response.data.ok
-        ? toast.success(response.data.message)
-        : toast.error(response.data.message);
-      dispatch(onClose());
-      setTimeout(() => {
-        window.location.reload();
-      }, 900);
+
+      if (response.data.ok) {
+        toast.dismiss(loadingToastId); // Dismiss loading toast on success
+        toast.success(response.data.message);
+        dispatch(onClose()); // Close the modal
+        fetchAddresses()
+      } else {
+        toast.dismiss(loadingToastId); // Dismiss loading toast on error
+        toast.error(response.data.message);
+      }
     } catch (error) {
+      toast.dismiss(loadingToastId); // Dismiss loading toast in case of error
       handleError(error);
     } finally {
-      setLoading(false);
+      setLoading(false); // Reset the loading state
     }
   };
 
@@ -129,6 +157,7 @@ export const AddressModal = ({ id }: { id?: string }) => {
     }
   };
 
+  // Fetch the address to edit if selectedId is available
   useEffect(() => {
     const getExistAddressToEdit = async () => {
       try {
@@ -149,6 +178,8 @@ export const AddressModal = ({ id }: { id?: string }) => {
 
     if (selectedId) {
       getExistAddressToEdit();
+    } else {
+      form.reset({ title: "", reciver: true, address: "" });
     }
   }, [form, selectedId]);
 

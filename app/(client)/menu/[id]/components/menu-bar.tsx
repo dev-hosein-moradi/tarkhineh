@@ -32,11 +32,11 @@ export default function MenuBar({ params, onSearchChange }: MenuBarProps) {
     onSearchChange(event.target.value);
   };
 
-  if (categories?.length === 0) {
+  if (!categories) {
     return <MenuBarSkeleton />;
   }
 
-  if (branches?.length === 0) {
+  if (!branches) {
     return <></>;
   }
 

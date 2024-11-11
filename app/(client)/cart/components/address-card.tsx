@@ -24,6 +24,8 @@ const AddressCard: React.FC<AddressCardState> = ({
     dispatch(onOpen(id || null));
   };
 
+  if (!data) return <></>;
+
   return (
     <div
       onClick={() => handleSelectAddress(data.id)}

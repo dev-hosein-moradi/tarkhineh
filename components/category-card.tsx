@@ -13,6 +13,7 @@ export default function CategoryCard({
 }) {
   const categoryModal = useCategoryModal();
 
+  if (!data) return <></>;
   return (
     <div
       className={`relative border-Primary border rounded h-[111px] lg:h-[160px] w-[162px] lg:w-[230px] mx-1 sm:mx-2 my-12 lg:my-20 hover:shadow-card-shadow transition ease-out duration-150`}

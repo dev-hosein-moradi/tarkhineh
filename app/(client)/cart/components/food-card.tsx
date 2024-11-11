@@ -5,7 +5,7 @@ import {
   removeFoodFromCart,
   addCustomLevel,
 } from "@/hooks/use-cart"; 
-import { Star, Trash } from "lucide-react";
+import { Star } from "lucide-react";
 import Image from "next/image";
 import { IFood } from "@/types";
 
@@ -33,6 +33,8 @@ export default function CartFoodCard({ food }: { food: IFood }) {
       }
     }
   };
+
+  if(!food) return <></>
 
   return (
     <div className="flex flex-row-reverse items-center justify-between bg-gray-1 lg:bg-white lg:border-[1px] border-gray-4 lg:rounded-lg p-2 mb-3 mr-1 lg:min-w-[610px]">

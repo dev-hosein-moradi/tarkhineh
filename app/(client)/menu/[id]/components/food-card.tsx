@@ -19,26 +19,35 @@ interface FoodCardProps {
 const FoodCard: React.FC<FoodCardProps> = ({ food, params }) => {
   const { selectedBranch } = useSelector((state: RootState) => state.cart);
   const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch(); // Get Redux dispatch function
+  const dispatch = useDispatch();
 
   const handleSubmitFoodToCart = (food: CartToOrder) => {
     dispatch(addCustomLevel(1));
-    dispatch(addFoodToCart(food)); // Dispatch Redux action
+    dispatch(addFoodToCart(food));
   };
-  console.log(selectedBranch);
 
   const onClickCard = (food: IFood) => {
     setLoading(true);
+  
+    const loadingToastId = toast.loading("در حال پردازش");
+  
+    // Create a new food item to add to the cart
     const newFood: CartToOrder = {
       ...food,
       branchId: selectedBranch,
     };
-    console.log(newFood);
-
+  
+    // Dispatch actions synchronously
     handleSubmitFoodToCart(newFood);
-    toast.success("آیتم مورد نظر به سبد خرید اضافه شد");
-    setLoading(false);
+  
+    // Simulate async behavior to dismiss the loading toast after a delay
+    setTimeout(() => {
+      toast.dismiss(loadingToastId); // Dismiss the loading toast
+      toast.success("آیتم مورد نظر به سبد خرید اضافه شد");
+      setLoading(false);
+    }, 500); // Adjust the delay as needed
   };
+  
 
   return (
     <div className="w-[360px] lg:w-[400px] min-w-[320px] lg:min-w-[400px] h-[120px] lg:h-[170px] min-h-[120px] lg:min-h-[170px] rounded-md border-[1px] border-gray-4 bg-white p-2 shadow-card-shadow hover:shadow-content-card-shadow ease-in-out duration-300 flex flex-row-reverse justify-self-center">

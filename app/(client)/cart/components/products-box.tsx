@@ -6,7 +6,6 @@ import { Trash } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/hooks/store";
 import { removeFoodFromCart } from "@/hooks/use-cart";
-import Spinner from "@/components/spinner";
 
 interface ProductBoxProps {
   carts: IFood[];
@@ -19,7 +18,7 @@ const ProductBox: React.FC<ProductBoxProps> = ({ carts }) => {
     dispatch(removeFoodFromCart(id));
   };
 
-  if (!carts) return <Spinner />;
+  if (!carts) return <></>;
   return (
     <section className="lg:border border-gray-4 lg:p-6 lg:rounded-lg lg:max-w-[80%]">
       <article dir="ltr" className="overflow-y-auto max-h-[400px]">

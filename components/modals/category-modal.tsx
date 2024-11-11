@@ -4,7 +4,7 @@ import { Modal } from "@/components/ui/modal";
 import { useBranchStore } from "@/hooks/use-branch";
 import { useCategoryModal } from "@/hooks/use-category-modal";
 import { Suspense, useEffect } from "react";
-import { MdBranchCardsSkeleton, SmBranchCardsSkeleton } from "../skeleton";
+import { SmBranchCardsSkeleton } from "../skeleton";
 import { SmBrnach } from "../branch-card";
 import Link from "next/link";
 
@@ -15,6 +15,8 @@ export const CategoryModal = () => {
   useEffect(() => {
     fetchBranches();
   }, [fetchBranches]);
+
+  if (!branches) return <></>;
 
   return (
     <Modal

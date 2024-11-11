@@ -17,7 +17,10 @@ export default function MenuFoodByType({
   error,
   params,
 }: MenuFoodByTypeProps) {
-  const router = useRouter();
+
+  if (!foodsByType) {
+    return <></>;
+  }
 
   if (error) {
     return <div>Error loading foods: {error.message}</div>;
@@ -60,6 +63,8 @@ const MenuFoodCard = ({
 }) => {
   const router = useRouter();
   const label = typeLabels[type] || "سایر غذاها";
+
+  if (!foods) return <></>;
   return (
     <div className={`bg-white w-full max-w-[1350px] mx-auto px-[5%] py-12`}>
       <h2

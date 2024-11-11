@@ -236,3 +236,84 @@ export const CartAddressCards = () => {
     </div>
   );
 };
+
+export const OrderCardSkeleton = () => {
+  return (
+    <div className="border rounded shadow p-4 w-full flex flex-col gap-3 bg-gray-50">
+      {/* Header */}
+      <div className="w-full flex flex-row-reverse items-center justify-between">
+        <Skeleton className="h-6 w-24" />
+        <div className="flex flex-row-reverse items-center gap-2">
+          <Skeleton className="h-5 w-16 rounded-md" />
+          <Skeleton className="h-5 w-16 rounded-md" />
+        </div>
+      </div>
+
+      {/* Details */}
+      <div className="flex flex-row-reverse items-center justify-center sm:justify-between flex-wrap gap-2">
+        <div className="w-full sm:w-max flex flex-row-reverse items-center gap-2">
+          <Skeleton className="h-4 w-20" />
+        </div>
+        <div className="w-full sm:w-max flex flex-row-reverse items-center gap-2">
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <div className="w-full sm:w-max flex flex-row-reverse items-center gap-2">
+          <Skeleton className="h-4 w-24" />
+        </div>
+      </div>
+
+      {/* Address */}
+      <div className="text-right text-sm text-gray-800 flex flex-row-reverse gap-2">
+        <Skeleton className="h-4 w-36" />
+      </div>
+
+      {/* Status Timeline */}
+      <div className="w-full flex flex-row-reverse items-center justify-center my-4">
+        <div className="flex-1 flex flex-row items-center gap-1">
+          <Skeleton className="w-full h-1 rounded" />
+          <Skeleton className="w-6 h-6 rounded-full" />
+        </div>
+        <div className="flex-1 flex flex-row items-center gap-1">
+          <Skeleton className="w-full h-1 rounded" />
+          <Skeleton className="w-6 h-6 rounded-full" />
+        </div>
+        <div className="flex-1 flex flex-row items-center gap-1">
+          <Skeleton className="w-full h-1 rounded" />
+          <Skeleton className="w-6 h-6 rounded-full" />
+        </div>
+      </div>
+
+      {/* Food Items */}
+      <div className="flex flex-row-reverse gap-2 items-center overflow-x-auto py-2">
+        {[...Array(3)].map((_, idx) => (
+          <div
+            key={idx}
+            className="food-item w-[150px] min-w-[150px] border rounded-md flex flex-col items-center bg-white pb-1"
+          >
+            <Skeleton className="w-[140px] h-[100px] mt-1 rounded object-cover" />
+            <Skeleton className="h-4 w-24 mt-2" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+        ))}
+      </div>
+
+      {/* Action Button */}
+      <div className="mt-4 flex flex-row w-full items-center gap-2">
+        <Skeleton className="h-10 w-32 rounded-md" />
+      </div>
+    </div>
+  );
+};
+
+export const OrderCardsSkeleton = () => {
+  const skeletonItems = Array(4).fill(null);
+  return (
+    <section className="w-full max-w-[1350px] min-h-[510px] my-2 px-[5%] mx-auto">
+      <div className="w-full flex flex-row-reverse flex-wrap gap-2">
+        {skeletonItems.map((_, index) => (
+          <OrderCardSkeleton key={index} />
+        ))}
+      </div>
+    </section>
+  );
+};

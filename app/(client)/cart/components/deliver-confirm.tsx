@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { CarFront, MapPin, NotebookPen, PlusCircle } from "lucide-react";
-import {  onOpen } from "@/hooks/use-address-modal";
+import { onOpen } from "@/hooks/use-address-modal";
 import { RootState } from "@/hooks/store";
 import { useDispatch, useSelector } from "react-redux";
 import { DeleteAddress, getAddresses } from "@/services/address-service";
@@ -50,17 +50,26 @@ const DeliverConfirm = () => {
 
   const handleDeleteAddress = async (id: string) => {
     setLoading(true);
+    const loadingToastId = toast.loading("در حال پردازش"); // Show loading toast and save its ID
+
     try {
       const response = await DeleteAddress(id, token);
-      response.data.ok
-        ? toast.success(response.data.message)
-        : toast.error(response.data.message);
+
+      if (response.data.ok) {
+        toast.dismiss(loadingToastId); // Dismiss loading toast on success
+        toast.success(response.data.message);
+      } else {
+        toast.dismiss(loadingToastId); // Dismiss loading toast on error
+        toast.error(response.data.message);
+      }
+
       setOpen(false);
-      fetchAddresses();
+      fetchAddresses(); // Refresh the addresses after deletion
     } catch (error) {
-      handleError(error);
+      toast.dismiss(loadingToastId); // Dismiss loading toast on error
+      handleError(error); // Handle the error if one occurs
     } finally {
-      setLoading(false);
+      setLoading(false); // Reset the loading state
     }
   };
 

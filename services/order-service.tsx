@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { IOrder } from "@/types";
 
 interface OrderResponse {
-  data: boolean;
+  data: any;
   status: number;
   error: Record<string, null>;
   ok: boolean;

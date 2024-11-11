@@ -20,7 +20,6 @@ export default function SelectPayment() {
     const value = Number(e.target.value);
     setIsDelivery(value);
     dispatch(setDeliveryType(e.target.value));
-    console.log(isDelivery);
   };
   return (
     <section className="w-full">

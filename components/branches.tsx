@@ -13,7 +13,7 @@ export default function Branchs() {
     fetchBranches();
   }, [fetchBranches]);
 
-  if (branches?.length == 0) {
+  if (!branches) {
     return <MdBranchCardsSkeleton />;
   }
   return (

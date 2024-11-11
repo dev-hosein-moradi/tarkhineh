@@ -56,6 +56,7 @@ export default function StoreSwitcher({
     dispatch(setSelectedBranch(store.value));
   };
 
+  if(!items) return <></>
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>

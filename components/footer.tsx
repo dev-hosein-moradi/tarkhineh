@@ -17,6 +17,9 @@ export default function Footer() {
     fetchBranches();
   }, [fetchBranches]);
 
+
+  if(!branches) return <></>
+
   return (
     <div className="relative bg-blend-darken w-full h-[300px]">
       <Image

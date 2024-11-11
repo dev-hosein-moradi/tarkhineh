@@ -22,23 +22,32 @@ const BranchFoodCard: React.FC<BranchFoodCardPageProps> = ({
   const [loading, setLoading] = useState(false);
 
   const handleSubmitFoodToCart = (food: CartToOrder) => {
-    dispatch(addCustomLevel(1))
+    dispatch(addCustomLevel(1));
     dispatch(addFoodToCart(food));
   };
 
   const onClickCard = (food: IFood) => {
     setLoading(true);
+
+    const loadingToastId = toast.loading("در حال پردازش"); // Show loading toast
+
     const newFood: CartToOrder = {
       ...food,
       branchId: params?.id,
     };
+
     handleSubmitFoodToCart(newFood);
-    toast.success("آیتم مورد نظر به سبد خرید اضافه شد");
-    setLoading(false);
+
+    // Simulate asynchronous behavior to dismiss loading toast and show success message
+    setTimeout(() => {
+      toast.dismiss(loadingToastId); // Dismiss the loading toast
+      toast.success("آیتم مورد نظر به سبد خرید اضافه شد"); // Show success message
+      setLoading(false);
+    }, 500); // Adjust delay as needed (e.g., 500ms)
   };
 
-  if(!food){
-    return <BranchFoodCardWrapperSkeleton />
+  if (!food) {
+    return <BranchFoodCardWrapperSkeleton />;
   }
 
   return (

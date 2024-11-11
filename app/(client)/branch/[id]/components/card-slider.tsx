@@ -42,7 +42,7 @@ export default function FoodSlidersByType({
     return <div>Error loading foods: {error.message}</div>;
   }
 
-  if (foods?.length === 0) {
+  if (!foods) {
     return <BranchFoodCardWrapperSkeleton />;
   }
 

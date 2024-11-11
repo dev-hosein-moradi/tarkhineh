@@ -60,8 +60,6 @@ export const MainNav = ({
 
   const { branches, fetchBranches } = useBranchStore();
   const { categories, fetchCategories } = useCategoryStore();
-  // Get modal state from Redux store
-  const { isOpen } = useSelector((state: RootState) => state.auth);
   const { isAuthenticated } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
@@ -138,6 +136,8 @@ export const MainNav = ({
   //     document.removeEventListener("visibilitychange", handleVisibilityChange);
   //   };
   // }, []);
+
+  if(!branches || !categories) return <></>
 
   return (
     <div className="flex flex-row-reverse justify-between w-full">
