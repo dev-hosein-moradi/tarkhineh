@@ -18,20 +18,20 @@ export default function CartStatus() {
   };
   return (
     <div
-      className="h-auto w-[90%] mx-auto flex flex-row items-center justify-around my-4"
+      className="h-auto w-[90%] mx-auto flex flex-col gap-4 sm:gap-0 sm:flex-row items-center justify-around my-4"
       dir="rtl"
     >
       <Button
         onClick={handleCartProccess}
         variant="outline"
         size="icon"
-        className="min-w-8 ml-2 bg-white text-gray-700"
+        className="min-w-8 ml-auto sm:ml-2 bg-white text-gray-700"
       >
         <ChevronRight className="w-5 h-5 text-gray-700" />
       </Button>
 
       <div
-        className={`w-[90%] mr-auto flex flex-row items-center justify-around flex-1 lg:flex-none lg:justify-around`}
+        className={`w-[100%] sm:w-[90%] mr-auto flex flex-row items-center justify-around flex-1 lg:flex-none lg:justify-around`}
       >
         <div
           className={`flex flex-row-reverse items-center justify-center gap-2 flex-1`}

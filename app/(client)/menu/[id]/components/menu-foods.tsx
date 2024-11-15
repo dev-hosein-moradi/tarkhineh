@@ -67,7 +67,7 @@ const MenuFoodCard = ({
   return (
     <div className={`bg-white w-full max-w-[1350px] mx-auto px-[5%] py-12`}>
       <h2
-        className={` text-black text-lg ml-auto lg:text-2xl text-right font-semibold mb-4 flex flex-row-reverse justify-between`}
+        className={` text-black text-lg ml-auto lg:text-2xl text-right font-semibold mb-4 flex ${index === 0 ? "flex-row" : "flex-row-reverse"} justify-between`}
       >
         {index == 0 && (
           <Button
