@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Page403() {
   return (
     <section className="bg-white dark:bg-gray-900">
@@ -12,12 +14,12 @@ export default function Page403() {
           <p className="mb-4 text-lg font-normal text-gray-500 dark:text-gray-400">
             متأسفم شما مجوز های لازم را برای دیدن این صحفه ندارید
           </p>
-          <a
+          <Link
             href="/"
             className="inline-flex text-white bg-tint-7 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-900 my-4"
           >
             قبل از اینکه توی دردسر بیوفتی برگرد به خونه
-          </a>
+          </Link>
         </div>
       </div>
     </section>
