@@ -6,10 +6,8 @@ import { Fragment, Suspense } from "react";
 
 export default function MenuLayout({
   children,
-  params,
 }: {
   children: React.ReactNode;
-  params: { id: string };
 }) {
   return (
     <Fragment>

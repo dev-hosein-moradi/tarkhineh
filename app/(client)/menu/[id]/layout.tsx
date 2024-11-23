@@ -7,20 +7,21 @@ import { Separator } from "@/components/ui/separator";
 import { Fragment, Suspense } from "react";
 import banner from "@/public/image/banner/menu-banner.jpeg";
 
-export default function MenuLayout({
+export default async function MenuLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const resolvedParams = await params;
   return (
     <Fragment>
       <Navbar />
       <Separator />
       <NavBreadcrumb now="منو" />
       <Suspense fallback={<HeroSliderSkeleton />}>
-        <HeroSLider params={params} banner={banner.src} />
+        <HeroSLider params={resolvedParams} banner={banner.src} />
       </Suspense>
       {children}
       <Footer />

@@ -6,16 +6,15 @@ import StoreSwitcher from "@/components/store-switcher";
 import { useBranchStore } from "@/hooks/use-branch";
 import { useCategoryStore } from "@/hooks/use-category";
 import { MenuBarSkeleton } from "@/components/skeleton";
-import { use } from "react";
 
 interface MenuBarProps {
-  params: Promise<{ id: string }>; // Adjusted to reflect that params is a Promise
+  params: { id: string }; // Adjusted to reflect that params is a Promise
   onSearchChange: (query: string) => void;
 }
 
 export default function MenuBar({ params, onSearchChange }: MenuBarProps) {
   // Unwrapping `params` using `use`
-  const { id: currentParamId } = use(params);
+  const { id: currentParamId } = params;
 
   const { categories, fetchCategories } = useCategoryStore();
   const [currentMenu, setCurrentMenu] = useState(currentParamId || "");

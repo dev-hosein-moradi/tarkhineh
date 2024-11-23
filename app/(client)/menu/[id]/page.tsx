@@ -6,12 +6,12 @@ import MenuFoodByType from "./components/menu-foods";
 import { useFoods } from "@/hooks/useFoods";
 import { IFood } from "@/types";
 import { MenuFoodCardsSkeleton } from "@/components/skeleton";
+import { use } from "react";
 
-interface MenuPageProps {
-  params: { id: string };
-}
+type Params = Promise<{ id: string }>;
 
-const MenuPage: React.FC<MenuPageProps> = ({ params }) => {
+const MenuPage = (props: { params: Params }) => {
+  const params = use(props.params);
   const { foods, error } = useFoods();
   const [filteredFoods, setFilteredFoods] = useState<IFood[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -51,7 +51,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ params }) => {
     }, {});
   }, [filteredFoods]);
 
-  if(!foods) return <MenuFoodCardsSkeleton />
+  if (!foods) return <MenuFoodCardsSkeleton />;
 
   return (
     <div>

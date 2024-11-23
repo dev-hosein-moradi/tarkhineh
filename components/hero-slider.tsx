@@ -8,6 +8,7 @@ import banner from "@/public/image/banner/banner.webp";
 import { getBranchById } from "@/services/branch-service";
 import { IBranch } from "@/types";
 import { fakeBlurDataURL } from "@/lib/blurDataImage";
+import { use } from 'react';
 
 // Dynamically import the Carousel and Button components
 const Carousel = dynamic(() =>
@@ -26,11 +27,11 @@ const Button = dynamic(() =>
 const banners = [banner];
 
 interface HeroSliderProps {
-  params: { id: string };
+  params: { id: string }; // Params is already resolved before being passed here
   banner: string;
 }
 
-const HeroSlider: React.FC<HeroSliderProps> = ({ params }) => {
+const HeroSlider: React.FC<HeroSliderProps> = ({ params, banner }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [branchName, setBranchName] = useState<string | null>("ترخینه");
@@ -38,7 +39,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ params }) => {
   useEffect(() => {
     const fetchBranch = async () => {
       try {
-        // Get the full response and extract the branch data
+        // Fetch branch data using the resolved params.id
         const response = await getBranchById(params.id);
         const branchData: IBranch = response.data.data; // Extract the IBranch object
 
@@ -51,7 +52,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ params }) => {
     if (pathname?.startsWith("/branch")) {
       fetchBranch();
     }
-  }, [params, pathname, searchParams]);
+  }, [params.id, pathname, searchParams]);
 
   const bannerText = useMemo(() => {
     if (pathname?.startsWith("/branch") && branchName) {

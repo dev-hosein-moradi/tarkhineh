@@ -4,15 +4,16 @@ import FoodSlidersByType from "./components/card-slider";
 import { Suspense } from "react";
 
 interface BranchPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-const BranchPage: React.FC<BranchPageProps> = ({ params }) => {
+const BranchPage: React.FC<BranchPageProps> = async ({ params }) => {
+  const resolvedParams = await params;
   return (
     <div>
-      <FoodSlidersByType params={params} />
+      <FoodSlidersByType params={resolvedParams} />
       <Suspense fallback={<BranchReviewSkeleton />}>
-        <BranchReview params={params} />
+        <BranchReview params={resolvedParams} />
       </Suspense>
     </div>
   );
