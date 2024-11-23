@@ -8,7 +8,8 @@ const isTokenExpired = (token: string | undefined): boolean => {
     if (!token) return true;
     try {
         const decoded: any = jwt.decode(token);
-        if (decoded?.exp && Date.now() >= decoded.exp) {
+        // Convert exp (in seconds) to milliseconds
+        if (decoded?.exp && Date.now() >= decoded.exp * 1000) {
             return true;
         }
         return false;
@@ -23,13 +24,18 @@ export function middleware(request: NextRequest) {
         request.nextUrl.pathname.startsWith(route)
     );
 
+    console.log('Middleware triggered for:', request.nextUrl.pathname);
+    console.log('Token:', token);
+
     if (isProtectedRoute) {
         if (!token) {
-            return NextResponse.redirect(new URL('/403', request.url));
+            console.log('No token. Redirecting to /login.');
+            return NextResponse.redirect(new URL('/login', request.url));
         }
 
         if (isTokenExpired(token)) {
-            return NextResponse.redirect(new URL('/403', request.url));
+            console.log('Token expired. Redirecting to /login.');
+            return NextResponse.redirect(new URL('/login', request.url));
         }
     }
 
@@ -37,5 +43,12 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/track-orders/:path*', '/profile/:path*', '/settings/:path*'], // Use path matchers to apply middleware to specific routes
+    matcher: [
+        '/track-orders',
+        '/track-orders/:path*',
+        '/profile',
+        '/profile/:path*',
+        '/settings',
+        '/settings/:path*',
+    ],
 };
