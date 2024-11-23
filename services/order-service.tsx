@@ -14,7 +14,12 @@ export const getOrdersByUser = async (
 ): Promise<AxiosResponse<OrderResponse>> => {
   try {
     const res = await axios.get<OrderResponse>(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}api/orders`
+      `${process.env.NEXT_PUBLIC_SERVER_URL}api/orders`,
+      {
+        params: {
+          userId,
+        },
+      }
     );
     return res;
   } catch (error) {

@@ -11,9 +11,7 @@ import dynamic from "next/dynamic";
 import { OrderCardsSkeleton } from "@/components/skeleton";
 
 // Dynamically import FoodCard for code splitting
-const FoodCard = dynamic(() => import("./components/food-card"), {
-  suspense: true,
-});
+const FoodCard = dynamic(() => import("./components/food-card"));
 
 export default function TrackOrders() {
   const dispatch = useDispatch();

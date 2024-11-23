@@ -33,8 +33,6 @@ export const getBranchById = async (
     const res = await axios.get<BranchResponse>(
       `${process.env.NEXT_PUBLIC_SERVER_URL}api/branch/${id}`
     );
-    console.log("serv" + res);
-    
     return res;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

@@ -24,6 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { handleLogout } from "@/services/auth-service";
 
 export default function AccountDropdown() {
   const dispatch = useDispatch();
@@ -77,6 +78,7 @@ export default function AccountDropdown() {
         <DropdownMenuItem
           onClick={() => {
             dispatch(logout());
+            handleLogout();
             router.push("/");
           }}
           className="flex-row-reverse justify-between"

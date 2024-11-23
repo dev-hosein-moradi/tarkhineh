@@ -63,7 +63,7 @@ export const AddressModal = ({ id }: { id?: string }) => {
       title: "",
       reciver: true,
       reciverName: "",
-      reciverPhone: mobileNumber,
+      reciverPhone: mobileNumber || "",
       address: "",
     },
   });
@@ -213,6 +213,7 @@ export const AddressModal = ({ id }: { id?: string }) => {
                         placeholder="عنوان آدرس"
                         dir="rtl"
                         {...field}
+                        value={field.value || ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -251,6 +252,7 @@ export const AddressModal = ({ id }: { id?: string }) => {
                             placeholder="نام و نام‌خانوادگی تحویل گیرنده"
                             dir="rtl"
                             {...field}
+                            value={field.value || ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -268,6 +270,7 @@ export const AddressModal = ({ id }: { id?: string }) => {
                             placeholder="شماره همراه تحویل گیرنده"
                             dir="rtl"
                             {...field}
+                            value={field.value || ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -288,6 +291,7 @@ export const AddressModal = ({ id }: { id?: string }) => {
                         className="resize-none"
                         placeholder="آدرس دقیق شما"
                         {...field}
+                        value={field.value || ""}
                       />
                     </FormControl>
                     <FormMessage />

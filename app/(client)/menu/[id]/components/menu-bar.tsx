@@ -1,19 +1,24 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import StoreSwitcher from "@/components/store-switcher";
 import { useBranchStore } from "@/hooks/use-branch";
 import { useCategoryStore } from "@/hooks/use-category";
 import { MenuBarSkeleton } from "@/components/skeleton";
+import { use } from "react";
 
 interface MenuBarProps {
-  params: { id: string };
+  params: Promise<{ id: string }>; // Adjusted to reflect that params is a Promise
   onSearchChange: (query: string) => void;
 }
 
 export default function MenuBar({ params, onSearchChange }: MenuBarProps) {
+  // Unwrapping `params` using `use`
+  const { id: currentParamId } = use(params);
+
   const { categories, fetchCategories } = useCategoryStore();
-  const [currentMenu, setCurrentMenu] = useState("");
+  const [currentMenu, setCurrentMenu] = useState(currentParamId || "");
   const { branches, fetchBranches } = useBranchStore();
 
   useEffect(() => {
@@ -25,8 +30,8 @@ export default function MenuBar({ params, onSearchChange }: MenuBarProps) {
   }, [fetchCategories]);
 
   useEffect(() => {
-    setCurrentMenu(params.id);
-  }, [params]);
+    setCurrentMenu(currentParamId);
+  }, [currentParamId]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onSearchChange(event.target.value);

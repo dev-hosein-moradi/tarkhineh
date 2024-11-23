@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
 
 // Define the initial state
 interface User {
@@ -63,6 +64,10 @@ const userSlice = createSlice({
       state.token = "";
       state.userId = "";
       state.isAuthenticated = false;
+
+      Object.keys(Cookies.get()).forEach((cookieName) => {
+        Cookies.remove(cookieName);
+      });
     },
   },
 });
