@@ -87,7 +87,7 @@ export const AuthModal = () => {
     const data = {
       mobile: values?.mobile,
       password: values?.password,
-      __t: "user"
+      __t: "user",
     };
 
     try {
@@ -156,6 +156,7 @@ export const AuthModal = () => {
                           className="w-full"
                           dir="rtl"
                           placeholder="شماره همراه"
+                          autoComplete="off"
                           {...field}
                         />
                       </FormControl>
@@ -174,6 +175,8 @@ export const AuthModal = () => {
                           className="w-full"
                           dir="rtl"
                           placeholder="رمز عبور"
+                          autoComplete="off"
+                          type="password"
                           {...field}
                         />
                       </FormControl>
