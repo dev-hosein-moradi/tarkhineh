@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ModalProvider } from "@/providers/modal-provider";
 import { ToastProvider } from "@/providers/toast-provider";
-import { Provider } from "react-redux";
 import ReduxProvider from "@/providers/redux-provider";
 
 export const metadata: Metadata = {

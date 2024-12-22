@@ -8,7 +8,6 @@ import banner from "@/public/image/banner/banner.webp";
 import { getBranchById } from "@/services/branch-service";
 import { IBranch } from "@/types";
 import { fakeBlurDataURL } from "@/lib/blurDataImage";
-import { use } from 'react';
 
 // Dynamically import the Carousel and Button components
 const Carousel = dynamic(() =>

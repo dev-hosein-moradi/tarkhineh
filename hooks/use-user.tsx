@@ -42,12 +42,30 @@ const userSlice = createSlice({
       state.mobileNumber = mobileNumber;
       state.token = token;
       state.isAuthenticated = true;
+
+      const expirationTime = new Date(
+        new Date().getTime() + 1 * 60 * 60 * 1000
+      );
+
+      Cookies.set("accessToken", token, {
+        expires: expirationTime,
+        path: "/",
+      });
     },
     setToken: (state, action) => {
       state.token = action.payload.token;
       state.userId = action.payload.userId;
       state.mobileNumber = action.payload.mobile;
       state.isAuthenticated = true;
+
+      const expirationTime = new Date(
+        new Date().getTime() + 1 * 60 * 60 * 1000
+      );
+
+      Cookies.set("accessToken", action.payload.token, {
+        expires: expirationTime,
+        path: "/",
+      });
     },
     updateUserData: (
       state,

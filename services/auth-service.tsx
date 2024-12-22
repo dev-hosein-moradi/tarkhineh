@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios";
+import Cookies from "js-cookie";
 
 interface AuthResponse {
   data: any;
@@ -22,6 +23,9 @@ export const LoginUser = async (
       data,
       { withCredentials: true }
     );
+    
+    console.log(res.headers);
+    // Cookies.set("authToken", res.headers["authToken"]);
 
     return res;
   } catch (error) {

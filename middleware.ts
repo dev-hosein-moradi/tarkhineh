@@ -19,13 +19,11 @@ const isTokenExpired = (token: string | undefined): boolean => {
 };
 
 export function middleware(request: NextRequest) {
-    const token = request.cookies.get('authToken')?.value;
+    const token = request.cookies.get('accessToken')?.value;
+
     const isProtectedRoute = protectedRoutes.some((route) =>
         request.nextUrl.pathname.startsWith(route)
     );
-
-    console.log('Middleware triggered for:', request.nextUrl.pathname);
-    console.log('Token:', token);
 
     if (isProtectedRoute) {
         if (!token) {
