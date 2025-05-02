@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 import { BranchReviewSkeleton } from "@/components/skeleton";
 import { fakeBlurDataURL } from "@/lib/blurDataImage";
@@ -6,8 +6,12 @@ import { getBranchById } from "@/services/branch-service";
 import { IBranch } from "@/types";
 import { Clock, MapPin, Phone } from "lucide-react";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 
-export default function BranchReview({ params }: { params: { id: string } }) {
+export default function BranchReview() {
+  const params = useParams();
+  const branchId = params?.id as string;
+
   const [branch, setBranch] = useState<IBranch | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -16,7 +20,7 @@ export default function BranchReview({ params }: { params: { id: string } }) {
 
     const fetchBranch = async () => {
       try {
-        const response = await getBranchById(params.id);
+        const response = await getBranchById(branchId);
         const branchData = response.data.data; // Extract the `data` property from the response
         if (isMounted) {
           setBranch(branchData);

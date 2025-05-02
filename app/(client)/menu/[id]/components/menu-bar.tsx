@@ -6,18 +6,20 @@ import StoreSwitcher from "@/components/store-switcher";
 import { useBranchStore } from "@/hooks/use-branch";
 import { useCategoryStore } from "@/hooks/use-category";
 import { MenuBarSkeleton } from "@/components/skeleton";
+import { useParams } from "next/navigation";
 
 interface MenuBarProps {
-  params: { id: string }; // Adjusted to reflect that params is a Promise
+  // Adjusted to reflect that params is a Promise
   onSearchChange: (query: string) => void;
 }
 
-export default function MenuBar({ params, onSearchChange }: MenuBarProps) {
+export default function MenuBar({ onSearchChange }: MenuBarProps) {
   // Unwrapping `params` using `use`
-  const { id: currentParamId } = params;
+  const params = useParams();
+  const branchId = params?.id as string;
 
   const { categories, fetchCategories } = useCategoryStore();
-  const [currentMenu, setCurrentMenu] = useState(currentParamId || "");
+  const [currentMenu, setCurrentMenu] = useState(branchId || "");
   const { branches, fetchBranches } = useBranchStore();
 
   useEffect(() => {
@@ -29,8 +31,8 @@ export default function MenuBar({ params, onSearchChange }: MenuBarProps) {
   }, [fetchCategories]);
 
   useEffect(() => {
-    setCurrentMenu(currentParamId);
-  }, [currentParamId]);
+    setCurrentMenu(branchId);
+  }, [branchId]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onSearchChange(event.target.value);

@@ -10,16 +10,19 @@ import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux"; // Use Redux hooks
 import { addCustomLevel, addFoodToCart, CartToOrder } from "@/hooks/use-cart"; // Import the action from Redux
 import { RootState } from "@/hooks/store";
+import { useParams } from "next/navigation";
 
 interface FoodCardProps {
   food: IFood;
-  params: { id: string };
 }
 
-const FoodCard: React.FC<FoodCardProps> = ({ food, params }) => {
+const FoodCard: React.FC<FoodCardProps> = ({ food }) => {
   const { selectedBranch } = useSelector((state: RootState) => state.cart);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+
+  const params = useParams();
+  const branchId = params?.id as string;
 
   const handleSubmitFoodToCart = (food: CartToOrder) => {
     dispatch(addCustomLevel(1));

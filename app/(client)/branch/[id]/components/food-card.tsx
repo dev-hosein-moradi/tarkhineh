@@ -9,17 +9,19 @@ import { toast } from "sonner";
 import { addCustomLevel, addFoodToCart, CartToOrder } from "@/hooks/use-cart";
 import { BranchFoodCardWrapperSkeleton } from "@/components/skeleton";
 
+import { useParams } from "next/navigation";
+
 interface BranchFoodCardPageProps {
   params: { id: string };
   food: IFood;
 }
 
-const BranchFoodCard: React.FC<BranchFoodCardPageProps> = ({
-  food,
-  params,
-}) => {
+const BranchFoodCard: React.FC<BranchFoodCardPageProps> = ({ food }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+
+  const params = useParams();
+  const branchId = params?.id as string;
 
   const handleSubmitFoodToCart = (food: CartToOrder) => {
     dispatch(addCustomLevel(1));
@@ -33,7 +35,7 @@ const BranchFoodCard: React.FC<BranchFoodCardPageProps> = ({
 
     const newFood: CartToOrder = {
       ...food,
-      branchId: params?.id,
+      branchId,
     };
 
     handleSubmitFoodToCart(newFood);

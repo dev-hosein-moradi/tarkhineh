@@ -17,13 +17,13 @@ import { Button } from "@/components/ui/button";
 import { useDispatch } from "react-redux";
 import { clearCart } from "@/hooks/use-cart";
 
-export default function FoodSlidersByType({
-  params,
-}: {
-  params: { id: string };
-}) {
+import { useParams } from "next/navigation";
+
+export default function FoodSlidersByType() {
   const dispatch = useDispatch();
   const { foods, error } = useFoods();
+
+  const params = useParams();
 
   useEffect(() => {
     dispatch(clearCart());
@@ -85,7 +85,7 @@ const CardSlider = ({
   type: string;
   foods: IFood[];
   index: number;
-  params: { id: string };
+  params: any;
 }) => {
   const label = typeLabels[type] || "سایر غذاها";
   return (

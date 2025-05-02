@@ -4,7 +4,7 @@ import { BranchFoodCardWrapperSkeleton } from "@/components/skeleton";
 import { IFood } from "@/types";
 import { Button } from "@/components/ui/button";
 import FoodCard from "./food-card";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 interface MenuFoodByTypeProps {
   foodsByType: Record<string, IFood[]>;
@@ -15,7 +15,6 @@ interface MenuFoodByTypeProps {
 export default function MenuFoodByType({
   foodsByType,
   error,
-  params,
 }: MenuFoodByTypeProps) {
   if (!foodsByType) {
     return <></>;
@@ -24,6 +23,8 @@ export default function MenuFoodByType({
   if (error) {
     return <div>Error loading foods: {error.message}</div>;
   }
+
+  const params = useParams();
 
   return (
     <div>
@@ -58,7 +59,7 @@ const MenuFoodCard = ({
   type: string;
   foods: IFood[];
   index: number;
-  params: { id: string };
+  params: any;
 }) => {
   const router = useRouter();
   const label = typeLabels[type] || "سایر غذاها";
@@ -67,7 +68,9 @@ const MenuFoodCard = ({
   return (
     <div className={`bg-white w-full max-w-[1350px] mx-auto px-[5%] py-12`}>
       <h2
-        className={` text-black text-lg ml-auto lg:text-2xl text-right font-semibold mb-4 flex ${index === 0 ? "flex-row" : "flex-row-reverse"} justify-between`}
+        className={` text-black text-lg ml-auto lg:text-2xl text-right font-semibold mb-4 flex ${
+          index === 0 ? "flex-row" : "flex-row-reverse"
+        } justify-between`}
       >
         {index == 0 && (
           <Button
