@@ -9,13 +9,14 @@ import { useParams, useRouter } from "next/navigation";
 interface MenuFoodByTypeProps {
   foodsByType: Record<string, IFood[]>;
   error: Error | null;
-  params: { id: string };
 }
 
 export default function MenuFoodByType({
   foodsByType,
   error,
 }: MenuFoodByTypeProps) {
+  const params = useParams();
+
   if (!foodsByType) {
     return <></>;
   }
@@ -24,7 +25,6 @@ export default function MenuFoodByType({
     return <div>Error loading foods: {error.message}</div>;
   }
 
-  const params = useParams();
 
   return (
     <div>
@@ -86,7 +86,7 @@ const MenuFoodCard = ({
       </h2>
       <div className="flex flex-wrap flex-row justify-end gap-1">
         {foods.map((food) => (
-          <FoodCard key={food.id} food={food} params={params} />
+          <FoodCard key={food.id} food={food} />
         ))}
       </div>
     </div>

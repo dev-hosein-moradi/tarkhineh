@@ -11,9 +11,9 @@ const BranchPage: React.FC<BranchPageProps> = async ({ params }) => {
   const resolvedParams = await params;
   return (
     <div>
-      <FoodSlidersByType params={resolvedParams} />
+      <FoodSlidersByType />
       <Suspense fallback={<BranchReviewSkeleton />}>
-        <BranchReview params={resolvedParams} />
+        <BranchReview  />
       </Suspense>
     </div>
   );
