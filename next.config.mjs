@@ -13,7 +13,7 @@ const nextConfig = bundleAnalyzer({
   },
 
   // Enable JavaScript minification with SWC
-  swcMinify: true,
+  // swcMinify: true,
 
   // Enable experimental CSS optimization
   experimental: {
