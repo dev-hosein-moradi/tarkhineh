@@ -55,12 +55,9 @@ const MenuPage = (props: { params: Params }) => {
 
   return (
     <div>
-      <MenuBar  onSearchChange={handleSearchChange} />
+      <MenuBar onSearchChange={handleSearchChange} />
       <FilterBar onFilterChange={handleFilterChange} />
-      <MenuFoodByType
-        foodsByType={filteredFoodsByType}
-        error={error}
-      />
+      <MenuFoodByType foodsByType={filteredFoodsByType} error={error} />
     </div>
   );
 };

@@ -137,7 +137,7 @@ export const MainNav = ({
   //   };
   // }, []);
 
-  if(!branches || !categories) return <></>
+  if (!branches || !categories) return <></>;
 
   return (
     <div className="flex flex-row-reverse justify-between w-full">

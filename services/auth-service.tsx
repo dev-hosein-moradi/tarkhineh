@@ -19,11 +19,11 @@ export const LoginUser = async (
 ): Promise<AxiosResponse<AuthResponse>> => {
   try {
     const res = await axios.post<AuthResponse>(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}login`,
+      `${process.env.NEXT_PUBLIC_SERVER_URL}api/login`,
       data,
       { withCredentials: true }
     );
-    
+
     console.log(res.headers);
     // Cookies.set("authToken", res.headers["authToken"]);
 
@@ -43,7 +43,7 @@ export const RegisterUser = async (
 ): Promise<AxiosResponse<AuthResponse>> => {
   try {
     const res = await axios.post<AuthResponse>(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}register`,
+      `${process.env.NEXT_PUBLIC_SERVER_URL}api/register`,
       data
     );
 

@@ -19,7 +19,7 @@ export default function Page({ params }: { params: any }) {
       <SearchWrapper />
       <CategoryWrapper />
       <QuickAbout />
-      <BranchsWrapper />
+      <BranchsWrapper />.
       <Footer />
     </div>
   );
