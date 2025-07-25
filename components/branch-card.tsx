@@ -49,7 +49,7 @@ export function MdBrnach({
       <Image
         className="w-[160px] h-[100px] object-cover rounded-r-md lg:w-[228px] lg:h-[230px] lg:rounded-t-md lg:group-hover:h-[190px] transition-all duration-500 bg-gray-100 group-hover:brightness-50"
         alt={data.name}
-        src={data.image}
+        src={data?.image}
         width={228}
         height={230}
         quality={100}

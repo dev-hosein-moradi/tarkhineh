@@ -78,6 +78,8 @@ export const MainNav = ({
     if (branches?.length !== 0 && categories?.length !== 0) {
       setLoading(false);
     }
+
+    console.log(branches);
   }, [branches, categories]);
 
   const renderBranches = useCallback(

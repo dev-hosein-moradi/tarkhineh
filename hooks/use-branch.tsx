@@ -17,7 +17,7 @@ export const useBranchStore = create<{
   fetchBranches: async () => {
     try {
       const branches = await getBranchs();
-      set({ branches });
+      set({ branches: branches || [] });
     } catch (error) {
       console.error("Failed to fetch branches in hook", error);
     }

@@ -1,92 +1,83 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import BranchTable from "./components/branch-table";
-import BranchForm from "./components/branch-form";
 import { AlertModal } from "@/components/modals/alert-modal";
-
-type Branch = {
-  name: string;
-  title: string;
-  ownerFullName: string;
-  tel?: string[];
-  address: string;
-  // Add other fields as needed
-};
+import { deleteBranch } from "@/services/branch-service";
+import { toast } from "sonner";
+import { IBranch } from "@/types";
 
 export default function BranchPage() {
-  const [open, setOpen] = useState(false);
-  const [editBranch, setEditBranch] = useState<Branch | null>(null);
-  const [viewBranch, setViewBranch] = useState<Branch | null>(null);
-  const [viewOpen, setViewOpen] = useState(false);
-  const [deleteBranch, setDeleteBranch] = useState<Branch | null>(null);
+  const router = useRouter();
+  const [deleteBranchData, setDeleteBranchData] = useState<IBranch | null>(
+    null
+  );
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const tableRef = useRef<any>(null);
 
-  // Dummy delete function
-  const handleDeleteConfirm = () => {
-    // TODO: Call API to delete branch
-    // Refresh table after delete
-    setDeleteOpen(false);
-    setDeleteBranch(null);
-    // You can show a toast here if needed
+  const handleDeleteConfirm = async () => {
+    if (!deleteBranchData?.id) return;
+
+    setDeleteLoading(true);
+    try {
+      await deleteBranch(deleteBranchData.id);
+      toast.success("شعبه با موفقیت حذف شد");
+      setDeleteOpen(false);
+      setDeleteBranchData(null);
+      // Refresh the table after successful delete
+      if (tableRef.current?.refreshTable) {
+        tableRef.current.refreshTable();
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("خطا در حذف شعبه");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleAddBranch = () => {
+    router.push("/admin/branch/form");
+  };
+
+  const handleEditBranch = (branch: IBranch) => {
+    router.push(`/admin/branch/form?id=${branch.id}`);
   };
 
   return (
     <div className="flex flex-col items-center justify-between py-[16px] px-[5%] relative max-w-[1350px] mx-auto">
       <div className="w-full flex flex-row-reverse justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">شعبه ها</h1>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-main" onClick={() => setEditBranch(null)}>
-              افزودن شعبه
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogTitle className="ml-auto">شعبه</DialogTitle>
-            <BranchForm branch={editBranch} onSuccess={() => setOpen(false)} />
-          </DialogContent>
-        </Dialog>
+        <Button className="bg-main" onClick={handleAddBranch}>
+          افزودن شعبه
+        </Button>
       </div>
+
       <BranchTable
-        onEdit={(branch) => {
-          setEditBranch(branch);
-          setOpen(true);
-        }}
+        ref={tableRef}
+        onEdit={handleEditBranch}
         onDelete={(branch) => {
-          setDeleteBranch(branch);
+          setDeleteBranchData(branch);
           setDeleteOpen(true);
         }}
         onView={(branch) => {
-          setViewBranch(branch);
-          setViewOpen(true);
+          // You can navigate to a view page or show details inline
+          console.log("View branch:", branch);
+          // For now, let's just show branch details in a toast
+          toast.info(`مشاهده شعبه: ${branch.name}`);
         }}
       />
-      <Dialog open={viewOpen} onOpenChange={setViewOpen}>
-        <DialogContent>
-          <DialogTitle>مشاهده شعبه</DialogTitle>
-          {viewBranch && (
-            <div>
-              <h2 className="text-xl font-bold mb-2">{viewBranch.name}</h2>
-              <p>عنوان: {viewBranch.title}</p>
-              <p>مالک: {viewBranch.ownerFullName}</p>
-              <p>تلفن: {viewBranch.tel?.join(", ")}</p>
-              <p>آدرس: {viewBranch.address}</p>
-              {/* Add more fields as needed */}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+
       <AlertModal
         isOpen={deleteOpen}
-        onClose={() => setDeleteOpen(false)}
+        onClose={() => {
+          setDeleteOpen(false);
+          setDeleteBranchData(null);
+        }}
         onConfirm={handleDeleteConfirm}
-        loading={false}
+        loading={deleteLoading}
       />
     </div>
   );
