@@ -4,7 +4,7 @@ import Logo from "@/public/image/Logo.svg";
 import { MainNav } from "./main-nav";
 import Link from "next/link";
 
-const Navbar = async () => {
+const Navbar = () => {
   return (
     <header className="flex flex-row items-center justify-between py-[16px] px-[5%] relative max-w-[1350px] mx-auto">
       <MainNav />

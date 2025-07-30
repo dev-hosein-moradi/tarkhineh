@@ -58,28 +58,36 @@ export const MainNav = ({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const { branches, fetchBranches } = useBranchStore();
-  const { categories, fetchCategories } = useCategoryStore();
+  const {
+    branches,
+    fetchBranches,
+    loading: branchesLoading,
+    error: branchesError,
+  } = useBranchStore();
+  const {
+    categories,
+    fetchCategories,
+    loading: categoriesLoading,
+    error: categoriesError,
+  } = useCategoryStore();
   const { isAuthenticated } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     fetchCategories().catch((e) => {
       toast.error(`دریافت دسته بندی ها با مشکل مواجه شد`);
     });
-  }, [fetchCategories]);
+  }, []);
 
   useEffect(() => {
     fetchBranches().catch((e) => {
       toast.error(`دریافت شعبه ها با مشکل مواجه شد`);
     });
-  }, [fetchBranches]);
+  }, []);
 
   useEffect(() => {
     if (branches?.length !== 0 && categories?.length !== 0) {
       setLoading(false);
     }
-
-    console.log(branches);
   }, [branches, categories]);
 
   const renderBranches = useCallback(
@@ -159,10 +167,10 @@ export const MainNav = ({
               <ChevronDown className="w-4 h-4" /> شعبه
             </p>
             <ul className="flex-col text-right bg-white rounded-md hidden group-hover:flex absolute -right-10 h-[180px] w-[200px] p-2 z-10 shadow-md border">
-              {loading ? (
+              {branchesLoading ? (
                 <SmBranchCardsSkeleton />
-              ) : error ? (
-                <p className="text-red-500 p-2">{error}</p>
+              ) : branchesError ? (
+                <p className="text-red-500 p-2">{branchesError}</p>
               ) : (
                 renderBranches()
               )}
@@ -175,10 +183,10 @@ export const MainNav = ({
               <ChevronDown className="w-4 h-4" /> منو
             </p>
             <ul className="flex-col text-right bg-white rounded-md hidden group-hover:flex absolute -right-10 h-[180px] w-[200px] p-2 z-10 shadow-md border">
-              {loading ? (
+              {categoriesLoading ? (
                 <SmBranchCardsSkeleton />
-              ) : error ? (
-                <p className="text-red-500 p-2">{error}</p>
+              ) : categoriesError ? (
+                <p className="text-red-500 p-2">{categoriesError}</p>
               ) : (
                 renderMenu()
               )}
@@ -277,10 +285,10 @@ export const MainNav = ({
               <SelectValue placeholder="شعبه" />
             </SelectTrigger>
             <SelectContent dir="rtl">
-              {loading ? (
+              {branchesLoading ? (
                 <SmBranchCardsSkeleton />
-              ) : error ? (
-                <p className="text-red-500 p-2">{error}</p>
+              ) : branchesError ? (
+                <p className="text-red-500 p-2">{branchesError}</p>
               ) : (
                 branches?.map((branch) => (
                   <Link
@@ -293,43 +301,43 @@ export const MainNav = ({
                 ))
               )}
             </SelectContent>
+
+            {/* Menu Select */}
+            <Select>
+              <SelectTrigger className="w-full text-right my-1" dir="rtl">
+                <SelectValue placeholder="منو" />
+              </SelectTrigger>
+              <SelectContent dir="rtl" className="flex flex-col">
+                {categoriesLoading ? (
+                  <SmBranchCardsSkeleton />
+                ) : categoriesError ? (
+                  <p className="text-red-500 p-2">{categoriesError}</p>
+                ) : (
+                  categories?.map((category) => (
+                    <Link
+                      key={category.id}
+                      href={`/menu/${category.id}`}
+                      className="hover:text-main duration-150 block py-1 px-4"
+                    >
+                      {category.name}
+                    </Link>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+
+            <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full">
+              اعطای نمایندگی
+            </li>
+
+            <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full">
+              درباره ما
+            </li>
+
+            <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full">
+              تماس با ما
+            </li>
           </Select>
-
-          {/* Menu Select */}
-          <Select>
-            <SelectTrigger className="w-full text-right my-1" dir="rtl">
-              <SelectValue placeholder="منو" />
-            </SelectTrigger>
-            <SelectContent dir="rtl" className="flex flex-col">
-              {loading ? (
-                <SmBranchCardsSkeleton />
-              ) : error ? (
-                <p className="text-red-500 p-2">{error}</p>
-              ) : (
-                categories?.map((category) => (
-                  <Link
-                    key={category.id}
-                    href={`/menu/${category.id}`}
-                    className="hover:text-main duration-150 block py-1 px-4"
-                  >
-                    {category.name}
-                  </Link>
-                ))
-              )}
-            </SelectContent>
-          </Select>
-
-          <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full">
-            اعطای نمایندگی
-          </li>
-
-          <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full">
-            درباره ما
-          </li>
-
-          <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full">
-            تماس با ما
-          </li>
         </ul>
       </div>
     </div>

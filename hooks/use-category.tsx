@@ -1,41 +1,29 @@
-import { getCategories } from "@/services/category-service";
-import { ICategory } from "@/types";
 import { create } from "zustand";
+import { getCategories } from "@/services/category-service"; // Update with your service
+import { ICategory } from "@/types";
 
-// Define the state and actions for the store
-export const useCategoryStore = create<{
-  categories: ICategory[];
+interface CategoryStore {
+  categories: ICategory[] | null;
+  loading: boolean;
+  error: string | null;
   fetchCategories: () => Promise<void>;
-  setCategories: (categories: ICategory[]) => void;
-  addCategory: (category: ICategory) => void;
-  updateCategory: (id: string, updateCategory: Partial<ICategory>) => void;
-  removeCategory: (id: string) => void;
-}>((set) => ({
-  categories: [],
+}
+
+export const useCategoryStore = create<CategoryStore>((set, get) => ({
+  categories: null,
+  loading: false,
+  error: null,
 
   fetchCategories: async () => {
+    // Prevent multiple simultaneous calls
+    if (get().loading) return;
+
+    set({ loading: true, error: null });
     try {
-      const categories = await getCategories();
-      set({ categories });
+      const data = await getCategories();
+      set({ categories: data, loading: false });
     } catch (error) {
-      console.error("Failed to fetch categories in hook", error);
+      set({ error: "خطا در دریافت دسته‌بندی‌ها", loading: false });
     }
   },
-
-  setCategories: (categories) => set(() => ({ categories })),
-
-  addCategory: (category) =>
-    set((state) => ({ categories: [...state.categories, category] })),
-
-  updateCategory: (id, updateCategory) =>
-    set((state) => ({
-      categories: state.categories.map((category) =>
-        category.id === id ? { ...category, ...updateCategory } : category
-      ),
-    })),
-
-  removeCategory: (id) =>
-    set((state) => ({
-      categories: state.categories.filter((category) => category.id !== id),
-    })),
 }));

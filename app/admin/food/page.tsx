@@ -2,74 +2,72 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import BranchTable from "./components/branch-table";
+import FoodTable from "./components/food-table";
 import { AlertModal } from "@/components/modals/alert-modal";
-import { deleteBranch } from "@/services/branch-service";
+import { deleteFood } from "@/services/food-service";
 import { toast } from "sonner";
-import { IBranch } from "@/types";
+import { IFood } from "@/types";
 
 // Define the ref type
-interface BranchTableRef {
+interface FoodTableRef {
   refreshTable: () => void;
 }
 
-export default function BranchPage() {
+export default function FoodPage() {
   const router = useRouter();
-  const [deleteBranchData, setDeleteBranchData] = useState<IBranch | null>(
-    null
-  );
+  const [deleteFoodData, setDeleteFoodData] = useState<IFood | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const tableRef = useRef<BranchTableRef>(null);
+  const tableRef = useRef<FoodTableRef>(null);
 
   const handleDeleteConfirm = () => {
-    if (!deleteBranchData?.id) return;
+    if (!deleteFoodData?.id) return;
 
     setDeleteLoading(true);
-    deleteBranch(deleteBranchData.id)
+    deleteFood(deleteFoodData.id)
       .then(() => {
-        toast.success("شعبه با موفقیت حذف شد");
+        toast.success("غذا با موفقیت حذف شد");
         setDeleteOpen(false);
-        setDeleteBranchData(null);
+        setDeleteFoodData(null);
         tableRef.current?.refreshTable();
       })
       .catch((error) => {
         console.error("Delete error:", error);
-        toast.error("خطا در حذف شعبه");
+        toast.error("خطا در حذف غذا");
       })
       .finally(() => {
         setDeleteLoading(false);
       });
   };
 
-  const handleAddBranch = () => {
-    router.push("/admin/branch/form");
+  const handleAddFood = () => {
+    router.push("/admin/food/form");
   };
 
-  const handleEditBranch = (branch: IBranch) => {
-    router.push(`/admin/branch/form?id=${branch.id}`);
+  const handleEditFood = (food: IFood) => {
+    router.push(`/admin/food/form?id=${food.id}`);
   };
 
   return (
     <div className="max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">مدیریت شعبه‌ها</h1>
-        <Button className="bg-main" onClick={handleAddBranch}>
-          افزودن شعبه جدید
+        <h1 className="text-2xl font-bold">غذاها</h1>
+        <Button className="bg-main" onClick={handleAddFood}>
+          افزودن غذا
         </Button>
       </div>
 
       <div className="bg-white rounded-lg shadow">
-        <BranchTable
+        <FoodTable
           ref={tableRef}
-          onEdit={handleEditBranch}
-          onDelete={(branch) => {
-            setDeleteBranchData(branch);
+          onEdit={handleEditFood}
+          onDelete={(food) => {
+            setDeleteFoodData(food);
             setDeleteOpen(true);
           }}
-          onView={(branch) => {
-            console.log("View branch:", branch);
-            toast.info(`مشاهده شعبه: ${branch.name}`);
+          onView={(food) => {
+            console.log("View food:", food);
+            toast.info(`مشاهده غذا: ${food.name}`);
           }}
         />
       </div>
@@ -78,7 +76,7 @@ export default function BranchPage() {
         isOpen={deleteOpen}
         onClose={() => {
           setDeleteOpen(false);
-          setDeleteBranchData(null);
+          setDeleteFoodData(null);
         }}
         onConfirm={handleDeleteConfirm}
         loading={deleteLoading}
