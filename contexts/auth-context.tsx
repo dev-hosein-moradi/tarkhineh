@@ -218,7 +218,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             ) {
               window.location.href = "/admin";
             } else {
-              window.location.href = "/profile";
+              window.location.href = "/";
             }
           }
         }, 100);

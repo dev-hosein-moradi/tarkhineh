@@ -3,16 +3,16 @@ import type { NextRequest } from 'next/server';
 
 // Security Configuration
 const SECURITY_CONFIG = {
-    // Content Security Policy
+    // Content Security Policy - Updated for Cloudinary
     CSP_HEADER: `
     default-src 'self';
-    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live;
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://upload-widget.cloudinary.com https://widget.cloudinary.com https://cloudinary.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://upload-widget.cloudinary.com;
     font-src 'self' https://fonts.gstatic.com;
-    img-src 'self' data: https: blob:;
-    media-src 'self' https:;
-    connect-src 'self' ${process.env.NEXT_PUBLIC_SERVER_URL} https://vercel.live wss://ws-us3.pusher.com;
-    frame-src 'none';
+    img-src 'self' data: https: blob: https://res.cloudinary.com https://cloudinary.com;
+    media-src 'self' https: https://res.cloudinary.com;
+    connect-src 'self' ${process.env.NEXT_PUBLIC_SERVER_URL} https://vercel.live wss://ws-us3.pusher.com https://api.cloudinary.com https://upload-widget.cloudinary.com https://widget.cloudinary.com https://res.cloudinary.com;
+    frame-src 'self' https://upload-widget.cloudinary.com https://widget.cloudinary.com;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
@@ -21,19 +21,20 @@ const SECURITY_CONFIG = {
 
     // Rate limiting configuration
     RATE_LIMIT: {
-        AUTH_ATTEMPTS: 5,      // Max login attempts per IP
-        API_REQUESTS: 100,     // Max API requests per minute per IP
-        TIME_WINDOW: 60 * 1000, // 1 minute in milliseconds
+        AUTH_ATTEMPTS: 5,
+        API_REQUESTS: 100,
+        TIME_WINDOW: 60 * 1000,
     },
 
-    // Security headers
+    // Security headers - Updated for Cloudinary
     SECURITY_HEADERS: {
         'X-DNS-Prefetch-Control': 'off',
         'X-Frame-Options': 'DENY',
         'X-Content-Type-Options': 'nosniff',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'X-XSS-Protection': '1; mode=block',
-        'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+        // Updated Permissions Policy to allow camera for Cloudinary
+        'Permissions-Policy': 'camera=(self "https://upload-widget.cloudinary.com" "https://widget.cloudinary.com"), microphone=(), geolocation=()',
         'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
     }
 };
@@ -458,15 +459,5 @@ export function middleware(request: NextRequest) {
 
 // Middleware Configuration
 export const config = {
-    matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         * - public folder files
-         * - static assets
-         */
-        '/((?!_next/static|_next/image|favicon.ico|public|images|icons|Logo.svg|.*\\.svg|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.ico|.*\\.css|.*\\.js|\\.well-known).*)',
-    ],
+    matcher: '/((?!api|_next/static|_next/image|favicon.ico).*)',
 };

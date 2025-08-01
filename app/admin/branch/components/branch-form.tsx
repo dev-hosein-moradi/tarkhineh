@@ -1,333 +1,510 @@
 "use client";
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Upload, X, Image as ImageIcon, Camera, RefreshCw } from "lucide-react";
+import { IBranch } from "@/types";
 import { createBranch, updateBranch } from "@/services/branch-service";
 import { toast } from "sonner";
-import NextCloudinaryUploader from "@/components/NextCloudinaryUploader";
-import type { CloudinaryUploadWidgetResults } from "next-cloudinary";
 
-type BranchFormProps = {
-  branch?: any;
+interface BranchFormProps {
+  branch?: IBranch | null;
   onSuccess: () => void;
-};
+  isEditing?: boolean;
+}
 
-export default function BranchForm({ branch, onSuccess }: BranchFormProps) {
-  console.log(branch);
+export default function BranchForm({
+  branch,
+  onSuccess,
+  isEditing = false,
+}: BranchFormProps) {
+  const [formData, setFormData] = useState({
+    name: "",
+    title: "",
+    address: "",
+    ownerFullName: "",
+    ownerPhone: "",
+    tel: [""],
+    kitchen: false,
+    parking: false,
+    store: false,
+    image: "", // Single image instead of array
+  });
 
-  const [form, setForm] = useState(
-    branch || {
-      name: "",
-      title: "",
-      address: "",
-      ownerFullName: "",
-      ownerNatCode: "",
-      ownerPhone: "",
-      ownerState: "",
-      ownerCity: "",
-      ownerRegion: "",
-      ownerAddress: "",
-      ownerType: "",
-      placeArea: "",
-      placeAge: "",
-      verification: false,
-      kitchen: false,
-      parking: false,
-      store: false,
-      image: "",
-      workTime: "",
-      tel: [],
-    }
-  );
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
-  function handleChange(e: any) {
-    const { name, value, type, checked } = e.target;
-    setForm((prev: any) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  }
+  // Load branch data when editing
+  useEffect(() => {
+    if (branch) {
+      console.log("Loading branch data:", branch);
 
-  const handleImageUploadSuccess = (result: CloudinaryUploadWidgetResults) => {
-    if (
-      result.info &&
-      typeof result.info === "object" &&
-      "secure_url" in result.info
-    ) {
-      setForm((prev: any) => ({
-        ...prev,
-        image: (result.info as any).secure_url,
-      }));
-      toast.success("تصویر با موفقیت آپلود شد.");
+      setFormData({
+        name: branch.name || "",
+        title: branch.title || "",
+        address: branch.address || "",
+        ownerFullName: branch.ownerFullName || "",
+        ownerPhone: branch.ownerPhone || "",
+        tel: branch.tel && branch.tel.length > 0 ? branch.tel : [""],
+        kitchen: branch.kitchen || false,
+        parking: branch.parking || false,
+        store: branch.store || false,
+        // Better image extraction logic
+        image: branch.images?.[0] || branch.mainImage || "",
+      });
+
+      console.log("Branch image data:", {
+        images: branch.images,
+        mainImage: branch.mainImage,
+        selectedImage: branch.images?.[0] || branch.mainImage || "",
+      });
     }
-  };
+  }, [branch]); // Only depend on branch, not isEditing
 
-  const handleImageUploadError = (error: any) => {
-    toast.error("خطا در آپلود تصویر: " + error.message);
-  };
-
-  async function handleSubmit(e: any) {
-    e.preventDefault();
-    setLoading(true);
+  const handleImageUpload = async () => {
     try {
-      if (branch && branch.id) {
-        await updateBranch(branch.id, form);
-        toast.success("شعبه با موفقیت ویرایش شد.");
-      } else {
-        await createBranch(form);
-        toast.success("شعبه جدید با موفقیت ثبت شد.");
+      setUploadingImage(true);
+
+      // Check if Cloudinary script is loaded
+      if (typeof window === "undefined" || !(window as any).cloudinary) {
+        // Try to load Cloudinary script dynamically
+        await loadCloudinaryScript();
       }
-      onSuccess();
-    } catch (err) {
-      toast.error("مشکلی در ثبت یا ویرایش شعبه رخ داد.");
+
+      if (!(window as any).cloudinary) {
+        toast.error("ابزار آپلود در دسترس نیست");
+        setUploadingImage(false);
+        return;
+      }
+
+      console.log("Opening Cloudinary widget...");
+
+      // Configure Cloudinary upload widget
+      const widget = (window as any).cloudinary.createUploadWidget(
+        {
+          cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+          uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
+          multiple: false,
+          maxFiles: 1,
+          resourceType: "image",
+          clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
+          maxFileSize: 5000000, // 5MB
+          transformation: [
+            { width: 800, height: 600, crop: "fill", quality: "auto" },
+          ],
+          sources: ["local", "url", "camera"], // Enable camera option
+        },
+        (error: any, result: any) => {
+          console.log("Cloudinary callback:", { error, result });
+
+          if (error) {
+            console.error("Upload error:", error);
+            toast.error(
+              `خطا در آپلود تصویر: ${error.message || "Unknown error"}`
+            );
+            setUploadingImage(false);
+            return;
+          }
+
+          if (result.event === "success") {
+            const newImageUrl = result.info.secure_url;
+            console.log("Image uploaded successfully:", newImageUrl);
+
+            // Replace the existing image
+            setFormData((prev) => ({
+              ...prev,
+              image: newImageUrl,
+            }));
+
+            toast.success("تصویر با موفقیت آپلود شد");
+          }
+
+          if (result.event === "close") {
+            setUploadingImage(false);
+          }
+        }
+      );
+
+      widget.open();
+    } catch (error) {
+      console.error("Widget error:", error);
+      toast.error("خطا در باز کردن ابزار آپلود");
+      setUploadingImage(false);
     }
-    setLoading(false);
-  }
+  };
+
+  // Add this helper function to load Cloudinary script dynamically
+  const loadCloudinaryScript = (): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      if ((window as any).cloudinary) {
+        resolve();
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = "https://upload-widget.cloudinary.com/global/all.js";
+      script.async = true;
+      script.onload = () => {
+        console.log("Cloudinary script loaded");
+        resolve();
+      };
+      script.onerror = () => {
+        console.error("Failed to load Cloudinary script");
+        reject(new Error("Failed to load Cloudinary script"));
+      };
+      document.head.appendChild(script);
+    });
+  };
+
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({
+      ...prev,
+      image: "",
+    }));
+    toast.success("تصویر حذف شد");
+  };
+
+  const handleTelChange = (index: number, value: string) => {
+    setFormData((prev) => {
+      const newTel = [...prev.tel];
+      newTel[index] = value;
+      return { ...prev, tel: newTel };
+    });
+  };
+
+  const addTelField = () => {
+    setFormData((prev) => ({
+      ...prev,
+      tel: [...prev.tel, ""],
+    }));
+  };
+
+  const removeTelField = (index: number) => {
+    if (formData.tel.length > 1) {
+      setFormData((prev) => ({
+        ...prev,
+        tel: prev.tel.filter((_, i) => i !== index),
+      }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.name.trim() || !formData.address.trim()) {
+      toast.error("نام شعبه و آدرس الزامی است");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Clean and prepare the data
+      const submitData = {
+        name: formData.name.trim(),
+        title: formData.title.trim(),
+        address: formData.address.trim(),
+        ownerFullName: formData.ownerFullName.trim(),
+        ownerPhone: formData.ownerPhone.trim(),
+        tel: formData.tel.filter((t) => t.trim() !== ""),
+        kitchen: Boolean(formData.kitchen),
+        parking: Boolean(formData.parking),
+        store: Boolean(formData.store),
+        // Only include image fields if there's an image
+        ...(formData.image && {
+          images: [formData.image],
+          mainImage: formData.image,
+        }),
+      };
+
+      console.log("Form submission data:", {
+        isEditing,
+        branchId: branch?.id,
+        submitData,
+        originalFormData: formData,
+      });
+
+      if (isEditing && branch?.id) {
+        await updateBranch(branch.id, submitData);
+        toast.success("شعبه با موفقیت ویرایش شد");
+      } else {
+        await createBranch(submitData);
+        toast.success("شعبه با موفقیت ایجاد شد");
+      }
+
+      onSuccess();
+    } catch (error: any) {
+      console.error("Submit error:", error);
+      toast.error(error.message || "خطا در ذخیره اطلاعات");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <form
-      className="space-y-6 text-right" // Removed max-height and overflow
-      dir="rtl"
-      onSubmit={handleSubmit}
-    >
-      {/* Basic Information Section */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold border-b pb-2">اطلاعات پایه</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            placeholder="نام شعبه"
-            required
-          />
-          <Input
-            name="title"
-            value={form.title}
-            onChange={handleChange}
-            placeholder="عنوان شعبه"
-            required
-          />
-        </div>
-        <Input
-          name="address"
-          value={form.address}
-          onChange={handleChange}
-          placeholder="آدرس شعبه"
-          required
-        />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            name="tel1"
-            value={form?.tel[0] || ""}
-            onChange={(e) =>
-              setForm((prev: any) => ({
-                ...prev,
-                tel: [e.target.value, prev.tel[1] || ""],
-              }))
-            }
-            placeholder="تلفن ۱"
-            required
-          />
-          <Input
-            name="tel2"
-            value={form?.tel[1] || ""}
-            onChange={(e) =>
-              setForm((prev: any) => ({
-                ...prev,
-                tel: [prev.tel[0] || "", e.target.value],
-              }))
-            }
-            placeholder="تلفن ۲"
-            required
-          />
-        </div>
-        <Input
-          name="workTime"
-          value={form.workTime}
-          onChange={handleChange}
-          placeholder="ساعات کاری"
-          required
-        />
-      </div>
+    <form onSubmit={handleSubmit} className="space-y-6" dir="rtl">
+      {/* Basic Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle>اطلاعات پایه</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="name">نام شعبه *</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, name: e.target.value }))
+                }
+                placeholder="نام شعبه"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="title">عنوان شعبه</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, title: e.target.value }))
+                }
+                placeholder="عنوان شعبه"
+              />
+            </div>
+          </div>
 
-      {/* Owner Information Section */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold border-b pb-2">اطلاعات مالک</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            name="ownerFullName"
-            value={form.ownerFullName}
-            onChange={handleChange}
-            placeholder="نام مالک"
-            required
-          />
-          <Input
-            name="ownerNatCode"
-            value={form.ownerNatCode}
-            onChange={handleChange}
-            placeholder="کد ملی مالک"
-            required
-          />
-          <Input
-            name="ownerPhone"
-            value={form.ownerPhone}
-            onChange={handleChange}
-            placeholder="شماره تلفن مالک"
-            required
-          />
-          <Input
-            name="ownerType"
-            value={form.ownerType}
-            onChange={handleChange}
-            placeholder="نوع مالک"
-            required
-          />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Input
-            name="ownerState"
-            value={form.ownerState}
-            onChange={handleChange}
-            placeholder="استان مالک"
-            required
-          />
-          <Input
-            name="ownerCity"
-            value={form.ownerCity}
-            onChange={handleChange}
-            placeholder="شهر مالک"
-            required
-          />
-          <Input
-            name="ownerRegion"
-            value={form.ownerRegion}
-            onChange={handleChange}
-            placeholder="منطقه مالک"
-            required
-          />
-        </div>
-        <Input
-          name="ownerAddress"
-          value={form.ownerAddress}
-          onChange={handleChange}
-          placeholder="آدرس مالک"
-          required
-        />
-      </div>
+          <div>
+            <Label htmlFor="address">آدرس *</Label>
+            <Textarea
+              id="address"
+              value={formData.address}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, address: e.target.value }))
+              }
+              placeholder="آدرس کامل شعبه"
+              required
+            />
+          </div>
 
-      {/* Place Information Section */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold border-b pb-2">مشخصات محل</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            name="placeArea"
-            value={form.placeArea}
-            onChange={handleChange}
-            placeholder="متراژ محل"
-            required
-          />
-          <Input
-            name="placeAge"
-            value={form.placeAge}
-            onChange={handleChange}
-            placeholder="سن بنا"
-            required
-          />
-        </div>
-      </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="ownerFullName">نام مالک</Label>
+              <Input
+                id="ownerFullName"
+                value={formData.ownerFullName}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    ownerFullName: e.target.value,
+                  }))
+                }
+                placeholder="نام کامل مالک"
+              />
+            </div>
+            <div>
+              <Label htmlFor="ownerPhone">تلفن مالک</Label>
+              <Input
+                id="ownerPhone"
+                value={formData.ownerPhone}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    ownerPhone: e.target.value,
+                  }))
+                }
+                placeholder="09123456789"
+              />
+            </div>
+          </div>
 
-      {/* Image Upload Section */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold border-b pb-2">تصویر شعبه</h2>
-        <NextCloudinaryUploader
-          uploadPreset="yefgbqyx"
-          folder="tarkhineh"
-          maxFiles={1}
-          multiple={false}
-          onUploadSuccess={handleImageUploadSuccess}
-          onUploadError={handleImageUploadError}
-        />
-        {form.image && (
-          <div className="mt-4">
-            <img
-              src={form.image}
-              alt="branch preview"
-              className="w-48 h-32 object-cover rounded border"
-            />
+          {/* Phone Numbers */}
+          <div>
+            <Label>تلفن‌های شعبه</Label>
+            <div className="space-y-2">
+              {formData.tel.map((tel, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
+                    value={tel}
+                    onChange={(e) => handleTelChange(index, e.target.value)}
+                    placeholder="021-12345678"
+                    className="flex-1"
+                  />
+                  {formData.tel.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => removeTelField(index)}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addTelField}
+                className="mt-2"
+              >
+                + افزودن تلفن
+              </Button>
+            </div>
           </div>
-        )}
-      </div>
+        </CardContent>
+      </Card>
 
-      {/* Features Section */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold border-b pb-2">امکانات</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="flex items-center gap-2">
-            <Checkbox
-              name="verification"
-              checked={form.verification}
-              onCheckedChange={(checked) =>
-                setForm((prev: any) => ({
-                  ...prev,
-                  verification: checked,
-                }))
-              }
-            />
-            <span>تایید شده</span>
+      {/* Image Section - Single Image */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ImageIcon className="w-5 h-5" />
+            تصویر شعبه
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Current Image Display */}
+          {formData.image ? (
+            <div>
+              <Label>تصویر فعلی</Label>
+              <div className="relative inline-block mt-2 w-full max-w-md">
+                <img
+                  src={formData.image}
+                  alt="تصویر شعبه"
+                  className="w-full h-48 object-cover rounded-lg border shadow-sm"
+                  onError={(e) => {
+                    console.error("Image failed to load:", formData.image);
+                    e.currentTarget.src = "/placeholder-image.jpg"; // Add a placeholder
+                  }}
+                  onLoad={() => {
+                    console.log("Image loaded successfully:", formData.image);
+                  }}
+                />
+
+                {/* Remove Button */}
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleRemoveImage}
+                  className="absolute top-2 left-2"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+
+                {/* Replace Button */}
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleImageUpload}
+                  disabled={uploadingImage}
+                  className="absolute bottom-2 right-2"
+                >
+                  {uploadingImage ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    "تغییر تصویر"
+                  )}
+                </Button>
+              </div>
+
+              {/* Debug Info */}
+              <div className="text-xs text-gray-500 mt-2">
+                URL: {formData.image.substring(0, 50)}...
+              </div>
+            </div>
+          ) : (
+            /* Upload Button when no image */
+            <div>
+              <Label>تصویر شعبه</Label>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleImageUpload}
+                disabled={uploadingImage}
+                className="w-full h-32 border-dashed border-2 flex flex-col gap-2 mt-2"
+              >
+                {uploadingImage ? (
+                  <>
+                    <RefreshCw className="w-6 h-6 animate-spin" />
+                    <span>در حال آپلود...</span>
+                  </>
+                ) : (
+                  <>
+                    <Camera className="w-8 h-8" />
+                    <span>افزودن تصویر شعبه</span>
+                    <span className="text-xs text-gray-500">
+                      فرمت JPG/PNG، حداکثر 5MB
+                    </span>
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Facilities */}
+      <Card>
+        <CardHeader>
+          <CardTitle>امکانات</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="kitchen">آشپزخانه</Label>
+              <Switch
+                dir="ltr"
+                id="kitchen"
+                checked={formData.kitchen}
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({ ...prev, kitchen: checked }))
+                }
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="parking">پارکینگ</Label>
+              <Switch
+                dir="ltr"
+                id="parking"
+                checked={formData.parking}
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({ ...prev, parking: checked }))
+                }
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="store">انبار</Label>
+              <Switch
+                dir="ltr"
+                id="store"
+                checked={formData.store}
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({ ...prev, store: checked }))
+                }
+              />
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Checkbox
-              name="kitchen"
-              checked={form.kitchen}
-              onCheckedChange={(checked) =>
-                setForm((prev: any) => ({
-                  ...prev,
-                  kitchen: checked,
-                }))
-              }
-            />
-            <span>آشپزخانه</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Checkbox
-              name="parking"
-              checked={form.parking}
-              onCheckedChange={(checked) =>
-                setForm((prev: any) => ({
-                  ...prev,
-                  parking: checked,
-                }))
-              }
-            />
-            <span>پارکینگ</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Checkbox
-              name="store"
-              checked={form.store}
-              onCheckedChange={(checked) =>
-                setForm((prev: any) => ({
-                  ...prev,
-                  store: checked,
-                }))
-              }
-            />
-            <span>انبار</span>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Submit Button */}
-      <div className="pt-6 border-t">
-        <Button
-          className="bg-main w-full md:w-auto"
-          type="submit"
-          disabled={loading}
-        >
-          {loading ? "در حال پردازش..." : branch ? "ویرایش شعبه" : "ثبت شعبه"}
+      <div className="flex justify-end gap-4">
+        <Button type="submit" disabled={loading} className="min-w-[120px]">
+          {loading
+            ? "در حال ذخیره..."
+            : isEditing
+            ? "ویرایش شعبه"
+            : "ایجاد شعبه"}
         </Button>
       </div>
     </form>

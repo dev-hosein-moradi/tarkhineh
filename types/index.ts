@@ -1,25 +1,19 @@
 export interface IBranch {
   id: string;
+  name: string;
+  title: string;
+  address: string;
   ownerFullName: string;
-  ownerNatCode: string;
   ownerPhone: string;
-  ownerState: string;
-  ownerCity: string;
-  ownerRegion: string;
-  ownerAddress: string;
-  ownerType: string;
-  placeArea: string;
-  placeAge: number;
+  tel?: string[];
   verification: boolean;
   kitchen: boolean;
   parking: boolean;
   store: boolean;
-  image: string;
-  name: string;
-  title: string;
-  address: string;
-  workTime: string;
-  tel: [string];
+  images?: string[]; // Array of image URLs
+  mainImage?: string; // Main/featured image URL
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ICategory {

@@ -17,6 +17,25 @@ const nextConfig = bundleAnalyzer({
       },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: [
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "https://vercel.live",
+              "https://upload-widget.cloudinary.com",
+              "https://widget.cloudinary.com",
+              "https://cloudinary.com",
+            ].join(" "),
+          },
+        ],
+      },
+    ];
+  },
 });
 
 export default nextConfig;
