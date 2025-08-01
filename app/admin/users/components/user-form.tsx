@@ -21,6 +21,21 @@ type UserFormProps = {
 };
 
 export default function UserForm({ user, onSuccess }: UserFormProps) {
+  // Helper function to get current user role (moved inside component)
+  const getCurrentUserRole = (): UserRole | null => {
+    try {
+      const userInfo = localStorage.getItem("userInfo");
+      if (userInfo) {
+        const user = JSON.parse(userInfo);
+        return user.role;
+      }
+      return null;
+    } catch (error) {
+      console.error("Error getting current user role:", error);
+      return null;
+    }
+  };
+
   // Initialize form with proper defaults and handle user data correctly
   const [form, setForm] = useState(() => {
     if (user) {
@@ -127,6 +142,36 @@ export default function UserForm({ user, onSuccess }: UserFormProps) {
     }
   };
 
+  // Get available roles based on current user's permissions
+  const getAvailableRoles = () => {
+    const currentRole = getCurrentUserRole();
+
+    if (currentRole === UserRole.superAdmin) {
+      // SuperAdmin can assign all roles
+      return [
+        { value: UserRole.customer, label: "مشتری" },
+        { value: UserRole.staff, label: "کارمند" },
+        { value: UserRole.branchManager, label: "مدیر شعبه" },
+        { value: UserRole.admin, label: "مدیر" },
+        { value: UserRole.superAdmin, label: "مدیر کل" },
+      ];
+    } else if (currentRole === UserRole.admin) {
+      // Admin cannot assign superAdmin role
+      return [
+        { value: UserRole.customer, label: "مشتری" },
+        { value: UserRole.staff, label: "کارمند" },
+        { value: UserRole.branchManager, label: "مدیر شعبه" },
+        { value: UserRole.admin, label: "مدیر" },
+      ];
+    } else {
+      // Others cannot assign roles - fallback to basic roles
+      return [
+        { value: UserRole.customer, label: "مشتری" },
+        { value: UserRole.staff, label: "کارمند" },
+      ];
+    }
+  };
+
   // Better typed submit handler
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -161,6 +206,13 @@ export default function UserForm({ user, onSuccess }: UserFormProps) {
         toast.error("فرمت ایمیل صحیح نیست");
         return;
       }
+    }
+
+    // Check role assignment permissions
+    const currentRole = getCurrentUserRole();
+    if (currentRole === UserRole.admin && form.role === UserRole.superAdmin) {
+      toast.error("شما نمی‌توانید کاربری را مدیر کل کنید");
+      return;
     }
 
     setLoading(true);
@@ -305,6 +357,7 @@ export default function UserForm({ user, onSuccess }: UserFormProps) {
           <div>
             <label className="text-sm font-medium mb-2 block">نوع کاربر</label>
             <Select
+              dir="rtl"
               value={form.type}
               onValueChange={(value) => handleSelectChange("type", value)}
             >
@@ -323,6 +376,7 @@ export default function UserForm({ user, onSuccess }: UserFormProps) {
           <div>
             <label className="text-sm font-medium mb-2 block">نقش</label>
             <Select
+              dir="rtl"
               value={form.role}
               onValueChange={(value) => handleSelectChange("role", value)}
             >
@@ -330,13 +384,11 @@ export default function UserForm({ user, onSuccess }: UserFormProps) {
                 <SelectValue placeholder="انتخاب نقش" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={UserRole.customer}>مشتری</SelectItem>
-                <SelectItem value={UserRole.staff}>کارمند</SelectItem>
-                <SelectItem value={UserRole.branchManager}>
-                  مدیر شعبه
-                </SelectItem>
-                <SelectItem value={UserRole.admin}>مدیر</SelectItem>
-                <SelectItem value={UserRole.superAdmin}>مدیر کل</SelectItem>
+                {getAvailableRoles().map((role) => (
+                  <SelectItem key={role.value} value={role.value}>
+                    {role.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

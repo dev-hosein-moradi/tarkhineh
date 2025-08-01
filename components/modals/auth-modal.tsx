@@ -7,6 +7,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 
 import { Modal } from "@/components/ui/modal";
 import {
@@ -24,8 +25,8 @@ import OTPForm from "../otp-form";
 import { RootState } from "@/hooks/store";
 import { onClose, nextLevel, prevLevel } from "@/hooks/use-auth-modal";
 import { toast } from "sonner";
-import { setToken } from "@/hooks/use-user";
-import { LoginUser, RegisterUser } from "@/services/auth-service";
+import { useAuth } from "@/contexts/auth-context";
+import { UserRole } from "@/types";
 import { Checkbox } from "@/components/ui/checkbox";
 
 // Form validation schema
@@ -35,18 +36,22 @@ const formSchema = z.object({
     .min(11, { message: "شماره همراه نامعتبر است" })
     .max(11, { message: "شماره همراه نامعتبر است" }),
   password: z.string().min(8, {
-    message: " لطفا رمز عبور پیچیده تر انتخاب کنید شامل حداقل 8 کاراکتر",
+    message: "لطفا رمز عبور پیچیده تر انتخاب کنید شامل حداقل 8 کاراکتر",
   }),
 });
 
 export const AuthModal = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
+
+  // Use new auth context instead of old Redux state
+  const { login, register, loading: authLoading } = useAuth();
 
   // Get modal state from Redux store
   const { isOpen, level } = useSelector((state: RootState) => state.auth);
 
   const [sendedPhone, setSendedPhone] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [localLoading, setLocalLoading] = useState(false);
   const [loginForm, setLoginForm] = useState(true);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -57,60 +62,57 @@ export const AuthModal = () => {
     },
   });
 
-  // Handle sending the phone number and navigating to the next level
+  // Updated login handler using new auth context
   const handleLogin = async (values: z.infer<typeof formSchema>) => {
-    setLoading(true);
+    setLocalLoading(true);
     setSendedPhone(values?.mobile);
-    const data = {
-      mobile: values?.mobile,
-      password: values?.password,
-    };
 
     try {
-      const response = await LoginUser(data);
-      if (response.data.ok) {
-        dispatch(setToken(response.data.data));
-        toast.success(`ورود با موفقیت انجام شد`);
-        dispatch(onClose());
-      }
+      // Use the auth context login function
+      await login(values.mobile, values.password);
+
+      // Close the modal after successful login
+      dispatch(onClose());
+
+      // The redirect will happen automatically from the auth context
+      // or middleware will handle it when user tries to access routes
     } catch (error) {
-      handleError(error);
+      // Error is already handled in auth context with toast
+      console.error("Login failed:", error);
     } finally {
-      setLoading(false);
+      setLocalLoading(false);
     }
   };
 
+  // Updated register handler using new auth context
   const handleRegister = async (values: z.infer<typeof formSchema>) => {
-    setLoading(true);
+    setLocalLoading(true);
     setSendedPhone(values?.mobile);
 
-    const data = {
+    const userData = {
       mobile: values?.mobile,
       password: values?.password,
-      __t: "user",
+      __t: "user", // Keep this if your backend expects it
     };
 
     try {
-      const response = await RegisterUser(data);
-      if (response.data.ok) {
-        dispatch(setToken(response.data.data));
-        toast.success(`ثبت نام با موفقیت انجام شد`);
-        dispatch(onClose());
-      }
+      // Use the auth context register function
+      await register(userData);
+
+      // Close the modal after successful registration
+      dispatch(onClose());
+
+      // The redirect will happen automatically from the auth context
     } catch (error) {
-      handleError(error);
+      // Error is already handled in auth context with toast
+      console.error("Registration failed:", error);
     } finally {
-      setLoading(false);
+      setLocalLoading(false);
     }
   };
 
-  const handleError = (error: any) => {
-    if (axios.isAxiosError(error) && error.response) {
-      const statusCode = error.response.status;
-      const errorMessage = error.response.data.message;
-      toast.error(errorMessage || "An error occurred");
-    }
-  };
+  // Combined loading state
+  const isLoading = authLoading || localLoading;
 
   return (
     <Modal
@@ -120,8 +122,8 @@ export const AuthModal = () => {
           ? "شماره همراه خود را وارد کنید"
           : `کد شش رقمی به شماره ${sendedPhone} ارسال شد`
       }
-      isOpen={isOpen} // Get from Redux store
-      onClose={() => dispatch(onClose())} // Dispatch close action
+      isOpen={isOpen}
+      onClose={() => dispatch(onClose())}
     >
       <div>
         <div className="w-full flex items-center justify-center py-8">
@@ -157,6 +159,7 @@ export const AuthModal = () => {
                           dir="rtl"
                           placeholder="شماره همراه"
                           autoComplete="off"
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -177,6 +180,7 @@ export const AuthModal = () => {
                           placeholder="رمز عبور"
                           autoComplete="off"
                           type="password"
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -199,15 +203,22 @@ export const AuthModal = () => {
 
                 <Separator className="my-4" />
                 <Button
+                  type="submit"
                   className="bg-main text-white w-1/2 mx-auto hover:bg-main shadow-md hover:shadow-xl"
-                  disabled={loading}
+                  disabled={isLoading}
                 >
-                  {loginForm ? "ورود" : "ثبت نام"}
+                  {isLoading
+                    ? loginForm
+                      ? "در حال ورود..."
+                      : "در حال ثبت نام..."
+                    : loginForm
+                    ? "ورود"
+                    : "ثبت نام"}
                 </Button>
               </form>
             </Form>
           ) : (
-            <OTPForm loading={loading} />
+            <OTPForm loading={isLoading} />
           )}
         </div>
       </div>

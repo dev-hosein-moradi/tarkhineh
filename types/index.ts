@@ -112,14 +112,15 @@ export interface IUser {
   lastName?: string;
   email?: string;
   mobileNumber: string;
-  type: UserType;
   role: UserRole;
+  type: UserType;
+  isActive: boolean;
   branchId?: string;
   branch?: IBranch;
-  permissions: IUserPermission[];
-  isActive: boolean;
+  permissions?: IUserPermission[];
   createdAt: string;
   updatedAt: string;
+  orderCount?: number; // Add orderCount to the IUser interface
 }
 
 export interface IUserPermission {

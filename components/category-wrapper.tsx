@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 
 const Categories = dynamic(() => import("./categories"));
 
-export default async function CategoryWrapper() {
+export default function CategoryWrapper() {
   return (
     <div className="w-full max-w-[1350px] mx-auto py-5 px-[5%] flex flex-col items-center">
       <h2

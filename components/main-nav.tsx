@@ -25,6 +25,8 @@ import { useBranchStore } from "@/hooks/use-branch";
 import { RootState } from "@/hooks/store";
 import { useDispatch, useSelector } from "react-redux";
 import AccountDropdown from "./account-dropdown";
+// Add this import
+import { useAuth } from "@/contexts/auth-context";
 
 const Select = dynamic(
   () => import("@/components/ui/select").then((mod) => mod.Select),
@@ -54,6 +56,9 @@ export const MainNav = ({
   const searchModel = useSearchModal();
   const router = useRouter();
 
+  // Use new auth context instead of Redux
+  const { isAuthenticated, user, initialized } = useAuth();
+
   const [sideMenu, setSideMenu] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -70,7 +75,9 @@ export const MainNav = ({
     loading: categoriesLoading,
     error: categoriesError,
   } = useCategoryStore();
-  const { isAuthenticated } = useSelector((state: RootState) => state.user);
+
+  // Remove this old Redux selector:
+  // const { isAuthenticated } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     fetchCategories().catch((e) => {
@@ -118,34 +125,19 @@ export const MainNav = ({
     [categories]
   );
 
-  // useEffect(() => {
-  //   let isTabClosed = false;
-
-  //   // Detect tab close or navigation away (default browser prompt)
-  //   const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-  //     if (!isTabClosed) {
-  //       event.preventDefault();
-  //       event.returnValue = ""; // Trigger browser confirmation dialog
-  //     }
-  //   };
-
-  //   // Track visibility change
-  //   const handleVisibilityChange = () => {
-  //     if (document.visibilityState === "hidden") {
-  //       // The tab is inactive or being closed
-  //       const confirmation = window.confirm("Are you sure you want to leave?");
-  //       isTabClosed = confirmation; // Only close if confirmed
-  //     }
-  //   };
-
-  //   window.addEventListener("beforeunload", handleBeforeUnload);
-  //   document.addEventListener("visibilitychange", handleVisibilityChange);
-
-  //   return () => {
-  //     window.removeEventListener("beforeunload", handleBeforeUnload);
-  //     document.removeEventListener("visibilitychange", handleVisibilityChange);
-  //   };
-  // }, []);
+  // Show loading while auth is initializing
+  if (!initialized) {
+    return (
+      <div className="flex flex-row-reverse justify-between w-full">
+        <div className="hidden md:flex mx-auto">
+          <div className="animate-pulse bg-gray-200 h-8 w-96 rounded"></div>
+        </div>
+        <div className="w-full md:w-auto flex items-center gap-1">
+          <div className="animate-pulse bg-gray-200 h-10 w-10 rounded"></div>
+        </div>
+      </div>
+    );
+  }
 
   if (!branches || !categories) return <></>;
 
@@ -217,6 +209,8 @@ export const MainNav = ({
         >
           <Menu className="w-6 h-6 group-hover:text-main duration-150" />
         </Button>
+
+        {/* Updated authentication check */}
         {!isAuthenticated ? (
           <Button
             className="hover:border-main bg-tint-1 duration-150"
@@ -279,6 +273,16 @@ export const MainNav = ({
             صفحه اصلی
           </li>
 
+          {/* Add authentication info in mobile menu */}
+          {isAuthenticated && user && (
+            <li className="py-2 my-1 border-b-[1px] w-full">
+              <div className="text-sm text-gray-600">
+                خوش آمدید: {user.mobileNumber}
+              </div>
+              <div className="text-xs text-gray-500">نقش: {user.role}</div>
+            </li>
+          )}
+
           {/* Branches Select */}
           <Select>
             <SelectTrigger className="w-full text-right my-1" dir="rtl">
@@ -301,43 +305,43 @@ export const MainNav = ({
                 ))
               )}
             </SelectContent>
-
-            {/* Menu Select */}
-            <Select>
-              <SelectTrigger className="w-full text-right my-1" dir="rtl">
-                <SelectValue placeholder="منو" />
-              </SelectTrigger>
-              <SelectContent dir="rtl" className="flex flex-col">
-                {categoriesLoading ? (
-                  <SmBranchCardsSkeleton />
-                ) : categoriesError ? (
-                  <p className="text-red-500 p-2">{categoriesError}</p>
-                ) : (
-                  categories?.map((category) => (
-                    <Link
-                      key={category.id}
-                      href={`/menu/${category.id}`}
-                      className="hover:text-main duration-150 block py-1 px-4"
-                    >
-                      {category.name}
-                    </Link>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
-
-            <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full">
-              اعطای نمایندگی
-            </li>
-
-            <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full">
-              درباره ما
-            </li>
-
-            <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full">
-              تماس با ما
-            </li>
           </Select>
+
+          {/* Menu Select */}
+          <Select>
+            <SelectTrigger className="w-full text-right my-1" dir="rtl">
+              <SelectValue placeholder="منو" />
+            </SelectTrigger>
+            <SelectContent dir="rtl" className="flex flex-col">
+              {categoriesLoading ? (
+                <SmBranchCardsSkeleton />
+              ) : categoriesError ? (
+                <p className="text-red-500 p-2">{categoriesError}</p>
+              ) : (
+                categories?.map((category) => (
+                  <Link
+                    key={category.id}
+                    href={`/menu/${category.id}`}
+                    className="hover:text-main duration-150 block py-1 px-4"
+                  >
+                    {category.name}
+                  </Link>
+                ))
+              )}
+            </SelectContent>
+          </Select>
+
+          <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full">
+            اعطای نمایندگی
+          </li>
+
+          <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full">
+            درباره ما
+          </li>
+
+          <li className="py-2 my-1 cursor-pointer border-b-[1px] w-full">
+            تماس با ما
+          </li>
         </ul>
       </div>
     </div>

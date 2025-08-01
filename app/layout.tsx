@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ModalProvider } from "@/providers/modal-provider";
-import { ToastProvider } from "@/providers/toast-provider";
 import ReduxProvider from "@/providers/redux-provider";
+import { AuthProvider } from "@/contexts/auth-context";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "رستوران ترخینه",
@@ -65,15 +66,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fa">
+    <html lang="fa" dir="ltr">
       <head>
         <link rel="icon" href="/Logo.svg" />
       </head>
       <body className={`font-estedad`}>
         <ReduxProvider>
-          <ModalProvider />
-          {children}
-          <ToastProvider />
+          <AuthProvider>
+            <ModalProvider />
+            {children}
+            <Toaster
+              position="top-center"
+              richColors
+              expand={false}
+              closeButton
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  fontFamily: "inherit",
+                },
+              }}
+            />
+          </AuthProvider>
         </ReduxProvider>
       </body>
     </html>

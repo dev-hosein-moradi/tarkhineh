@@ -20,12 +20,24 @@ import {
   Home,
   LogOut,
 } from "lucide-react";
+import { canAccessUsersSection } from "@/services/user-service";
+// Add this import for auth context
+import { useAuth } from "@/contexts/auth-context";
 
 const AdminSidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isDesktopOpen, setIsDesktopOpen] = useState(true);
+  const [canAccessUsers, setCanAccessUsers] = useState(false);
+
+  // Add auth context
+  const { logout } = useAuth();
+
+  // Check user access permissions
+  useEffect(() => {
+    setCanAccessUsers(canAccessUsersSection());
+  }, []);
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -47,68 +59,96 @@ const AdminSidebar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const navItems = [
+  // Add logout handler
+  const handleLogout = async () => {
+    try {
+      await logout();
+      // The auth context will handle redirect to home page
+      // But we can also explicitly redirect if needed
+      router.push("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Even if logout fails, redirect to home
+      router.push("/");
+    }
+  };
+
+  // Define all navigation items
+  const allNavItems = [
     {
       title: "داشبورد",
       path: "/admin",
       icon: Home,
       description: "صفحه اصلی مدیریت",
+      show: true, // Always show dashboard
     },
     {
       title: "شعبه‌ها",
       path: "/admin/branch",
       icon: Building2,
       description: "مدیریت شعبه‌ها",
+      show: true, // Assuming all admin roles can see branches
     },
     {
       title: "غذاها",
       path: "/admin/food",
       icon: UtensilsCrossed,
       description: "مدیریت منوی غذا",
+      show: true, // Assuming all admin roles can see foods
     },
     {
       title: "اقلام جانبی",
       path: "/admin/accompaniment",
       icon: Coffee,
       description: "نوشیدنی، سالاد و...",
+      show: true, // Assuming all admin roles can see accompaniments
     },
     {
       title: "دسته‌بندی اقلام",
       path: "/admin/accompaniment-category",
       icon: Tags,
       description: "دسته‌بندی اقلام جانبی",
+      show: true, // Assuming all admin roles can see categories
     },
     {
       title: "کاربران",
       path: "/admin/users",
       icon: Users,
       description: "مدیریت کاربران",
+      show: canAccessUsers, // Only show if user has access
     },
     {
       title: "سفارشات",
       path: "/admin/orders",
       icon: ShoppingCart,
       description: "مدیریت سفارشات",
+      show: true, // Assuming all admin roles can see orders
     },
     {
       title: "گزارشات",
       path: "/admin/reports",
       icon: BarChart3,
       description: "آمار و گزارشات",
+      show: true, // Assuming all admin roles can see reports
     },
     {
       title: "بلاگ",
       path: "/admin/blog",
       icon: FileText,
       description: "مدیریت مقالات",
+      show: true, // Assuming all admin roles can see blog
     },
     {
       title: "تنظیمات",
       path: "/admin/settings",
       icon: Settings,
       description: "تنظیمات سیستم",
+      show: true, // Assuming all admin roles can see settings
     },
   ];
+
+  // Filter navigation items based on permissions
+  const navItems = allNavItems.filter((item) => item.show);
 
   const handleNavigation = (path: string) => {
     router.push(path);
@@ -187,11 +227,12 @@ const AdminSidebar = () => {
         </nav>
       </ScrollArea>
 
-      {/* Footer */}
+      {/* Footer - Updated with logout handler */}
       <div className="p-6 border-t">
         <Button
           variant="ghost"
           className="w-full justify-start gap-3 h-12 text-right text-red-600 hover:text-red-700 hover:bg-red-50"
+          onClick={handleLogout}
         >
           <LogOut className="h-5 w-5" />
           <span className="flex-1 text-right">خروج</span>

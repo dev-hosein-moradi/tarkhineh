@@ -5,7 +5,8 @@ import {
   UserType,
   PermissionType,
 } from "@/types";
-import axios, { AxiosResponse } from "axios";
+import apiClient from "@/lib/axios";
+import { AxiosResponse } from "axios";
 
 interface UserResponse {
   data: IUser;
@@ -23,64 +24,171 @@ interface UsersResponse {
   message: string;
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_SERVER_URL;
-
-// Helper to get token from cookie
-function getAccessToken() {
-  const match = document.cookie.match(/(?:^|;\s*)accessToken=([^;]*)/);
-  return match ? match[1] : null;
+// Update the response interfaces to include pagination
+interface PaginatedUsersResponse {
+  data: IUser[];
+  total: number;
+  totalPages: number;
+  currentPage: number;
+  status: number;
+  error: Record<string, null>;
+  ok: boolean;
+  message: string;
 }
 
-// Get all users (admin only) - Updated to use users-with-roles endpoint
-export const getUsers = async (): Promise<IUser[] | null> => {
-  const token = getAccessToken();
+// Helper functions that now work with auth context
+export function getCurrentUserInfo() {
+  if (typeof window === "undefined") return null;
   try {
-    const res = await axios.get<UsersResponse>(
-      `${BASE_URL}api/admin/users-with-roles`,
-      {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      }
-    );
-    return res.data.data;
+    // Try both localStorage keys for compatibility
+    const userInfo =
+      localStorage.getItem("userInfo") || localStorage.getItem("accessToken");
+    return userInfo ? JSON.parse(userInfo) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function getCurrentUserRole(): UserRole | string | null {
+  const userInfo = getCurrentUserInfo();
+  // Handle both nested and flat role structure
+  return userInfo?.role || userInfo?.userInfo?.role || null;
+}
+
+export function getCurrentUserId(): string | null {
+  const userInfo = getCurrentUserInfo();
+  return userInfo?.id || null;
+}
+
+export function getCurrentUserBranchId(): string | null {
+  const userInfo = getCurrentUserInfo();
+  return userInfo?.branchId || userInfo?.userInfo?.branchId || null;
+}
+
+export function canAccessUsersSection(): boolean {
+  const currentRole = getCurrentUserRole();
+  // Handle both string and enum comparisons
+  return (
+    currentRole === UserRole.superAdmin ||
+    currentRole === UserRole.admin ||
+    currentRole === "superAdmin" ||
+    currentRole === "admin"
+  );
+}
+
+export function canDeleteUsers(): boolean {
+  const currentRole = getCurrentUserRole();
+  // Only superAdmin can delete users
+  return currentRole === UserRole.superAdmin || currentRole === "superAdmin";
+}
+
+export function canEditUsers(): boolean {
+  const currentRole = getCurrentUserRole();
+  // Both superAdmin and admin can edit users
+  return (
+    currentRole === UserRole.superAdmin ||
+    currentRole === UserRole.admin ||
+    currentRole === "superAdmin" ||
+    currentRole === "admin"
+  );
+}
+
+export function canCreateUsers(): boolean {
+  const currentRole = getCurrentUserRole();
+  // Both superAdmin and admin can create users
+  return (
+    currentRole === UserRole.superAdmin ||
+    currentRole === UserRole.admin ||
+    currentRole === "superAdmin" ||
+    currentRole === "admin"
+  );
+}
+
+export function canManageUserPermissions(): boolean {
+  const currentRole = getCurrentUserRole();
+  // Both superAdmin and admin can manage permissions
+  return (
+    currentRole === UserRole.superAdmin ||
+    currentRole === UserRole.admin ||
+    currentRole === "superAdmin" ||
+    currentRole === "admin"
+  );
+}
+
+export function isAuthenticated(): boolean {
+  return getCurrentUserInfo() !== null;
+}
+
+export function isUserActive(): boolean {
+  const userInfo = getCurrentUserInfo();
+  return userInfo?.isActive !== false; // Default to true if not specified
+}
+
+// Get all users with proper role filtering
+export const getUsers = async (): Promise<IUser[] | null> => {
+  if (!canAccessUsersSection()) {
+    throw new Error("شما دسترسی به این بخش را ندارید");
+  }
+
+  try {
+    const currentRole = getCurrentUserRole();
+    console.log("Current user role:", currentRole); // Debug log
+
+    // Try the basic users endpoint first
+    console.log("Fetching users from /admin/users endpoint"); // Debug log
+    const res = await apiClient.get<UsersResponse>("/api/admin/users");
+    console.log("API Response:", res.data); // Debug log
+    console.log("Users count:", res.data.data?.length); // Debug log
+
+    return res.data.data || [];
   } catch (error) {
     console.error("Error fetching users:", error);
-    return null;
+
+    // If basic endpoint fails, try the roles endpoint as fallback
+    try {
+      console.log("Trying users-with-roles endpoint as fallback"); // Debug log
+      const res = await apiClient.get<UsersResponse>(
+        "/api/admin/users-with-roles"
+      );
+      console.log("Fallback API Response:", res.data); // Debug log
+      return res.data.data || [];
+    } catch (fallbackError) {
+      console.error("Both endpoints failed:", fallbackError);
+      return null;
+    }
   }
 };
 
-// Get user by ID
 export const getUserById = async (
   id: string
 ): Promise<AxiosResponse<UserResponse>> => {
-  const token = getAccessToken();
-  try {
-    const res = await axios.get<UserResponse>(
-      `${BASE_URL}api/admin/users/${id}`,
-      {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      }
-    );
-    return res;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      throw error;
-    }
-    throw new Error("An unexpected error occurred");
+  if (!canAccessUsersSection()) {
+    throw new Error("شما دسترسی به این بخش را ندارید");
   }
+
+  return await apiClient.get<UserResponse>(`/api/admin/users/${id}`);
 };
 
-// Create user
+// Create user (with enhanced role restrictions)
 export async function createUser(data: any) {
-  const token = getAccessToken();
+  if (!canCreateUsers()) {
+    throw new Error("شما دسترسی به ایجاد کاربر را ندارید");
+  }
+
+  const currentRole = getCurrentUserRole();
+
+  // Prevent admin from creating superAdmin users
+  if (
+    (currentRole === UserRole.admin || currentRole === "admin") &&
+    (data.role === UserRole.superAdmin || data.role === "superAdmin")
+  ) {
+    throw new Error("شما نمی‌توانید کاربر مدیر کل ایجاد کنید");
+  }
+
   try {
-    const res = await axios.post(`${BASE_URL}api/admin/users`, data, {
+    const res = await apiClient.post("/api/admin/users", data, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: token ? `Bearer ${token}` : "",
       },
     });
     return res.data;
@@ -90,14 +198,26 @@ export async function createUser(data: any) {
   }
 }
 
-// Update user
+// Update user (with enhanced role restrictions)
 export async function updateUser(id: string, data: any) {
-  const token = getAccessToken();
+  if (!canEditUsers()) {
+    throw new Error("شما دسترسی به ویرایش کاربر را ندارید");
+  }
+
+  const currentRole = getCurrentUserRole();
+
+  // Prevent admin from updating to superAdmin role
+  if (
+    (currentRole === UserRole.admin || currentRole === "admin") &&
+    (data.role === UserRole.superAdmin || data.role === "superAdmin")
+  ) {
+    throw new Error("شما نمی‌توانید کاربری را به مدیر کل تبدیل کنید");
+  }
+
   try {
-    const res = await axios.patch(`${BASE_URL}api/admin/users/${id}`, data, {
+    const res = await apiClient.patch(`/api/admin/users/${id}`, data, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: token ? `Bearer ${token}` : "",
       },
     });
     return res.data;
@@ -107,15 +227,14 @@ export async function updateUser(id: string, data: any) {
   }
 }
 
-// Delete user
+// Delete user (only superAdmin can delete)
 export async function deleteUser(id: string) {
-  const token = getAccessToken();
+  if (!canDeleteUsers()) {
+    throw new Error("فقط مدیر کل می‌تواند کاربران را حذف کند");
+  }
+
   try {
-    const res = await axios.delete(`${BASE_URL}api/admin/users/${id}`, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-      },
-    });
+    const res = await apiClient.delete(`/api/admin/users/${id}`);
     return res.data;
   } catch (error) {
     console.error("Delete user error:", error);
@@ -123,17 +242,19 @@ export async function deleteUser(id: string) {
   }
 }
 
-// Toggle user active status
+// Toggle user active status (with enhanced role check)
 export async function toggleUserStatus(id: string, isActive: boolean) {
-  const token = getAccessToken();
+  if (!canEditUsers()) {
+    throw new Error("شما دسترسی به تغییر وضعیت کاربر را ندارید");
+  }
+
   try {
-    const res = await axios.patch(
-      `${BASE_URL}api/admin/users/${id}/status`,
+    const res = await apiClient.patch(
+      `/api/admin/users/${id}/status`,
       { isActive },
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
         },
       }
     );
@@ -144,17 +265,19 @@ export async function toggleUserStatus(id: string, isActive: boolean) {
   }
 }
 
-// Reset user password
+// Reset user password (with role check)
 export async function resetUserPassword(id: string, newPassword: string) {
-  const token = getAccessToken();
+  if (!canEditUsers()) {
+    throw new Error("شما دسترسی به تغییر رمز عبور را ندارید");
+  }
+
   try {
-    const res = await axios.patch(
-      `${BASE_URL}api/admin/users/${id}/password`,
+    const res = await apiClient.patch(
+      `/api/admin/users/${id}/password`,
       { password: newPassword },
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
         },
       }
     );
@@ -165,19 +288,17 @@ export async function resetUserPassword(id: string, newPassword: string) {
   }
 }
 
-// Get user permissions - Fixed to match your backend endpoint
+// Get user permissions (with role check)
 export const getUserPermissions = async (
   userId: string
 ): Promise<IUserPermission[] | null> => {
-  const token = getAccessToken();
+  if (!canManageUserPermissions()) {
+    throw new Error("شما دسترسی به مدیریت دسترسی‌ها را ندارید");
+  }
+
   try {
-    const res = await axios.get<{ data: IUserPermission[] }>(
-      `${BASE_URL}api/admin/users/${userId}/permissions`,
-      {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      }
+    const res = await apiClient.get<{ data: IUserPermission[] }>(
+      `/api/admin/users/${userId}/permissions`
     );
     return res.data.data;
   } catch (error) {
@@ -186,44 +307,22 @@ export const getUserPermissions = async (
   }
 };
 
-// Add permissions to user (keeps existing ones) - Uses POST
-export async function assignUserPermissions(
-  userId: string,
-  permissions: { permission: PermissionType; branchId?: string }[]
-) {
-  const token = getAccessToken();
-  try {
-    const res = await axios.post(
-      `${BASE_URL}api/admin/users/${userId}/permissions`,
-      { permissions },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      }
-    );
-    return res.data;
-  } catch (error) {
-    console.error("Assign permissions error:", error);
-    throw new Error("خطا در تخصیص دسترسی‌ها");
-  }
-}
-
-// Update user permissions (replace all permissions) - Uses PUT for full replacement
+// Update user permissions (with role check)
 export async function updateUserPermissions(
   userId: string,
   permissions: { permission: PermissionType; branchId?: string }[]
 ) {
-  const token = getAccessToken();
+  if (!canManageUserPermissions()) {
+    throw new Error("شما دسترسی به مدیریت دسترسی‌ها را ندارید");
+  }
+
   try {
-    const res = await axios.put(
-      `${BASE_URL}api/admin/users/${userId}/permissions`,
+    const res = await apiClient.put(
+      `/api/admin/users/${userId}/permissions`,
       { permissions },
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
         },
       }
     );
@@ -234,41 +333,29 @@ export async function updateUserPermissions(
   }
 }
 
-// Remove user permissions - Uses DELETE
-export async function removeUserPermissions(
-  userId: string,
-  permissions: { permission: PermissionType; branchId?: string }[]
-) {
-  const token = getAccessToken();
-  try {
-    const res = await axios.delete(
-      `${BASE_URL}api/admin/users/${userId}/permissions`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        data: { permissions }, // DELETE requests with body need to use 'data' property
-      }
-    );
-    return res.data;
-  } catch (error) {
-    console.error("Remove permissions error:", error);
-    throw new Error("خطا در حذف دسترسی‌ها");
+// Update user role (with enhanced role check)
+export async function updateUserRole(userId: string, role: UserRole | string) {
+  if (!canEditUsers()) {
+    throw new Error("شما دسترسی به تغییر نقش کاربر را ندارید");
   }
-}
 
-// Update user role - Uses PATCH
-export async function updateUserRole(userId: string, role: UserRole) {
-  const token = getAccessToken();
+  const currentRole = getCurrentUserRole();
+
+  // Prevent admin from setting superAdmin role
+  if (
+    (currentRole === UserRole.admin || currentRole === "admin") &&
+    (role === UserRole.superAdmin || role === "superAdmin")
+  ) {
+    throw new Error("شما نمی‌توانید کاربری را مدیر کل کنید");
+  }
+
   try {
-    const res = await axios.patch(
-      `${BASE_URL}api/admin/users/${userId}/role`,
+    const res = await apiClient.patch(
+      `/api/admin/users/${userId}/role`,
       { role },
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
         },
       }
     );
@@ -278,3 +365,135 @@ export async function updateUserRole(userId: string, role: UserRole) {
     throw new Error("خطا در به‌روزرسانی نقش کاربر");
   }
 }
+
+// Update getStaffUsers with pagination and search
+export const getStaffUsers = async (
+  page: number = 1,
+  limit: number = 10,
+  search: string = ""
+): Promise<{
+  users: IUser[];
+  total: number;
+  totalPages: number;
+  currentPage: number;
+} | null> => {
+  if (!canAccessUsersSection()) {
+    throw new Error("شما دسترسی به این بخش را ندارید");
+  }
+
+  try {
+    const currentRole = getCurrentUserRole();
+    console.log("Fetching staff users for role:", currentRole, {
+      page,
+      limit,
+      search,
+    });
+
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      sort: "createdAt",
+      order: "desc",
+    });
+
+    if (search.trim()) {
+      params.append("search", search.trim());
+    }
+
+    // Sending query parameters to backend
+    const endpoint = `/api/admin/users?type=admin&${params.toString()}`;
+    const res = await apiClient.get<PaginatedUsersResponse>(endpoint);
+
+    if (res.data && res.data.ok) {
+      return {
+        users: res.data.data || [],
+        total: res.data.total || 0,
+        totalPages: res.data.totalPages || 1,
+        currentPage: res.data.currentPage || 1,
+      };
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error fetching staff users:", error);
+    return null;
+  }
+};
+
+// Update getCustomerUsers with pagination and search
+export const getCustomerUsers = async (
+  page: number = 1,
+  limit: number = 10,
+  search: string = ""
+): Promise<{
+  users: IUser[];
+  total: number;
+  totalPages: number;
+  currentPage: number;
+} | null> => {
+  if (!canAccessUsersSection()) {
+    throw new Error("شما دسترسی به این بخش را ندارید");
+  }
+
+  try {
+    console.log("Fetching customer users", { page, limit, search });
+
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      sort: "createdAt",
+      order: "desc",
+    });
+
+    if (search.trim()) {
+      params.append("search", search.trim());
+    }
+
+    const endpoint = `/api/admin/users?role=customer&${params.toString()}`;
+    const res = await apiClient.get<PaginatedUsersResponse>(endpoint);
+
+    if (res.data && res.data.ok) {
+      return {
+        users: res.data.data || [],
+        total: res.data.total || 0,
+        totalPages: res.data.totalPages || 1,
+        currentPage: res.data.currentPage || 1,
+      };
+    }
+
+    // Fallback to type=user if role=customer fails
+    const fallbackEndpoint = `/api/admin/users?type=user&${params.toString()}`;
+    const fallbackRes = await apiClient.get<PaginatedUsersResponse>(
+      fallbackEndpoint
+    );
+
+    if (fallbackRes.data && fallbackRes.data.ok) {
+      return {
+        users: fallbackRes.data.data || [],
+        total: fallbackRes.data.total || 0,
+        totalPages: fallbackRes.data.totalPages || 1,
+        currentPage: fallbackRes.data.currentPage || 1,
+      };
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error fetching customer users:", error);
+    return null;
+  }
+};
+
+// Keep the original getAllUsers for backward compatibility
+export const getAllUsers = async (): Promise<IUser[] | null> => {
+  if (!canAccessUsersSection()) {
+    throw new Error("شما دسترسی به این بخش را ندارید");
+  }
+
+  try {
+    const res = await apiClient.get<UsersResponse>("/api/admin/users");
+    return res.data.data || [];
+  } catch (error) {
+    console.error("Error fetching all users:", error);
+    return null;
+  }
+};

@@ -27,7 +27,11 @@ import {
   Unlock,
   KeyRound,
 } from "lucide-react";
-import { getUsers, toggleUserStatus } from "@/services/user-service";
+import {
+  getUsers,
+  toggleUserStatus,
+  canDeleteUsers,
+} from "@/services/user-service";
 import { IUser, UserRole, UserType } from "@/types";
 import { toast } from "sonner";
 
@@ -97,34 +101,44 @@ const UserTable = forwardRef<UserTableRef, UserTableProps>(
         });
     };
 
-    const getRoleBadgeColor = (role: UserRole) => {
+    const getRoleBadgeColor = (role: UserRole | string) => {
       switch (role) {
         case UserRole.superAdmin:
+        case "superAdmin":
           return "bg-red-100 text-red-800";
         case UserRole.admin:
+        case "admin":
           return "bg-orange-100 text-orange-800";
         case UserRole.branchManager:
+        case "branchManager":
           return "bg-blue-100 text-blue-800";
         case UserRole.staff:
+        case "staff":
           return "bg-green-100 text-green-800";
         case UserRole.customer:
+        case "customer":
           return "bg-gray-100 text-gray-800";
         default:
           return "bg-gray-100 text-gray-800";
       }
     };
 
-    const getRoleTitle = (role: UserRole) => {
+    const getRoleTitle = (role: UserRole | string) => {
       switch (role) {
         case UserRole.superAdmin:
+        case "superAdmin":
           return "مدیر کل";
         case UserRole.admin:
+        case "admin":
           return "مدیر";
         case UserRole.branchManager:
+        case "branchManager":
           return "مدیر شعبه";
         case UserRole.staff:
+        case "staff":
           return "کارمند";
         case UserRole.customer:
+        case "customer":
           return "مشتری";
         default:
           return role;
@@ -283,13 +297,16 @@ const UserTable = forwardRef<UserTableRef, UserTableProps>(
                           <KeyRound className="w-4 h-4 ml-2" />
                           تغییر رمز عبور
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => onDelete(user)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-4 h-4 ml-2" />
-                          حذف کاربر
-                        </DropdownMenuItem>
+                        {/* Only show delete option for superAdmin */}
+                        {canDeleteUsers() && (
+                          <DropdownMenuItem
+                            onClick={() => onDelete(user)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4 ml-2" />
+                            حذف کاربر
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
